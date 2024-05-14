@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<!--
+HTML code would be added to the below div tag
+which would be taken as an input from the user.
+-->
+<center>
+    <div >
+        <img width="55" height="55" data-bit="iit" src="cid:logo">
+        <h1 style="padding: 5px; line-height: 18px;" class="text-2xl font-bold">Event Master</h1>
+        <p style="padding: 5px; ">Before you sign in, we need to verify your identity. <br> Please copy this code to use.</p>
+        <p style="
+                    margin-top: 10px ;
+                    margin-bottom: 10px;
+                    background-color: rgb(153, 134, 215);
+                    border-radius: 10px; padding: 1rem 2.5rem;
+                    font-size: 2rem; color: white;
+                    font-weight: bold;
+                    width: fit-content"
+           class="px-16 py-4 bg-gray-200 w-fit mx-auto text-2xl font-semibold"
+           th:utext="${content}">
+            8 8 8 8
+        </p>
+        <p style="padding: 5px; ">Welcome to the Event Master Application. Here, <br> you can manage your events and materials.</p>
+    </div>
+</center>
+</body>
+</html>
