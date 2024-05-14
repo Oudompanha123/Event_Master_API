@@ -7,10 +7,12 @@ import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
 import com.example.final_project.model.dto.response.authentication.RegisterResponse;
+import com.example.final_project.model.dto.response.member.MemberResponse;
 import com.example.final_project.repository.MemberRepository;
 import com.example.final_project.service.MemberService;
 import com.example.final_project.util.OtpUtil;
 import com.example.final_project.util.RandomGenerator;
+import com.example.final_project.util.Token;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -193,5 +195,14 @@ public class MemberServiceImpl implements MemberService {
             throw new RuntimeException("Unable to send OTP code.");
         }
         return "Send new OTP code Successfully";
+    }
+
+
+
+    @Override
+    public List<MemberResponse> getAllMembers(Integer offset, Integer limit) {
+        offset = (offset - 1) * limit;
+        Integer orgId = Token.getOrgIdByToken();
+        return memberRepository.getAllMembers(offset, limit, orgId);
     }
 }

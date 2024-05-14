@@ -5,6 +5,7 @@ import com.example.final_project.model.Organization;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
+import com.example.final_project.model.dto.response.member.MemberResponse;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public interface MemberRepository {
     @Select("""
            SELECT * FROM member WHERE email = #{email}
     """)
-    @Results(id = "memberMapper", value = {
+    @Results(id = "authMapper", value = {
             @Result(property = "organization", column = "org_id", one = @One(select = "getOrganizationById")),
             @Result(property = "memberId", column = "member_id"),
             @Result(property = "memberName", column = "member_name"),
@@ -35,7 +36,7 @@ public interface MemberRepository {
         VALUES (#{admin.adminName}, #{admin.phone}, #{admin.email}, #{admin.password}, #{orgId}, #{admin.role}, true)
         RETURNING *
     """)
-    @ResultMap("memberMapper")
+    @ResultMap("authMapper")
     Member createAdmin(@Param("admin") AdminRequest adminRequest, Integer orgId);
 
     @Select("""
@@ -74,7 +75,7 @@ public interface MemberRepository {
         VALUES (#{user.userName}, #{user.phone}, #{user.email}, #{user.password}, #{orgId}, #{user.role})
         RETURNING *
     """)
-    @ResultMap("memberMapper")
+    @ResultMap("authMapper")
     Member createUser(@Param("user") UserRequest userRequest, Integer orgId);
 
     @Select(("""
@@ -110,4 +111,17 @@ public interface MemberRepository {
             ('Workshop', #{orgId})
     """)
     void createDefaultEventCategory(Integer orgId);
+
+
+    @Select("""
+        SELECT member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
+        FROM member WHERE org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+    """)
+    @Results(id = "memberMapper", value = {
+            @Result(property = "memberId", column = "member_id"),
+            @Result(property = "memberName", column = "member_name"),
+            @Result(property = "dateOfBirth", column = "date_of_birth")
+    }
+    )
+    List<MemberResponse> getAllMembers(Integer offset, Integer limit, Integer orgId);
 }

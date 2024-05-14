@@ -1,4 +1,4 @@
-package com.example.final_project.model.dto.response.authentication;
+package com.example.final_project.model.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

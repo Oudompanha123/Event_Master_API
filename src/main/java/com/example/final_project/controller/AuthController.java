@@ -9,7 +9,7 @@ import com.example.final_project.model.dto.request.authentication.AuthRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
 import com.example.final_project.model.dto.response.authentication.*;
-import com.example.final_project.model.dto.response.authentication.PostResponse;
+import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.repository.MemberRepository;
 import com.example.final_project.service.MemberService;
 import jakarta.validation.Valid;
