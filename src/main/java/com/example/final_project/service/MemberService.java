@@ -1,6 +1,5 @@
 package com.example.final_project.service;
 
-import com.example.final_project.model.Member;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
