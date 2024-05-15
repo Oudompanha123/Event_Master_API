@@ -21,5 +21,15 @@ public interface MemberService extends UserDetailsService {
 
     String resendOTP(String email);
 
+    void authenticate(String email, String password) throws Exception;
+
+    Object getToken(String email);
+
     List<MemberResponse> getAllMembers(Integer offset, Integer limit);
+
+    void deleteMemberById(Integer memberId);
+
+    MemberResponse updateMemberRole(Integer memberId, String role);
+
+    List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit);
 }

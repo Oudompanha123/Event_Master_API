@@ -114,8 +114,10 @@ public interface MemberRepository {
 
 
     @Select("""
-        SELECT member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
-        FROM member WHERE org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+        SELECT member.member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
+        FROM member INNER JOIN otp ON member.member_id = otp.member_id
+        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true AND status = true
+        LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "memberMapper", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -124,4 +126,30 @@ public interface MemberRepository {
     }
     )
     List<MemberResponse> getAllMembers(Integer offset, Integer limit, Integer orgId);
+
+    @Select("""
+        SELECT * FROM member WHERE member_id = #{memberId}
+    """)
+    Member getMemberByMemberId(Integer memberId);
+
+    @Select("""
+        UPDATE member SET status = false WHERE member_id = #{memberId}
+    """)
+    void deleteMemberById(Integer memberId);
+
+    @Select("""
+        UPDATE member SET role = #{role} WHERE member_id = #{memberId} RETURNING *
+    """)
+    @ResultMap("memberMapper")
+    MemberResponse updateMemberRole(Integer memberId, String role);
+
+    @Select("""
+        SELECT member.member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
+        FROM member INNER JOIN otp ON member.member_id = otp.member_id
+        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
+        AND status = true AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+        LIMIT #{limit} OFFSET #{offset};
+    """)
+    @ResultMap("memberMapper")
+    List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit, Integer orgId);
 }

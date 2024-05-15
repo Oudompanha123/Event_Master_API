@@ -1,15 +1,16 @@
 package com.example.final_project.controller;
 
 import com.example.final_project.model.dto.response.GetResponse;
+import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/member")
@@ -19,10 +20,38 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping
+    @Operation(summary = "Get All Members")
     public ResponseEntity<?> getAllMembers(
             @RequestParam(defaultValue = "1") @Positive Integer offset,
             @RequestParam(defaultValue = "8") @Positive Integer limit
     ){
         return GetResponse.getResponse("get all members successful", memberService.getAllMembers(offset, limit));
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteMemberById(@PathVariable(name = "id") Integer memberId){
+        memberService.deleteMemberById(memberId);
+        return "delete member successfully";
+    }
+
+    // update role
+    @PutMapping
+    @Operation(summary = "change role")
+    public ResponseEntity<?> updateMemberRole(
+            @RequestParam Integer memberId,
+            @RequestParam @NotBlank @NotNull String role
+    ){
+        return UpdateResponse.updateResponse("update role successfully", memberService.updateMemberRole(memberId, role));
+    }
+
+    @PostMapping("/search")
+    @Operation(summary = "search by name")
+    public ResponseEntity<?> searchMemberByName(
+            @RequestParam String memberName,
+            @RequestParam(defaultValue = "1") @Positive Integer offset,
+            @RequestParam(defaultValue = "8") @Positive Integer limit)
+    {
+        return GetResponse.getResponse("Get member by name success",
+                memberService.searchMemberByName(memberName, offset, limit));
     }
 }

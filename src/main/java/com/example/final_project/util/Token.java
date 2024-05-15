@@ -8,4 +8,8 @@ public class Token {
         Member userDetails = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userDetails.getOrganization().getOrgId();
     }
+    public static Integer getMemberIdByToken(){
+        Member userDetails = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getMemberId();
+    }
 }

@@ -2,10 +2,13 @@ package com.example.final_project.service.Impl;
 
 import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
+import com.example.final_project.jwt.JwtService;
 import com.example.final_project.model.Member;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
+import com.example.final_project.model.dto.response.authentication.AdminLoginResponse;
+import com.example.final_project.model.dto.response.authentication.AuthResponse;
 import com.example.final_project.model.dto.response.authentication.RegisterResponse;
 import com.example.final_project.model.dto.response.member.MemberResponse;
 import com.example.final_project.repository.MemberRepository;
@@ -16,6 +19,10 @@ import com.example.final_project.util.Token;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @Service
@@ -31,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final EmailingServiceImpl emailingService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ModelMapper modelMapper;
+    private final JwtService jwtService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -197,6 +206,47 @@ public class MemberServiceImpl implements MemberService {
         return "Send new OTP code Successfully";
     }
 
+    public void authenticate(String username, String password) throws Exception {
+        try {
+            UserDetails member = this.loadUserByUsername(username);
+            if (member == null) {
+                throw new BadRequestException("Wrong Email");
+            }
+            if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
+                throw new BadRequestException("Wrong Password");
+            }
+            SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
+    }
+
+    @Override
+    public Object getToken(String email) {
+        final UserDetails userDetails = this.loadUserByUsername(email);
+
+        // check user is verified or not
+        Member member = (Member) userDetails;
+        boolean isVerifiedOTP = memberRepository.isVerifiedOTP(member.getMemberId());
+        if(!isVerifiedOTP)
+            throw new NotFoundException("This account is not verify yet !");
+
+        // if role is user, check is approved or not
+        if(member.getRole().equals("user") && !member.isApprove())
+            throw new NotFoundException("This account is not approve yet");
+
+        final String token = jwtService.generateToken(userDetails);
+
+        // check role, if user, return only token but if admin, return token and org profile
+        if(member.getRole().equals("user"))
+            return new AuthResponse(token);
+        else if(member.getRole().equals("admin"))
+            return new AdminLoginResponse(token, member.getOrganization());
+        else
+            throw new NotFoundException("role is invalid!");
+    }
 
 
     @Override
@@ -205,4 +255,54 @@ public class MemberServiceImpl implements MemberService {
         Integer orgId = Token.getOrgIdByToken();
         return memberRepository.getAllMembers(offset, limit, orgId);
     }
+
+    @Override
+    public void deleteMemberById(Integer memberId) {
+        // check member is existed or not
+        Member member = memberRepository.getMemberByMemberId(memberId);
+        if(member == null)
+            throw new NotFoundException("Member not found");
+        else{
+            //get memberId by token
+            Integer memberIdByToken = Token.getMemberIdByToken();
+
+            Member currentMember = memberRepository.getMemberByMemberId(memberIdByToken);
+
+            // check role, only admin can delete member
+            if(!currentMember.getRole().equals("admin"))
+                throw new BadRequestException("only admin can delete member");
+            else{
+                memberRepository.deleteMemberById(memberId);
+            }
+        }
+    }
+
+    @Override
+    public MemberResponse updateMemberRole(Integer memberId, String role) {
+        // check member is existed or not
+        Member member = memberRepository.getMemberByMemberId(memberId);
+        if(member == null)
+            throw new NotFoundException("Member not found");
+
+        //get memberId by token
+        Integer memberIdByToken = Token.getMemberIdByToken();
+
+        Member currentMember = memberRepository.getMemberByMemberId(memberIdByToken);
+
+        // check role, only admin can change member role
+        if(!currentMember.getRole().equals("admin"))
+            throw new BadRequestException("only admin can change member role");
+        else{
+            return memberRepository.updateMemberRole(memberId, role);
+        }
+    }
+
+    @Override
+    public List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit) {
+        offset = (offset - 1) * limit;
+        Integer orgId = Token.getOrgIdByToken();
+        return memberRepository.searchMemberByName(memberName, offset, limit, orgId);
+    }
+
+
 }
