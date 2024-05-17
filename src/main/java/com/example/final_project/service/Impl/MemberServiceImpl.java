@@ -4,6 +4,7 @@ import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.jwt.JwtService;
 import com.example.final_project.model.Member;
+import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
@@ -16,6 +17,7 @@ import com.example.final_project.service.MemberService;
 import com.example.final_project.util.OtpUtil;
 import com.example.final_project.util.RandomGenerator;
 import com.example.final_project.util.Token;
+import com.example.final_project.util.Validation;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -57,13 +59,12 @@ public class MemberServiceImpl implements MemberService {
             throw new BadRequestException("Password and Confirm password do not matched");
         }
 
-        // check phone number must start with number 0
-        if(!adminRequest.getPhone().startsWith("0"))
-            throw new BadRequestException("Phone number must start with number 0");
+        // validate phone
+        Validation.validatePhoneNumber(adminRequest.getPhone());
 
-        // check role must be admin
-        if(!adminRequest.getRole().equals("admin"))
-            throw new BadRequestException("Role must be admin");
+          // password must be more than 8
+//        if(adminRequest.getPassword().length() < 8)
+//            throw new BadRequestException("Password must be more than 8");
 
         // insert data into organization table
         String orgCode = RandomGenerator.generateRandomString();
@@ -99,17 +100,16 @@ public class MemberServiceImpl implements MemberService {
         if(emailList.contains(userRequest.getEmail()))
             throw new BadRequestException("This email is already register");
 
-        // check phone number must start with number 0
-        if(!userRequest.getPhone().startsWith("0"))
-            throw new BadRequestException("Phone number must start with number 0");
+        // validate phone
+        Validation.validatePhoneNumber(userRequest.getPhone());
+
+        // password must be more than 8
+//        if(adminRequest.getPassword().length() < 8)
+//            throw new BadRequestException("Password must be more than 8");
 
         //check password and confirm password matched
         if(!userRequest.getPassword().equals(userRequest.getConfirmPassword()))
             throw new BadRequestException("Password and Confirm password do not matched");
-
-        // check role must be user
-        if(!userRequest.getRole().equals("user"))
-            throw new BadRequestException("invalid role");
 
         // get org_id by org_code
         Integer orgId = memberRepository.getOrgIdByOrgCode(userRequest.getOrgCode());
@@ -233,15 +233,15 @@ public class MemberServiceImpl implements MemberService {
             throw new NotFoundException("This account is not verify yet !");
 
         // if role is user, check is approved or not
-        if(member.getRole().equals("user") && !member.isApprove())
+        if(member.getRole().equals("ROLE_USER") && !member.isApprove())
             throw new NotFoundException("This account is not approve yet");
 
         final String token = jwtService.generateToken(userDetails);
 
         // check role, if user, return only token but if admin, return token and org profile
-        if(member.getRole().equals("user"))
+        if(member.getRole().equals("ROLE_USER") || member.getRole().equals("ROLE_SUB_ADMIN"))
             return new AuthResponse(token);
-        else if(member.getRole().equals("admin"))
+        else if(member.getRole().equals("ROLE_ADMIN"))
             return new AdminLoginResponse(token, member.getOrganization());
         else
             throw new NotFoundException("role is invalid!");
@@ -262,38 +262,19 @@ public class MemberServiceImpl implements MemberService {
         if(member == null)
             throw new NotFoundException("Member not found");
         else{
-            //get memberId by token
-            Integer memberIdByToken = Token.getMemberIdByToken();
-
-            Member currentMember = memberRepository.getMemberByMemberId(memberIdByToken);
-
-            // check role, only admin can delete member
-            if(!currentMember.getRole().equals("admin"))
-                throw new BadRequestException("only admin can delete member");
-            else{
-                memberRepository.deleteMemberById(memberId);
-            }
+            memberRepository.insertToHistory(member);
+            memberRepository.deleteMemberById(memberId);
         }
+
     }
 
     @Override
-    public MemberResponse updateMemberRole(Integer memberId, String role) {
+    public MemberResponse updateMemberRole(Integer memberId, Roles role) {
         // check member is existed or not
         Member member = memberRepository.getMemberByMemberId(memberId);
         if(member == null)
             throw new NotFoundException("Member not found");
-
-        //get memberId by token
-        Integer memberIdByToken = Token.getMemberIdByToken();
-
-        Member currentMember = memberRepository.getMemberByMemberId(memberIdByToken);
-
-        // check role, only admin can change member role
-        if(!currentMember.getRole().equals("admin"))
-            throw new BadRequestException("only admin can change member role");
-        else{
-            return memberRepository.updateMemberRole(memberId, role);
-        }
+        return memberRepository.updateMemberRole(memberId, role);
     }
 
     @Override
@@ -302,6 +283,4 @@ public class MemberServiceImpl implements MemberService {
         Integer orgId = Token.getOrgIdByToken();
         return memberRepository.searchMemberByName(memberName, offset, limit, orgId);
     }
-
-
 }

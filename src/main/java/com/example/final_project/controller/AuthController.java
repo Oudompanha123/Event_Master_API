@@ -6,8 +6,8 @@ import com.example.final_project.model.dto.request.authentication.AuthRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
 import com.example.final_project.model.dto.response.PostResponse;
+import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -41,20 +41,20 @@ public class AuthController {
 
     }
     @PutMapping("/forget")
-    public ResponseEntity<String> forgetPassword(@RequestParam @NotBlank @NotBlank @Email String email, @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest ){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.forgetPassword(email,forgetPasswordRequest));
+    public ResponseEntity<?> forgetPassword(@RequestParam @NotBlank @NotBlank @Email String email, @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest ){
+        return UpdateResponse.updateResponse(memberService.forgetPassword(email,forgetPasswordRequest), null);
     }
 
     @PutMapping("/verify")
-    public ResponseEntity<String> verifyOTP(
+    public ResponseEntity<?> verifyOTP(
             @RequestParam @NotBlank @NotNull String otp,
             @RequestParam @NotBlank @NotNull String email
     ){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.verifyOTP(otp, email));
+        return UpdateResponse.updateResponse(memberService.verifyOTP(otp, email), null);
     }
 
     @PostMapping("/resend")
-    public ResponseEntity<String> resendOTP(@RequestParam @NotBlank @NotBlank @Email  String email){
-        return ResponseEntity.status(HttpStatus.OK).body(memberService.resendOTP(email));
+    public ResponseEntity<?> resendOTP(@RequestParam @NotBlank @NotBlank @Email  String email){
+        return PostResponse.postResponse(memberService.resendOTP(email), null);
     }
 }

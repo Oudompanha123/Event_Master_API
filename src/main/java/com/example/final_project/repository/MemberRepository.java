@@ -2,6 +2,7 @@ package com.example.final_project.repository;
 
 import com.example.final_project.model.Member;
 import com.example.final_project.model.Organization;
+import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
@@ -113,10 +114,13 @@ public interface MemberRepository {
     void createDefaultEventCategory(Integer orgId);
 
 
+
+
+
     @Select("""
         SELECT member.member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
         FROM member INNER JOIN otp ON member.member_id = otp.member_id
-        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true AND status = true
+        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
         LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "memberMapper", value = {
@@ -130,10 +134,16 @@ public interface MemberRepository {
     @Select("""
         SELECT * FROM member WHERE member_id = #{memberId}
     """)
+    @Results(id = "memberMappers", value = {
+            @Result(property = "memberId", column = "member_id"),
+            @Result(property = "memberName", column = "member_name"),
+            @Result(property = "dateOfBirth", column = "date_of_birth"),
+            @Result(property = "organization", column = "org_id", one = @One(select = "getOrganizationById"))
+    })
     Member getMemberByMemberId(Integer memberId);
 
     @Select("""
-        UPDATE member SET status = false WHERE member_id = #{memberId}
+        DELETE FROM member WHERE member_id = #{memberId}
     """)
     void deleteMemberById(Integer memberId);
 
@@ -141,15 +151,22 @@ public interface MemberRepository {
         UPDATE member SET role = #{role} WHERE member_id = #{memberId} RETURNING *
     """)
     @ResultMap("memberMapper")
-    MemberResponse updateMemberRole(Integer memberId, String role);
+    MemberResponse updateMemberRole(Integer memberId, Roles role);
 
     @Select("""
         SELECT member.member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
         FROM member INNER JOIN otp ON member.member_id = otp.member_id
         WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
-        AND status = true AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+        AND member_name ILIKE CONCAT('%', #{memberName}, '%')
         LIMIT #{limit} OFFSET #{offset};
     """)
     @ResultMap("memberMapper")
     List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit, Integer orgId);
+
+    @Select("""
+        INSERT INTO member_history VALUES
+         (default, #{member.memberId}, #{member.memberName}, #{member.organization.orgId},
+         #{member.role}, #{member.picture}, #{member.email}, #{member.phone})
+    """)
+    void insertToHistory(@Param("member") Member member);
 }

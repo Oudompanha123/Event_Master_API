@@ -19,14 +19,23 @@ create table member
     address       varchar(255) default 'No Address',
     picture       text,
     date_of_birth date,
-    role          varchar(10) not null,
+    role          varchar(15) not null,
     is_approve    boolean      default false,
-    status boolean default true,
     org_id        integer     not null,
     constraint org_id_member_fk
         foreign key (org_id)
             references organization (org_id)
-            ON UPDATE CASCADE
+);
+
+create table member_history(
+                               id serial primary key,
+                               member_id integer,
+                               member_name varchar(40),
+                               org_id integer,
+                               role varchar(10),
+                               picture text,
+                               email varchar(40),
+                               phone varchar(11)
 );
 
 create table asset
@@ -46,11 +55,15 @@ create table category
 (
     cate_id   serial primary key,
     cate_name varchar(40) not null,
-    status boolean default true,
+    create_at date default current_date,
+    create_by integer not null,
     org_id    integer     not null,
     constraint org_id_category_fk
         foreign key (org_id)
-            references organization (org_id)
+            references organization (org_id),
+    constraint create_by_category_fk
+        foreign key (create_by)
+            references member (member_id),
 );
 
 create table registration_form
@@ -59,7 +72,6 @@ create table registration_form
     form_name varchar(50) not null,
     description varchar(50),
     data      jsonb,
-    status    boolean default true,
     org_id    integer     not null,
     cate_id   integer     not null,
     constraint org_id_registration_form_fk
@@ -68,8 +80,6 @@ create table registration_form
     constraint cate_id_registration_form_fk
         foreign key (cate_id)
             references category (cate_id)
-            ON UPDATE CASCADE
-
 );
 
 create table event
@@ -83,19 +93,16 @@ create table event
     description  varchar(255),
     is_open      boolean default true, -- by default it is open
     is_post      boolean default false,
-    status       boolean default true,
     max_attendee integer     not null,
     cate_id      integer     not null,
     form_id      integer     not null,
     org_id       integer     not null,
     constraint cate_id_event_fk
         foreign key (cate_id)
-            references category (cate_id)
-            ON UPDATE CASCADE,
+            references category (cate_id),
     constraint form_id_event_fk
         foreign key (form_id)
-            references registration_form (form_id)
-            ON UPDATE CASCADE,
+            references registration_form (form_id),
     constraint org_id_event_fk
         foreign key (org_id)
             references organization (org_id)
@@ -105,11 +112,11 @@ create table attendee
 (
     attendee_id serial primary key,
     data        jsonb   not null,
+    status boolean default false,
     event_id    integer not null,
     constraint event_id_attendee_fk
         foreign key (event_id)
             references event (event_id)
-            ON UPDATE CASCADE
 );
 
 create table material
@@ -125,14 +132,9 @@ create table material
     handler_id    integer     not null,
     supporters    jsonb,
     event_id      integer     not null,
-    constraint handler_id_material_fk
-        foreign key (handler_id)
-            references member (member_id)
-            ON UPDATE CASCADE,
     constraint event_id_material_fk
         foreign key (event_id)
             references event (event_id)
-            ON UPDATE CASCADE
 );
 
 create table agenda
@@ -143,7 +145,6 @@ create table agenda
     constraint event_id_agenda_fk
         foreign key (event_id)
             references event (event_id)
-            ON UPDATE CASCADE
 );
 
 create table otp
@@ -157,4 +158,5 @@ create table otp
     constraint member_id_otp_fk
         foreign key (member_id)
             references member (member_id)
+            ON DELETE CASCADE
 );
