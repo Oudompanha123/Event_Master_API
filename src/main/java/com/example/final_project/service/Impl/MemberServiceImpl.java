@@ -70,12 +70,12 @@ public class MemberServiceImpl implements MemberService {
         String orgCode = RandomGenerator.generateRandomString();
         Integer orgId = memberRepository.createOrganization(orgCode);
 
-        // set 3 default values for event category (Charity, Product Launches, Workshop)
-        memberRepository.createDefaultEventCategory(orgId);
-
         // insert data into member table
         adminRequest.setPassword(bCryptPasswordEncoder.encode(adminRequest.getPassword()));
         Member member = memberRepository.createAdmin(adminRequest, orgId);
+
+        // set 2 default values for event category (Conference, Marathons And Races Event)
+        memberRepository.createDefaultEventCategory(orgId, member.getMemberId());
 
         String otp = OtpUtil.generateOtp();
         // insert data into otp table
@@ -288,5 +288,11 @@ public class MemberServiceImpl implements MemberService {
     public Integer getTotalMemberRecords(){
         Integer orgId = Token.getOrgIdByToken();
         return memberRepository.getTotalMemberRecords(orgId);
+    }
+
+    @Override
+    public Integer getTotalMemberRecordsFromSearch(String memberName){
+        Integer orgId = Token.getOrgIdByToken();
+        return memberRepository.getTotalMemberRecordsFromSearch(orgId, memberName);
     }
 }

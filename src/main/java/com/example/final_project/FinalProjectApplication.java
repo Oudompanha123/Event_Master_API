@@ -7,11 +7,14 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import org.springframework.boot.SpringApplication;
 
-@OpenAPIDefinition(info = @Info(title = "My API",
+@OpenAPIDefinition(info = @Info(title = "Event Master API",
 		version = "v1",
-		description = "This is description"))
+		description = "Watch as your vision comes to life flawlessly. \n" +
+				"EventMaster handles all the logistics, coordinating \n" +
+				"vendors, managing registrations,  and providing \n" +
+				"real-time updates, so you can focus on making \n" +
+				"memories."))
 @SecurityScheme(
 		name = "bearerAuth",
 		type = SecuritySchemeType.HTTP,

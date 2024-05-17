@@ -34,4 +34,6 @@ public interface MemberService extends UserDetailsService {
     List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit);
 
     Integer getTotalMemberRecords();
+
+    Integer getTotalMemberRecordsFromSearch(String memberName);
 }

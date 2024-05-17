@@ -105,13 +105,12 @@ public interface MemberRepository {
     Integer getMemberIdByOtpId(Integer otpId);
 
     @Select("""
-        INSERT INTO category(cate_name, org_id)
+        INSERT INTO category(cate_name, org_id, create_by)
         VALUES
-            ('Charity', #{orgId}),
-            ('Product Launches', #{orgId}),
-            ('Workshop', #{orgId})
+            ('Conference', #{orgId}, #{memberId}),
+            ('Marathons And Races Event', #{orgId}, #{memberId})
     """)
-    void createDefaultEventCategory(Integer orgId);
+    void createDefaultEventCategory(Integer orgId, Integer memberId);
 
 
 
@@ -176,4 +175,12 @@ public interface MemberRepository {
         WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true;
     """)
     Integer getTotalMemberRecords(Integer orgId);
+
+    @Select("""
+        SELECT count(*)
+        FROM member INNER JOIN otp ON member.member_id = otp.member_id
+        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
+        AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+    """)
+    Integer getTotalMemberRecordsFromSearch(Integer orgId, String memberName);
 }

@@ -51,7 +51,7 @@ public class MemberController {
             @RequestParam(defaultValue = "1") @Positive Integer offset,
             @RequestParam(defaultValue = "7") @Positive Integer limit)
     {
-        return GetResponse.getResponse("Get member by name success",
+        return GetAllResponse.getAllResponse("Get member by name success", memberService.getTotalMemberRecordsFromSearch(memberName),
                 memberService.searchMemberByName(memberName, offset, limit));
     }
 }
