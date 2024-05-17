@@ -1,6 +1,7 @@
 package com.example.final_project.controller;
 
 import com.example.final_project.model.constant.Roles;
+import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
@@ -24,7 +25,7 @@ public class MemberController {
             @RequestParam(defaultValue = "1") @Positive Integer offset,
             @RequestParam(defaultValue = "7") @Positive Integer limit
     ){
-        return GetResponse.getResponse("get all members successful", memberService.getAllMembers(offset, limit));
+        return GetAllResponse.getAllResponse("get all members successful", memberService.getTotalMemberRecords(), memberService.getAllMembers(offset, limit));
     }
 
     @DeleteMapping("/{id}")

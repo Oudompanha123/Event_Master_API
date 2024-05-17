@@ -32,4 +32,6 @@ public interface MemberService extends UserDetailsService {
     MemberResponse updateMemberRole(Integer memberId, Roles role);
 
     List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit);
+
+    Integer getTotalMemberRecords();
 }

@@ -283,4 +283,10 @@ public class MemberServiceImpl implements MemberService {
         Integer orgId = Token.getOrgIdByToken();
         return memberRepository.searchMemberByName(memberName, offset, limit, orgId);
     }
+
+    @Override
+    public Integer getTotalMemberRecords(){
+        Integer orgId = Token.getOrgIdByToken();
+        return memberRepository.getTotalMemberRecords(orgId);
+    }
 }

@@ -169,4 +169,11 @@ public interface MemberRepository {
          #{member.role}, #{member.picture}, #{member.email}, #{member.phone})
     """)
     void insertToHistory(@Param("member") Member member);
+
+    @Select("""
+        SELECT count(*)
+        FROM member INNER JOIN otp ON member.member_id = otp.member_id
+        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true;
+    """)
+    Integer getTotalMemberRecords(Integer orgId);
 }
