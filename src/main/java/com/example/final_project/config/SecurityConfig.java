@@ -5,6 +5,7 @@ import com.example.final_project.jwt.JwtAuthFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        // member controller
+                        .requestMatchers(HttpMethod.GET, "/member").hasAnyRole( "ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/member/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/member/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/member/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

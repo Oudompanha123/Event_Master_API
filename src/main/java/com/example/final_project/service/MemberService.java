@@ -1,5 +1,6 @@
 package com.example.final_project.service;
 
+import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
@@ -28,7 +29,7 @@ public interface MemberService extends UserDetailsService {
 
     void deleteMemberById(Integer memberId);
 
-    MemberResponse updateMemberRole(Integer memberId, String role);
+    MemberResponse updateMemberRole(Integer memberId, Roles role);
 
     List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit);
 }

@@ -1,5 +1,6 @@
 package com.example.final_project.model.dto.request.authentication;
 
+import com.example.final_project.model.constant.Roles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,9 +24,7 @@ public class AdminRequest {
     @NotBlank
     @NotNull
     private String confirmPassword;
-    @NotBlank
-    @NotNull
-    private String role;
+    Roles role;
     @NotBlank
     @NotNull
     @Email

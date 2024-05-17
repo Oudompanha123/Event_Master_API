@@ -1,12 +1,11 @@
 package com.example.final_project.controller;
 
+import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,24 +22,24 @@ public class MemberController {
     @Operation(summary = "Get All Members")
     public ResponseEntity<?> getAllMembers(
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "8") @Positive Integer limit
+            @RequestParam(defaultValue = "7") @Positive Integer limit
     ){
         return GetResponse.getResponse("get all members successful", memberService.getAllMembers(offset, limit));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteMemberById(@PathVariable(name = "id") Integer memberId){
+    public ResponseEntity<?> deleteMemberById(@PathVariable(name = "id") Integer memberId){
         memberService.deleteMemberById(memberId);
-        return "delete member successfully";
+        return GetResponse.getResponse("delete member id : " + memberId + " successfully!", null);
     }
 
     // update role
-    @PutMapping
+    @PutMapping("/{id}")
     @Operation(summary = "change role")
     public ResponseEntity<?> updateMemberRole(
-            @RequestParam Integer memberId,
-            @RequestParam @NotBlank @NotNull String role
-    ){
+            @PathVariable (name = "id") Integer memberId,
+            @RequestParam Roles role
+            ){
         return UpdateResponse.updateResponse("update role successfully", memberService.updateMemberRole(memberId, role));
     }
 
@@ -49,7 +48,7 @@ public class MemberController {
     public ResponseEntity<?> searchMemberByName(
             @RequestParam String memberName,
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "8") @Positive Integer limit)
+            @RequestParam(defaultValue = "7") @Positive Integer limit)
     {
         return GetResponse.getResponse("Get member by name success",
                 memberService.searchMemberByName(memberName, offset, limit));
