@@ -8,12 +8,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/category")
 @SecurityRequirement(name = "bearerAuth")
 @AllArgsConstructor
 public class CategoryController {
@@ -21,8 +22,11 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Get All categories")
-    public ResponseEntity<?> getAllCategories(){
-        return GetResponse.getResponse("Get all categories successfully", categoryService.getAllCategories());
+    public ResponseEntity<?> getAllCategories(
+            @RequestParam(defaultValue = "1") @Positive Integer offset,
+            @RequestParam(defaultValue = "6") @Positive Integer limit
+    ){
+        return GetResponse.getResponse("Get all categories successfully", categoryService.getAllCategories(offset, limit));
     }
 
     @PostMapping

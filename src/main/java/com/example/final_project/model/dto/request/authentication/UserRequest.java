@@ -24,7 +24,6 @@ public class UserRequest {
     @NotBlank
     @NotNull
     private String confirmPassword;
-    private Roles role;
     @NotBlank
     @NotNull
     private String orgCode;

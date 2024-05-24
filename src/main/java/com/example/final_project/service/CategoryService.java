@@ -5,7 +5,7 @@ import com.example.final_project.model.Category;
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getAllCategories();
+    List<Category> getAllCategories(Integer offset, Integer limit);
 
     Category createCategory(String categoryName);
 

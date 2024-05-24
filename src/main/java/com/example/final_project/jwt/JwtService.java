@@ -40,6 +40,7 @@ public class JwtService {
         claims.put("memberId", member.getMemberId());
         claims.put("orgId", member.getOrganization().getOrgId());
         claims.put("role", member.getRole());
+        claims.put("organization", member.getOrganization());
         return createToken(claims, userDetails.getUsername());
     }
 

@@ -1,0 +1,96 @@
+package com.example.final_project.service.Impl;
+
+import com.example.final_project.exception.NotFoundException;
+import com.example.final_project.model.Event;
+import com.example.final_project.model.constant.Active;
+import com.example.final_project.model.dto.request.event.EventRequest;
+import com.example.final_project.model.dto.request.event.SearchEventRequest;
+import com.example.final_project.repository.CategoryRepository;
+import com.example.final_project.repository.EventRepository;
+import com.example.final_project.service.EventService;
+import com.example.final_project.util.Token;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class EventServiceImpl implements EventService {
+    private final EventRepository eventRepository;
+    private final CategoryRepository categoryRepository;
+
+    @Override
+    public Integer getTotalEventRecords() {
+        Integer orgId = Token.getOrgIdByToken();
+        return eventRepository.getTotalEventRecords(orgId);
+    }
+
+    @Override
+    public List<Event> getAllEvents(Integer offset, Integer limit) {
+        Integer orgId = Token.getOrgIdByToken();
+        offset = (offset - 1) * limit;
+        return eventRepository.getAllEvents(orgId, offset, limit);
+    }
+
+    @Override
+    public Event getEventById(Integer eventId) {
+        // check event is existed or not
+        if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+        return eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
+    }
+
+    @Override
+    public Event createEvent(EventRequest eventRequest) {
+        // check categoryId in EventRequest has been found in database or not
+        if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)
+            throw new NotFoundException("Category id : " + eventRequest.getCategoryId() + " not found");
+        return eventRepository.createEvent(Token.getOrgIdByToken(), eventRequest);
+    }
+
+    @Override
+    public void deleteEventById(Integer eventId) {
+        // check event is existed or not
+        Event event = eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
+        if(event == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+        eventRepository.deleteEventById(Token.getOrgIdByToken(), eventId);
+    }
+
+    @Override
+    public Event updateEventById(EventRequest eventRequest, Integer eventId) {
+        // check event is existed or not
+        Event event = eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
+        if(event == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+        // check categoryId in EventRequest has been found in database or not
+        if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)
+            throw new NotFoundException("Category id : " + eventRequest.getCategoryId() + " not found");
+        return eventRepository.updateEventById(eventRequest, eventId, Token.getOrgIdByToken());
+    }
+
+    @Override
+    public void updateActiveById(Integer eventId, Active active) {
+        // check event is existed or not
+        Event event = eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
+        if(event == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+        // casting active enum to boolean. (close = false and open = true)
+        boolean isOpen = active == Active.open;
+        eventRepository.updateActiveById(eventId, Token.getOrgIdByToken(), isOpen);
+    }
+
+    @Override
+    public Integer getTotalEventRecordsFromSearch(SearchEventRequest searchEventRequest) {
+        Integer orgId = Token.getOrgIdByToken();
+        return eventRepository.getTotalEventRecordsFromSearch(searchEventRequest, orgId);
+    }
+
+    @Override
+    public List<Event> searchEvent(SearchEventRequest searchEventRequest, Integer offset, Integer limit) {
+        Integer orgId = Token.getOrgIdByToken();
+        offset = (offset - 1) * limit;
+        return eventRepository.getSearchAllEvent(searchEventRequest, orgId, offset, limit);
+    }
+
+}

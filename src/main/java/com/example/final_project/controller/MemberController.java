@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/api/member")
 @AllArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class MemberController {

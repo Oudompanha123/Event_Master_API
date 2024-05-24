@@ -32,7 +32,7 @@ create table member_history(
                                member_id integer,
                                member_name varchar(40),
                                org_id integer,
-                               role varchar(10),
+                               role varchar(15),
                                picture text,
                                email varchar(40),
                                phone varchar(11)
@@ -44,7 +44,7 @@ create table asset
     asset_name varchar(40) not null,
     qty        decimal(6, 2)   not null,
     unit       varchar(20) not null,
-    add_date   date    default current_date,
+    created_at   date    default current_date,
     org_id     integer     not null,
     constraint org_id_asset_fk
         foreign key (org_id)
@@ -55,32 +55,17 @@ create table category
 (
     cate_id   serial primary key,
     cate_name varchar(40) not null,
-    create_at date default current_date,
-    create_by integer not null,
+    created_at date default current_date,
+    created_by integer not null,
     org_id    integer     not null,
     constraint org_id_category_fk
         foreign key (org_id)
             references organization (org_id),
     constraint create_by_category_fk
-        foreign key (create_by)
-            references member (member_id),
+        foreign key (created_by)
+            references member (member_id)
 );
 
-create table registration_form
-(
-    form_id   serial primary key,
-    form_name varchar(50) not null,
-    description varchar(50),
-    data      jsonb,
-    org_id    integer     not null,
-    cate_id   integer     not null,
-    constraint org_id_registration_form_fk
-        foreign key (org_id)
-            references organization (org_id),
-    constraint cate_id_registration_form_fk
-        foreign key (cate_id)
-            references category (cate_id)
-);
 
 create table event
 (
@@ -89,20 +74,18 @@ create table event
     start_date   timestamp   not null,
     end_date     timestamp   not null,
     duration     varchar(30),
+    address      varchar(255),
     poster       text,
     description  varchar(255),
     is_open      boolean default true, -- by default it is open
     is_post      boolean default false,
     max_attendee integer     not null,
+    registration_form jsonb,
     cate_id      integer     not null,
-    form_id      integer     not null,
     org_id       integer     not null,
     constraint cate_id_event_fk
         foreign key (cate_id)
             references category (cate_id),
-    constraint form_id_event_fk
-        foreign key (form_id)
-            references registration_form (form_id),
     constraint org_id_event_fk
         foreign key (org_id)
             references organization (org_id)
@@ -112,12 +95,15 @@ create table attendee
 (
     attendee_id serial primary key,
     data        jsonb   not null,
-    status boolean default false,
+    status boolean default false, -- true attendee join event
     event_id    integer not null,
     constraint event_id_attendee_fk
         foreign key (event_id)
             references event (event_id)
+            ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
 
 create table material
 (
@@ -129,12 +115,13 @@ create table material
     status        varchar(10) not null default 'pending',
     assign_date   timestamp   not null default CURRENT_TIMESTAMP,
     due_date      timestamp   not null,
-    handler_id    integer     not null,
-    supporters    jsonb,
+    handler_id    integer     not null, -- find member or member_history table
+    supporters    jsonb, -- have many supporters
     event_id      integer     not null,
     constraint event_id_material_fk
         foreign key (event_id)
             references event (event_id)
+            ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table agenda
@@ -145,6 +132,7 @@ create table agenda
     constraint event_id_agenda_fk
         foreign key (event_id)
             references event (event_id)
+            ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table otp

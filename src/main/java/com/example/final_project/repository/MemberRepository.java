@@ -34,7 +34,7 @@ public interface MemberRepository {
 
     @Select("""
         INSERT INTO member(member_name, phone, email, password, org_id, role, is_approve)
-        VALUES (#{admin.adminName}, #{admin.phone}, #{admin.email}, #{admin.password}, #{orgId}, #{admin.role}, true)
+        VALUES (#{admin.adminName}, #{admin.phone}, #{admin.email}, #{admin.password}, #{orgId}, 'ROLE_ADMIN', false)
         RETURNING *
     """)
     @ResultMap("authMapper")
@@ -73,7 +73,7 @@ public interface MemberRepository {
 
     @Select("""
         INSERT INTO member(member_name, phone, email, password, org_id, role)
-        VALUES (#{user.userName}, #{user.phone}, #{user.email}, #{user.password}, #{orgId}, #{user.role})
+        VALUES (#{user.userName}, #{user.phone}, #{user.email}, #{user.password}, #{orgId}, 'ROLE_USER')
         RETURNING *
     """)
     @ResultMap("authMapper")
@@ -105,22 +105,26 @@ public interface MemberRepository {
     Integer getMemberIdByOtpId(Integer otpId);
 
     @Select("""
-        INSERT INTO category(cate_name, org_id, create_by)
+        INSERT INTO category(cate_name, org_id, created_by)
         VALUES
             ('Conference', #{orgId}, #{memberId}),
             ('Marathons And Races Event', #{orgId}, #{memberId})
     """)
     void createDefaultEventCategory(Integer orgId, Integer memberId);
 
+    @Update("""
+        UPDATE member SET is_approve = true WHERE member_id = #{memberId};
+    """)
+    void updateIsApprovedToTrue(Integer memberId);
+
+
 
 
 
 
     @Select("""
-        SELECT member.member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
-        FROM member INNER JOIN otp ON member.member_id = otp.member_id
-        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
-        LIMIT #{limit} OFFSET #{offset};
+        SELECT member_id, member_name, gender, phone, email, address, picture,
+        date_of_birth, role FROM member WHERE org_id = #{orgId} AND is_approve = true ORDER BY role LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "memberMapper", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -153,11 +157,11 @@ public interface MemberRepository {
     MemberResponse updateMemberRole(Integer memberId, Roles role);
 
     @Select("""
-        SELECT member.member_id, member_name, gender, phone, email, address, picture, date_of_birth, role
-        FROM member INNER JOIN otp ON member.member_id = otp.member_id
-        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
-        AND member_name ILIKE CONCAT('%', #{memberName}, '%')
-        LIMIT #{limit} OFFSET #{offset};
+        SELECT member_id, member_name, gender, phone, email, address, picture,
+        date_of_birth, role FROM member WHERE org_id = #{orgId} AND is_approve = true
+            AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+            ORDER BY role LIMIT #{limit} OFFSET #{offset}
+        ;
     """)
     @ResultMap("memberMapper")
     List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit, Integer orgId);
@@ -170,17 +174,13 @@ public interface MemberRepository {
     void insertToHistory(@Param("member") Member member);
 
     @Select("""
-        SELECT count(*)
-        FROM member INNER JOIN otp ON member.member_id = otp.member_id
-        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true;
+        SELECT COUNT(*) FROM member WHERE org_id = #{orgId} AND is_approve = true;
     """)
     Integer getTotalMemberRecords(Integer orgId);
 
     @Select("""
-        SELECT count(*)
-        FROM member INNER JOIN otp ON member.member_id = otp.member_id
-        WHERE org_id = #{orgId} AND otp.is_verify = true AND is_approve = true
-        AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+        SELECT COUNT(*) FROM member WHERE org_id = #{orgId} AND is_approve = true
+            AND member_name ILIKE CONCAT('%', #{memberName}, '%')
     """)
     Integer getTotalMemberRecordsFromSearch(Integer orgId, String memberName);
 }

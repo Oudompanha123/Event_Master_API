@@ -8,7 +8,6 @@ import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
-import com.example.final_project.model.dto.response.authentication.AdminLoginResponse;
 import com.example.final_project.model.dto.response.authentication.AuthResponse;
 import com.example.final_project.model.dto.response.authentication.RegisterResponse;
 import com.example.final_project.model.dto.response.member.MemberResponse;
@@ -179,6 +178,10 @@ public class MemberServiceImpl implements MemberService {
             // check expired OTP
             if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60)){
                 memberRepository.updateOtpStatus(otpId);
+                if(member.getRole().equals("ROLE_ADMIN")) {
+                    // change is approve to true for admin
+                    memberRepository.updateIsApprovedToTrue(member.getMemberId());
+                }
                 return "Your account is verify successful";
             }
             else
@@ -226,23 +229,21 @@ public class MemberServiceImpl implements MemberService {
     public Object getToken(String email) {
         final UserDetails userDetails = this.loadUserByUsername(email);
 
-        // check user is verified or not
+        // validate before login
         Member member = (Member) userDetails;
-        boolean isVerifiedOTP = memberRepository.isVerifiedOTP(member.getMemberId());
-        if(!isVerifiedOTP)
-            throw new NotFoundException("This account is not verify yet !");
 
-        // if role is user, check is approved or not
-        if(member.getRole().equals("ROLE_USER") && !member.isApprove())
-            throw new NotFoundException("This account is not approve yet");
+        // for admin, if is_approve = false means never verify otp code
+        if(member.getRole().equals("ROLE_ADMIN") && !member.isApprove())
+            throw  new BadRequestException("This account is not verified otp code");
+
+        if(member.getRole().equals("ROLE_USER") || member.getRole().equals("ROLE_SUB_ADMIN"))
+            if(!member.isApprove())
+                throw new BadRequestException("This account is not approved yet");
 
         final String token = jwtService.generateToken(userDetails);
 
-        // check role, if user, return only token but if admin, return token and org profile
-        if(member.getRole().equals("ROLE_USER") || member.getRole().equals("ROLE_SUB_ADMIN"))
+        if(member.getRole().equals("ROLE_USER") || member.getRole().equals("ROLE_SUB_ADMIN") || member.getRole().equals("ROLE_ADMIN"))
             return new AuthResponse(token);
-        else if(member.getRole().equals("ROLE_ADMIN"))
-            return new AdminLoginResponse(token, member.getOrganization());
         else
             throw new NotFoundException("role is invalid!");
     }

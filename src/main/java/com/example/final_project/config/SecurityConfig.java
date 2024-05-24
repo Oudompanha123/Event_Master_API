@@ -33,22 +33,29 @@ public class SecurityConfig {
         http
                 .cors(withDefaults()).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**","/v3/api-docs/**",
+                        .requestMatchers("/api/auth/**","/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
                         // member controller
-                        .requestMatchers(HttpMethod.GET, "/member").hasAnyRole( "ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/member/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/member/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/member/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/member").hasAnyRole( "ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/member/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/member/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/member/search").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // category controller
-                        .requestMatchers(HttpMethod.GET, "/category").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/category").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/category/").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/category/").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/category").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/category").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/category/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/category/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
+                        // event controller
+                        .requestMatchers(HttpMethod.GET, "/api/event").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/event/{id}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/api/event").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/event/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/active/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
                 .exceptionHandling(e->e.accessDeniedHandler(customAccessDeniedHandler)

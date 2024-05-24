@@ -2,26 +2,24 @@ package com.example.final_project.repository;
 
 import com.example.final_project.model.Category;
 import org.apache.ibatis.annotations.*;
-
 import java.util.List;
 
 @Mapper
 public interface CategoryRepository {
     @Select("""
-        SELECT cate_id, cate_name, create_at, member.role as create_by FROM category INNER JOIN member ON
-            category.create_by = member.member_id  WHERE category.org_id = #{orgId};
+        SELECT cate_id, cate_name, created_at, member.member_name as created_by FROM category INNER JOIN member ON
+            category.created_by = member.member_id  WHERE category.org_id = #{orgId} ORDER BY cate_name LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "categoryMapper", value = {
             @Result(property = "categoryId", column = "cate_id"),
             @Result(property = "categoryName", column = "cate_name"),
-            @Result(property = "createAt", column = "create_at"),
-            @Result(property = "createBy", column = "create_by")
-
+            @Result(property = "createAt", column = "created_at"),
+            @Result(property = "createBy", column = "created_by")
     })
-    List<Category> getAllCategories(Integer orgId);
+    List<Category> getAllCategories(Integer orgId, Integer offset, Integer limit);
 
     @Select("""
-        INSERT INTO category (cate_name, org_id, create_by)
+        INSERT INTO category (cate_name, org_id, created_by)
         VALUES (#{categoryName}, #{orgIdByToken}, #{memberIdByToken})
         RETURNING *
     """)
@@ -32,12 +30,6 @@ public interface CategoryRepository {
         SELECT cate_name FROM category WHERE org_id = #{orgId}
     """)
     List<String> getAllCategoryName(Integer orgId);
-
-    @Select("""
-        SELECT count(*) FROM registration_form
-        WHERE org_id = #{orgId} AND cate_id = #{categoryId};
-    """)
-    Integer countCategoryUseInRegistrationForm(Integer orgId, Integer categoryId);
 
     @Select("""
         SELECT count(*) FROM event
@@ -51,10 +43,10 @@ public interface CategoryRepository {
     void deleteCategory(Integer categoryId);
 
     @Select("""
-        SELECT * FROM category WHERE org_id = #{orgId} AND cate_id = #{categoryId};
+        SELECT * FROM category WHERE  cate_id = #{cateId} AND org_id = #{orgId};
     """)
     @ResultMap("categoryMapper")
-    Category getCategoryById(Integer orgId ,Integer categoryId);
+    Category getCategoryById(Integer cateId, Integer orgId);
 
     @Select("""
         UPDATE category SET cate_name = #{categoryName} WHERE cate_id = #{categoryId} RETURNING *;

@@ -18,10 +18,11 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public List<Category> getAllCategories() {
+    public List<Category> getAllCategories(Integer offset, Integer limit) {
+        offset = (offset - 1) * limit;
         // get orgId by token
         Integer orgId = Token.getOrgIdByToken();
-        return categoryRepository.getAllCategories(orgId);
+        return categoryRepository.getAllCategories(orgId, offset, limit);
     }
 
     @Override
@@ -37,11 +38,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategoryById(Integer categoryId) {
         // check category exists or not
-        if(categoryRepository.getCategoryById(Token.getOrgIdByToken(), categoryId) == null)
+        if(categoryRepository.getCategoryById(categoryId, Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Cannot find this category");
-        // check category is used in registration form or not. If it uses, cannot delete
-        if(categoryRepository.countCategoryUseInRegistrationForm(Token.getOrgIdByToken(), categoryId) > 0)
-            throw new BadRequestException("Cannot delete this category because it is using in registration form table");
         // check category is used in event or not. If it uses, cannot delete
         if(categoryRepository.countCategoryUseInEvent(Token.getOrgIdByToken(), categoryId) > 0)
             throw new BadRequestException("Cannot delete this category because it is using in event table");
@@ -52,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category updateCategory(Integer categoryId, String categoryName) {
         // check category exists or not
-        if(categoryRepository.getCategoryById(Token.getOrgIdByToken(), categoryId) == null)
+        if(categoryRepository.getCategoryById(categoryId, Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Cannot find this category");
         // check category name that want to update already exists in table or not
         List<String> categoryNameList = categoryRepository.getAllCategoryName(Token.getOrgIdByToken());
