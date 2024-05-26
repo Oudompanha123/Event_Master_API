@@ -107,8 +107,8 @@ public interface MemberRepository {
     @Select("""
         INSERT INTO category(cate_name, org_id, created_by)
         VALUES
-            ('Conference', #{orgId}, #{memberId}),
-            ('Marathons And Races Event', #{orgId}, #{memberId})
+            ('Conferences', #{orgId}, #{memberId}),
+            ('Marathons And Races', #{orgId}, #{memberId})
     """)
     void createDefaultEventCategory(Integer orgId, Integer memberId);
 

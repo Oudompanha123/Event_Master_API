@@ -4,15 +4,18 @@ import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Event;
 import com.example.final_project.model.constant.Active;
 import com.example.final_project.model.dto.request.event.EventRequest;
+import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.repository.CategoryRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.service.EventService;
+import com.example.final_project.util.RegistrationFormString;
 import com.example.final_project.util.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 @AllArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -41,10 +44,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event createEvent(EventRequest eventRequest) {
+    public Event createEvent(EventRequest eventRequest){
         // check categoryId in EventRequest has been found in database or not
         if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Category id : " + eventRequest.getCategoryId() + " not found");
+
+        // set default form to event by category name
+        String cateName = categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()).getCategoryName();
+        if(cateName.equals("Conferences")){
+            eventRequest.setDataJsonString(RegistrationFormString.getConferenceString());
+        } else if (cateName.equals("Marathons And Races")) {
+            eventRequest.setDataJsonString(RegistrationFormString.getMarathonString());
+        }
+        else {
+            eventRequest.setDataJsonString(RegistrationFormString.getUnknownCategoryString());
+        }
+
         return eventRepository.createEvent(Token.getOrgIdByToken(), eventRequest);
     }
 
@@ -93,4 +108,25 @@ public class EventServiceImpl implements EventService {
         return eventRepository.getSearchAllEvent(searchEventRequest, orgId, offset, limit);
     }
 
+    @Override
+    public Event modifyRegistrationForm(Integer eventId, FormRequest formRequest) {
+        // check event id in database or not
+        Event event = eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
+        if(event == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+
+        String newJsonFormString;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            newJsonFormString = objectMapper.writeValueAsString(formRequest.getData());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            // Handle exception
+            return null;
+        }
+
+        // clear all registration form data
+        eventRepository.clearRegistrationFormById(eventId, Token.getOrgIdByToken());
+        return eventRepository.modifyRegistrationForm(eventId, newJsonFormString, Token.getOrgIdByToken());
+    }
 }

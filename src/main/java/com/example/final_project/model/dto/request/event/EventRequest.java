@@ -1,12 +1,17 @@
 package com.example.final_project.model.dto.request.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.json.JSONObject;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -37,5 +42,7 @@ public class EventRequest {
     private Integer maxAttendee;
     @NotNull
     private Integer categoryId;
+    @JsonIgnore
+    private String dataJsonString;
 }
 

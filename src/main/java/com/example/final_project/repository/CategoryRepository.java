@@ -43,7 +43,7 @@ public interface CategoryRepository {
     void deleteCategory(Integer categoryId);
 
     @Select("""
-        SELECT * FROM category WHERE  cate_id = #{cateId} AND org_id = #{orgId};
+        SELECT * FROM category WHERE cate_id = #{cateId} AND org_id = #{orgId};
     """)
     @ResultMap("categoryMapper")
     Category getCategoryById(Integer cateId, Integer orgId);

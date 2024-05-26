@@ -3,13 +3,15 @@ package com.example.final_project.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.json.JSONObject;
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event {
+public class Event{
     private Integer eventId;
     private String eventName;
     private String description;
@@ -21,6 +23,5 @@ public class Event {
     private Boolean isOpen;
     private Boolean isPost;
     private Integer maxAttendee;
-    private RegistrationForm registrationForm;
-    private Category category;
+    private List<JSONObject> data;
 }

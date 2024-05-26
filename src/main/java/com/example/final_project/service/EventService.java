@@ -3,9 +3,12 @@ package com.example.final_project.service;
 import com.example.final_project.model.Event;
 import com.example.final_project.model.constant.Active;
 import com.example.final_project.model.dto.request.event.EventRequest;
+import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EventService {
 
@@ -15,7 +18,7 @@ public interface EventService {
 
     Event getEventById(Integer eventId);
 
-    Event createEvent(EventRequest eventRequest);
+    Event createEvent(EventRequest eventRequest) throws JsonProcessingException;
 
     void deleteEventById(Integer eventId);
 
@@ -26,4 +29,6 @@ public interface EventService {
     Integer getTotalEventRecordsFromSearch(SearchEventRequest searchEventRequest);
 
     List<Event> searchEvent(SearchEventRequest searchEventRequest, Integer offset, Integer limit);
+
+    Event modifyRegistrationForm(Integer eventId, FormRequest formRequest);
 }

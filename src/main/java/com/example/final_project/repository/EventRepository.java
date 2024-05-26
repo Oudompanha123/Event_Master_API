@@ -2,10 +2,10 @@ package com.example.final_project.repository;
 
 import com.example.final_project.model.Event;
 import com.example.final_project.model.dto.request.event.EventRequest;
+import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.util.SqlScriptFilterEvent;
 import org.apache.ibatis.annotations.*;
-
 import java.util.List;
 
 @Mapper
@@ -26,8 +26,7 @@ public interface EventRepository {
             @Result(property = "maxAttendee", column = "max_attendee"),
             @Result(property = "isOpen", column = "is_open"),
             @Result(property = "isPost", column = "is_post"),
-            @Result(property = "category", column = "cate_id",
-                    one = @One(select = "com.example.final_project.repository.CategoryRepository.getCategoryById"))
+            @Result(property = "data", column = "registration_form")
     })
     List<Event> getAllEvents(Integer orgId, Integer offset, Integer limit);
 
@@ -39,10 +38,10 @@ public interface EventRepository {
 
     @Select("""
         INSERT INTO event (event_name, start_date, end_date, duration, address, poster, description,
-                is_post, max_attendee, cate_id, org_id)
+                is_post, max_attendee, registration_form, cate_id, org_id)
             VALUES (#{event.eventName}, #{event.startDate}, #{event.endDate}, #{event.duration},
                 #{event.address}, #{event.poster}, #{event.description}, #{event.isPost},
-                #{event.maxAttendee}, #{event.categoryId}, #{orgId})     RETURNING *
+                #{event.maxAttendee}, #{event.dataJsonString} :: jsonb, #{event.categoryId}, #{orgId})     RETURNING *
     """)
     @ResultMap("eventMapper")
     Event createEvent(Integer orgId, @Param("event") EventRequest eventRequest);
@@ -72,6 +71,18 @@ public interface EventRepository {
     @SelectProvider(type = SqlScriptFilterEvent.class, method = "getSqlScriptSearchEvent")
     @ResultMap("eventMapper")
     List<Event> getSearchAllEvent(SearchEventRequest searchEventRequest, Integer orgId, Integer offset, Integer limit);
+
+    @Select("""
+        UPDATE event SET registration_form = registration_form ||  #{newJsonFormString} ::jsonb
+        WHERE event_id = #{eventId} AND org_id = #{orgId} RETURNING *;
+    """)
+    @ResultMap("eventMapper")
+    Event modifyRegistrationForm(Integer eventId, String newJsonFormString, Integer orgId);
+
+    @Update("""
+        UPDATE event SET registration_form = '[]' WHERE event_id = #{eventId} AND org_id = #{orgId};
+    """)
+    void clearRegistrationFormById(Integer eventId, Integer orgId);
 }
 
 

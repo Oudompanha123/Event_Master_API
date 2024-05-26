@@ -73,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
         adminRequest.setPassword(bCryptPasswordEncoder.encode(adminRequest.getPassword()));
         Member member = memberRepository.createAdmin(adminRequest, orgId);
 
-        // set 2 default values for event category (Conference, Marathons And Races Event)
+        // set 2 default values for event category (Conferences, Marathons And Races Event)
         memberRepository.createDefaultEventCategory(orgId, member.getMemberId());
 
         String otp = OtpUtil.generateOtp();

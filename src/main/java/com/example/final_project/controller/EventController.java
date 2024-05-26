@@ -2,6 +2,7 @@ package com.example.final_project.controller;
 
 import com.example.final_project.model.constant.Active;
 import com.example.final_project.model.dto.request.event.EventRequest;
+import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
@@ -41,7 +42,7 @@ public class EventController {
 
     @PostMapping
     @Operation(summary = "Create new event")
-    public ResponseEntity<?> createEvent(@RequestBody @Valid EventRequest eventRequest){
+    public ResponseEntity<?> createEvent(@RequestBody @Valid EventRequest eventRequest) throws Exception{
         return PostResponse.postResponse("Create event successfully", eventService.createEvent(eventRequest));
     }
 
@@ -78,5 +79,15 @@ public class EventController {
         return GetAllResponse.getAllResponse("Search event successfully",
                 eventService.getTotalEventRecordsFromSearch(searchEventRequest),
                 eventService.searchEvent(searchEventRequest, offset, limit));
+    }
+
+    @PutMapping("/registration-form/{id}")
+    @Operation(summary = "Insert, delete and update registration form")
+    public ResponseEntity<?> modifyRegistrationForm(
+            @PathVariable(name = "id") Integer eventId,
+            @RequestBody FormRequest formRequest
+            ){
+        return GetResponse.getResponse("Registration form is successfully modified",
+                eventService.modifyRegistrationForm(eventId, formRequest));
     }
 }
