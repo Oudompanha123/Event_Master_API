@@ -115,6 +115,7 @@ public class EventServiceImpl implements EventService {
         if(event == null)
             throw new NotFoundException("Event id : " + eventId + " not found");
 
+        // convert List<Map<String, Object>> into String format
         String newJsonFormString;
         try {
             ObjectMapper objectMapper = new ObjectMapper();

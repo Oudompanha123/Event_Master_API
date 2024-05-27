@@ -2,7 +2,6 @@ package com.example.final_project.repository;
 
 import com.example.final_project.model.Event;
 import com.example.final_project.model.dto.request.event.EventRequest;
-import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.util.SqlScriptFilterEvent;
 import org.apache.ibatis.annotations.*;

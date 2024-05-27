@@ -58,6 +58,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/event/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/event/active/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/event/registration-form/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+
+                        // dashboard controller
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard").hasAnyRole("ADMIN", "SUB_ADMIN")
+
+                        // notifications controller
+                        .requestMatchers(HttpMethod.GET, "/api/notifications").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/notifications/approve/{id}").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/notifications/reject/{id}").hasAnyRole("ADMIN")
+
+                        // asset controller
+                        .requestMatchers(HttpMethod.GET, "/api/asset").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/asset/search/{name}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/asset/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/asset/update/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/asset/create").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/asset/delete/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
                 .exceptionHandling(e->e.accessDeniedHandler(customAccessDeniedHandler)
