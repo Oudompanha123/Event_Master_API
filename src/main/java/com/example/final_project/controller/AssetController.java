@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class AssetController {
     private final AssetService assetService;
 
-    // Get all assets
     @GetMapping
     @Operation(summary = "Get all assets")
     public ResponseEntity<?> getAllAsset(
@@ -41,14 +40,12 @@ public class AssetController {
         return GetAllResponse.getAllResponse("Find asset by name successful", assetService.getTotalAssetRecordsFromSearch(name), assetService.getAllAssetsByName(name, offset, limit));
     }
 
-    // Get asset by id
     @GetMapping("/{id}")
     @Operation(summary = "Get asset by id")
     public ResponseEntity<?> getAssetById(@PathVariable("id") @Positive Integer id) {
         return GetResponse.getResponse("Find asset by id successful",assetService.findAssetById(id));
     }
 
-    // Update asset by id
     @PutMapping("/update/{id}")
     @Operation(summary = "Update asset by id")
     public ResponseEntity<?> createAsset(
@@ -58,7 +55,6 @@ public class AssetController {
         return  GetResponse.getResponse("Update asset by id successful",assetService.updateAsset(id, assetRequest));
     }
 
-    // insert asset
     @PostMapping("/create")
     @Operation(summary = "Create asset")
     public ResponseEntity<?> createAsset(@RequestBody @Valid AssetRequest assetRequest) {
@@ -66,7 +62,6 @@ public class AssetController {
 
     }
 
-    // delete asset
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete asset by id")
     public ResponseEntity<?> deleteMemberById(@PathVariable(name = "id") Integer assetId){

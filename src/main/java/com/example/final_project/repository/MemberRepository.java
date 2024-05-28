@@ -183,4 +183,11 @@ public interface MemberRepository {
             AND member_name ILIKE CONCAT('%', #{memberName}, '%')
     """)
     Integer getTotalMemberRecordsFromSearch(Integer orgId, String memberName);
+
+    @Select("""
+        SELECT * FROM organization WHERE code = #{orgCode};
+    """)
+    @Result(property = "orgId", column = "org_id")
+    @Result(property = "orgName", column = "org_name")
+    Organization getOrganizationByCode(String orgCode);
 }

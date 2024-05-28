@@ -75,6 +75,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/asset/create").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/asset/delete/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
+                        // agenda controller
+                        .requestMatchers(HttpMethod.POST, "/api/agenda/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/agenda/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/agenda/{id}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
                 .exceptionHandling(e->e.accessDeniedHandler(customAccessDeniedHandler)

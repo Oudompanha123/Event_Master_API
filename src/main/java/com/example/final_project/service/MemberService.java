@@ -1,5 +1,6 @@
 package com.example.final_project.service;
 
+import com.example.final_project.model.Organization;
 import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
@@ -36,4 +37,6 @@ public interface MemberService extends UserDetailsService {
     Integer getTotalMemberRecords();
 
     Integer getTotalMemberRecordsFromSearch(String memberName);
+
+    Organization getOrganizationByCode(String orgCode);
 }

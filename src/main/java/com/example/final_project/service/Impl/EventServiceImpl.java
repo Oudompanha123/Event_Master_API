@@ -9,13 +9,12 @@ import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.repository.CategoryRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.service.EventService;
+import com.example.final_project.util.Convert;
 import com.example.final_project.util.RegistrationFormString;
 import com.example.final_project.util.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 @AllArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -116,15 +115,7 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Event id : " + eventId + " not found");
 
         // convert List<Map<String, Object>> into String format
-        String newJsonFormString;
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            newJsonFormString = objectMapper.writeValueAsString(formRequest.getData());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            // Handle exception
-            return null;
-        }
+        String newJsonFormString = Convert.convertListMapToString(formRequest.getData());
 
         // clear all registration form data
         eventRepository.clearRegistrationFormById(eventId, Token.getOrgIdByToken());

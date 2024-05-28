@@ -4,6 +4,7 @@ import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.jwt.JwtService;
 import com.example.final_project.model.Member;
+import com.example.final_project.model.Organization;
 import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
@@ -295,5 +296,12 @@ public class MemberServiceImpl implements MemberService {
     public Integer getTotalMemberRecordsFromSearch(String memberName){
         Integer orgId = Token.getOrgIdByToken();
         return memberRepository.getTotalMemberRecordsFromSearch(orgId, memberName);
+    }
+
+    @Override
+    public Organization getOrganizationByCode(String orgCode) {
+        if(memberRepository.getOrganizationByCode(orgCode) == null)
+            throw new NotFoundException("Organization not found");
+        return memberRepository.getOrganizationByCode(orgCode);
     }
 }

@@ -7,7 +7,7 @@ public class RandomGenerator {
     // Method to generate a random alphanumeric string of 6 characters
     public static String generateRandomString() {
         // Define the characters allowed in the random string
-        String characters = "0123456789";
+        String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         // Create a StringBuilder to store the generated string
         StringBuilder sb = new StringBuilder(6);
         // Create a Random object

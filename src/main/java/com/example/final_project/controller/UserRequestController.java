@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RequestMapping("api/notification")
 @SecurityRequirement(name = "bearerAuth")
-public class NotificationController {
+public class UserRequestController {
     private final NotificationService notificationService;
 
     // get all member is not approve
     @GetMapping
-    @Operation(summary = "Get all notifications")
+    @Operation(summary = "Get all user requests")
     public ResponseEntity<?> getAllNotifications() {
         return GetResponse.getResponse("Get all of member is not approve",notificationService.findAllMember());
     }
@@ -36,6 +36,5 @@ public class NotificationController {
         notificationService.rejectMemberById(memberId);
         return GetResponse.getResponse("reject member id : " + memberId + " successfully!", null );
     }
-
 }
 

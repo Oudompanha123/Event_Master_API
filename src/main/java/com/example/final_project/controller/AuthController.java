@@ -5,9 +5,11 @@ import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.AuthRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
+import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -56,5 +58,11 @@ public class AuthController {
     @PostMapping("/resend")
     public ResponseEntity<?> resendOTP(@RequestParam @NotBlank @NotBlank @Email  String email){
         return PostResponse.postResponse(memberService.resendOTP(email), null);
+    }
+
+    @GetMapping("/org/{code}")
+    @Operation(summary = "Get organization by organization code")
+    public ResponseEntity<?> getOrganizationByCode(@PathVariable(name = "code") String orgCode){
+        return GetResponse.getResponse("Get organization successfully", memberService.getOrganizationByCode(orgCode));
     }
 }
