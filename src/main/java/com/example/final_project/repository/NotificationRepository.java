@@ -1,7 +1,6 @@
 package com.example.final_project.repository;
 
 import com.example.final_project.model.Member;
-import com.example.final_project.model.dto.response.member.MemberResponse;
 import com.example.final_project.model.dto.response.member.NotificationResponse;
 import org.apache.ibatis.annotations.*;
 
