@@ -11,13 +11,13 @@ public interface NotificationRepository {
 
     @Select("""
         SELECT member_id, member_name, gender, phone, email, picture
-         FROM member WHERE is_approve = false AND org_id = #{orgId};
+         FROM member WHERE is_approve = false AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "memberMapper", value = {
             @Result(property = "memberId", column = "member_id"),
             @Result(property = "memberName", column = "member_name")
     })
-    List<NotificationResponse> getAllNotifications(Integer orgId);
+    List<NotificationResponse> getAllNotifications(Integer orgId, Integer offset, Integer limit);
 
     @Select("""
         SELECT * FROM member WHERE member_id = #{memberId} AND org_id = #{orgId};

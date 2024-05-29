@@ -25,7 +25,7 @@ public class MemberController {
             @RequestParam(defaultValue = "1") @Positive Integer offset,
             @RequestParam(defaultValue = "7") @Positive Integer limit
     ){
-        return GetAllResponse.getAllResponse("get all members successful", memberService.getTotalMemberRecords(), memberService.getAllMembers(offset, limit));
+        return GetAllResponse.getAllResponse("Get all members successfully", memberService.getTotalMemberRecords(), memberService.getAllMembers(offset, limit));
     }
 
     @DeleteMapping("/{id}")

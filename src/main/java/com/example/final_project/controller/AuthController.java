@@ -26,6 +26,7 @@ public class AuthController {
     private final MemberService memberService;
 
     @PostMapping("/login")
+    @Operation(summary = "login to Dashboard")
     public ResponseEntity<?> authenticate(@RequestBody @Valid AuthRequest authRequest) throws Exception {
         memberService.authenticate(authRequest.getEmail(), authRequest.getPassword());
         Object loginResponse = memberService.getToken(authRequest.getEmail());
@@ -33,21 +34,25 @@ public class AuthController {
     }
 
     @PostMapping("/admin-register")
+    @Operation(summary = "register for admin")
     public ResponseEntity<?> adminRegister(@RequestBody @Valid AdminRequest adminRequest){
         return PostResponse.postResponse("register success as admin", memberService.adminRegister(adminRequest));
     }
 
     @PostMapping("/user-register")
+    @Operation(summary = "register for user")
     public ResponseEntity<?> userRegister(@RequestBody @Valid UserRequest userRequest){
         return PostResponse.postResponse("register success as user", memberService.userRegister(userRequest));
 
     }
     @PutMapping("/forget")
+    @Operation(summary = "forget password")
     public ResponseEntity<?> forgetPassword(@RequestParam @NotBlank @NotBlank @Email String email, @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest ){
         return UpdateResponse.updateResponse(memberService.forgetPassword(email,forgetPasswordRequest), null);
     }
 
     @PutMapping("/verify")
+    @Operation(summary = "verify email by OTP code")
     public ResponseEntity<?> verifyOTP(
             @RequestParam @NotBlank @NotNull String otp,
             @RequestParam @NotBlank @NotNull String email
@@ -56,6 +61,7 @@ public class AuthController {
     }
 
     @PostMapping("/resend")
+    @Operation(summary = "resend OTP code to email")
     public ResponseEntity<?> resendOTP(@RequestParam @NotBlank @NotBlank @Email  String email){
         return PostResponse.postResponse(memberService.resendOTP(email), null);
     }

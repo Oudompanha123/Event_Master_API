@@ -8,6 +8,7 @@ import com.example.final_project.repository.MemberRepository;
 import com.example.final_project.repository.NotificationRepository;
 import com.example.final_project.service.NotificationService;
 import com.example.final_project.util.Token;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,9 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
-    public List<NotificationResponse> findAllMember() {
-        return notificationRepository.getAllNotifications(Token.getOrgIdByToken());
+    public List<NotificationResponse> findAllMember(Integer offset, Integer limit) {
+        offset = (offset - 1) * limit;
+        return notificationRepository.getAllNotifications(Token.getOrgIdByToken(), offset, limit);
     }
 
     @Override

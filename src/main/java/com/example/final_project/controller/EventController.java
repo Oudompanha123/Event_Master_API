@@ -30,7 +30,7 @@ public class EventController {
             @RequestParam(defaultValue = "1") @Positive Integer offset,
             @RequestParam(defaultValue = "15") @Positive Integer limit
     ){
-        return GetAllResponse.getAllResponse("Get All events successfully",
+        return GetAllResponse.getAllResponse("Get all events successfully",
                 eventService.getTotalEventRecords(), eventService.getAllEvents(offset, limit));
     }
 

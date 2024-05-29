@@ -5,6 +5,7 @@ import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,11 @@ public class UserRequestController {
     // get all member is not approve
     @GetMapping
     @Operation(summary = "Get all user requests")
-    public ResponseEntity<?> getAllNotifications() {
-        return GetResponse.getResponse("Get all of member is not approve",notificationService.findAllMember());
+    public ResponseEntity<?> getAllNotifications(
+            @RequestParam(defaultValue = "1") @Positive Integer offset,
+            @RequestParam(defaultValue = "8") @Positive Integer limit
+    ) {
+        return GetResponse.getResponse("Get all of member is not approve",notificationService.findAllMember(offset, limit));
     }
 
     // accept member
