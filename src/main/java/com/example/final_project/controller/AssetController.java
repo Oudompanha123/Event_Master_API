@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("api/asset")
+@RequestMapping("/api/asset")
 @SecurityRequirement(name = "bearerAuth")
 public class AssetController {
     private final AssetService assetService;

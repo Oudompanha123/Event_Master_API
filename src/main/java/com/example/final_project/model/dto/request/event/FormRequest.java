@@ -1,16 +1,14 @@
 package com.example.final_project.model.dto.request.event;
 
+import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.json.JSONObject;
-
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class FormRequest {
-    private List<Map<String, Object>> data;
+    private JSONObject data;
 }

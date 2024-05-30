@@ -2,6 +2,7 @@ package com.example.final_project.repository;
 
 import com.example.final_project.model.Event;
 import com.example.final_project.model.dto.request.event.EventRequest;
+import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.util.SqlScriptFilterEvent;
 import org.apache.ibatis.annotations.*;
@@ -25,7 +26,7 @@ public interface EventRepository {
             @Result(property = "maxAttendee", column = "max_attendee"),
             @Result(property = "isOpen", column = "is_open"),
             @Result(property = "isPost", column = "is_post"),
-            @Result(property = "data", column = "registration_form")
+            @Result(property = "form", column = "registration_form")
     })
     List<Event> getAllEvents(Integer orgId, Integer offset, Integer limit);
 
@@ -72,11 +73,11 @@ public interface EventRepository {
     List<Event> getSearchAllEvent(SearchEventRequest searchEventRequest, Integer orgId, Integer offset, Integer limit);
 
     @Select("""
-        UPDATE event SET registration_form = registration_form ||  #{newJsonFormString} ::jsonb
+        UPDATE event SET registration_form = registration_form ||  #{form.data, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
         WHERE event_id = #{eventId} AND org_id = #{orgId} RETURNING *;
     """)
     @ResultMap("eventMapper")
-    Event modifyRegistrationForm(Integer eventId, String newJsonFormString, Integer orgId);
+    Event modifyRegistrationForm(Integer eventId, @Param("form") FormRequest formRequest, Integer orgId);
 
     @Update("""
         UPDATE event SET registration_form = '[]' WHERE event_id = #{eventId} AND org_id = #{orgId};

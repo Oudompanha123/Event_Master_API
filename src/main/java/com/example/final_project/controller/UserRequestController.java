@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("api/notification")
+@RequestMapping("/api/user-request")
 @SecurityRequirement(name = "bearerAuth")
 public class UserRequestController {
     private final NotificationService notificationService;

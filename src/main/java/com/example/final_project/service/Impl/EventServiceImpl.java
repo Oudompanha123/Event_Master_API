@@ -9,12 +9,12 @@ import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.repository.CategoryRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.service.EventService;
-import com.example.final_project.util.Convert;
 import com.example.final_project.util.RegistrationFormString;
 import com.example.final_project.util.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -109,16 +109,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event modifyRegistrationForm(Integer eventId, FormRequest formRequest) {
+        System.out.println(formRequest);
         // check event id in database or not
         Event event = eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
         if(event == null)
             throw new NotFoundException("Event id : " + eventId + " not found");
 
-        // convert List<Map<String, Object>> into String format
-        String newJsonFormString = Convert.convertListMapToString(formRequest.getData());
-
         // clear all registration form data
         eventRepository.clearRegistrationFormById(eventId, Token.getOrgIdByToken());
-        return eventRepository.modifyRegistrationForm(eventId, newJsonFormString, Token.getOrgIdByToken());
+        return eventRepository.modifyRegistrationForm(eventId, formRequest, Token.getOrgIdByToken());
     }
 }

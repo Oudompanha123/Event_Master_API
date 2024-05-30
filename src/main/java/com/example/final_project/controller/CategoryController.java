@@ -14,9 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/category")
 @SecurityRequirement(name = "bearerAuth")
-@AllArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
 

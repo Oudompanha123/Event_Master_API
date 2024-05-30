@@ -63,9 +63,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/dashboard").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // notifications controller
-                        .requestMatchers(HttpMethod.GET, "/api/notifications").hasAnyRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/notifications/approve/{id}").hasAnyRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/notifications/reject/{id}").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/user-request").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/user-request/approve/{id}").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/user-request/reject/{id}").hasAnyRole("ADMIN")
 
                         // asset controller
                         .requestMatchers(HttpMethod.GET, "/api/asset").hasAnyRole("ADMIN", "SUB_ADMIN")

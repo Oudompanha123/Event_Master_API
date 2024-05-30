@@ -8,10 +8,7 @@ import com.example.final_project.model.Event;
 import com.example.final_project.repository.AgendaRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.service.AgendaService;
-import com.example.final_project.util.Convert;
 import com.example.final_project.util.Token;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +28,8 @@ public class AgendaServiceImpl implements AgendaService {
         Integer agendaId = agendaRepository.findAgendaIdByEventId(eventId);
         if(agendaId != null)
             throw new BadRequestException("An event has only one agenda");
-        // convert List<Map<String, Object>> into String format
-        String agendaData = Convert.convertListMapToString(agenda.getData());
-        return agendaRepository.createAgenda(agendaData, eventId);
+
+        return agendaRepository.createAgenda(agenda, eventId);
     }
 
     @Override
@@ -62,8 +58,6 @@ public class AgendaServiceImpl implements AgendaService {
         // clear data in agenda
         agendaRepository.clearDataInAgenda(agendaId);
 
-        // convert List<Map<String, Object>> into String format
-        String agendaData = Convert.convertListMapToString(agenda.getData());
-        return agendaRepository.updateAgendaById(agendaId, agendaData);
+        return agendaRepository.updateAgendaById(agendaId, agenda);
     }
 }

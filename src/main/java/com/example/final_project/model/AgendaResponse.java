@@ -1,9 +1,9 @@
 package com.example.final_project.model;
 
+import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.json.JSONObject;
 
 import java.util.List;
 

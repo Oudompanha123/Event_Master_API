@@ -23,5 +23,5 @@ public class Event{
     private Boolean isOpen;
     private Boolean isPost;
     private Integer maxAttendee;
-    private List<JSONObject> data;
+    private List<JSONObject> form;
 }

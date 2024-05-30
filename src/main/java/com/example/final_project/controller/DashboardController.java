@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/dashboard")
 @SecurityRequirement(name = "bearerAuth")
-@AllArgsConstructor
 public class DashboardController {
     private final DashboardService dashboardService;
 
