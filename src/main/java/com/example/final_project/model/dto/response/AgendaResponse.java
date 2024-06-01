@@ -1,4 +1,4 @@
-package com.example.final_project.model;
+package com.example.final_project.model.dto.response;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class AgendaResponse {
     private Integer agendaId;
-    private List<JSONObject> data;
+    private JSONObject data;
     private Integer eventId;
 }

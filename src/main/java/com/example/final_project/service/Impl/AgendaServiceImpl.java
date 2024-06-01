@@ -3,7 +3,7 @@ package com.example.final_project.service.Impl;
 import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Agenda;
-import com.example.final_project.model.AgendaResponse;
+import com.example.final_project.model.dto.response.AgendaResponse;
 import com.example.final_project.model.Event;
 import com.example.final_project.repository.AgendaRepository;
 import com.example.final_project.repository.EventRepository;

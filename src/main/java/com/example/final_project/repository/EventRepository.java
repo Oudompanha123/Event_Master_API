@@ -73,14 +73,14 @@ public interface EventRepository {
     List<Event> getSearchAllEvent(SearchEventRequest searchEventRequest, Integer orgId, Integer offset, Integer limit);
 
     @Select("""
-        UPDATE event SET registration_form = registration_form ||  #{form.data, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
+        UPDATE event SET registration_form = #{form.data, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
         WHERE event_id = #{eventId} AND org_id = #{orgId} RETURNING *;
     """)
     @ResultMap("eventMapper")
     Event modifyRegistrationForm(Integer eventId, @Param("form") FormRequest formRequest, Integer orgId);
 
     @Update("""
-        UPDATE event SET registration_form = '[]' WHERE event_id = #{eventId} AND org_id = #{orgId};
+        UPDATE event SET registration_form = null WHERE event_id = #{eventId} AND org_id = #{orgId};
     """)
     void clearRegistrationFormById(Integer eventId, Integer orgId);
 }

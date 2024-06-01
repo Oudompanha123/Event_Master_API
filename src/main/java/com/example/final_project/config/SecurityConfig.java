@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/auth/**","/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/api/landing-page/**"
                         ).permitAll()
                         // member controller
                         .requestMatchers(HttpMethod.GET, "/api/member").hasAnyRole( "ADMIN", "SUB_ADMIN")

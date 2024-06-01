@@ -1,26 +1,23 @@
-package com.example.final_project.model;
+package com.example.final_project.model.dto.response.landingPage;
 
-import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event{
+public class AllFieldInLandingPage {
+    private String cateName;
     private Integer eventId;
     private String eventName;
     private String description;
     private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private String duration;
     private String address;
     private String poster;
     private Boolean isOpen;
-    private Boolean isPost;
-    private Integer maxAttendee;
-    private JSONObject form;
+    private String orgName;
+    private String logo;
 }

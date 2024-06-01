@@ -179,7 +179,7 @@ public class MemberServiceImpl implements MemberService {
             // check expired OTP
             if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60)){
                 memberRepository.updateOtpStatus(otpId);
-                if(member.getRole().equals("ROLE_ADMIN")) {
+                if(member.getRole().equals(Roles.ROLE_ADMIN)) {
                     // change is approve to true for admin
                     memberRepository.updateIsApprovedToTrue(member.getMemberId());
                 }
@@ -234,16 +234,16 @@ public class MemberServiceImpl implements MemberService {
         Member member = (Member) userDetails;
 
         // for admin, if is_approve = false means never verify otp code
-        if(member.getRole().equals("ROLE_ADMIN") && !member.isApprove())
+        if(member.getRole().equals(Roles.ROLE_ADMIN) && !member.isApprove())
             throw  new BadRequestException("This account is not verified otp code");
 
-        if(member.getRole().equals("ROLE_USER") || member.getRole().equals("ROLE_SUB_ADMIN"))
+        if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN))
             if(!member.isApprove())
                 throw new BadRequestException("This account is not approved yet");
 
         final String token = jwtService.generateToken(userDetails);
 
-        if(member.getRole().equals("ROLE_USER") || member.getRole().equals("ROLE_SUB_ADMIN") || member.getRole().equals("ROLE_ADMIN"))
+        if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN) || member.getRole().equals(Roles.ROLE_ADMIN))
             return new AuthResponse(token);
         else
             throw new NotFoundException("role is invalid!");
@@ -264,6 +264,10 @@ public class MemberServiceImpl implements MemberService {
         if(member == null)
             throw new NotFoundException("Member not found");
         else{
+            // check member is admin or not
+            if(member.getRole().equals(Roles.ROLE_ADMIN))
+                throw new BadRequestException("You can't delete admin.");
+
             memberRepository.insertToHistory(member);
             memberRepository.deleteMemberById(memberId);
         }

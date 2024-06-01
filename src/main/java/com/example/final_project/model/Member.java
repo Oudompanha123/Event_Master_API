@@ -25,14 +25,14 @@ public class Member implements UserDetails {
     private String address;
     private String picture;
     private LocalDate dateOfBirth;
-    private String role;
+    private Roles role;
     private boolean isApprove;
     private Boolean isVerify = false;
     private Organization organization;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authorities = new SimpleGrantedAuthority(role);
+        SimpleGrantedAuthority authorities = new SimpleGrantedAuthority(role.name());
         return Collections.singleton(authorities);
     }
 
