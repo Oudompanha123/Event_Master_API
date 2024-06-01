@@ -1,4 +1,4 @@
-package com.example.final_project.service.Impl;
+package com.example.final_project.service;
 
 import com.example.final_project.model.dto.response.landingPage.EventDetailInLandingPage;
 import com.example.final_project.model.dto.response.landingPage.EventsByCategory;

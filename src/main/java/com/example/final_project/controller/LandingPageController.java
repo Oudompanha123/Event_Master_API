@@ -1,9 +1,8 @@
 package com.example.final_project.controller;
 
 import com.example.final_project.model.dto.response.GetResponse;
-import com.example.final_project.service.Impl.LandingPageService;
+import com.example.final_project.service.LandingPageService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

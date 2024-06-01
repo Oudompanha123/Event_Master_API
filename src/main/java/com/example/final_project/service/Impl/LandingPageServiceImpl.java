@@ -3,6 +3,7 @@ package com.example.final_project.service.Impl;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.dto.response.landingPage.*;
 import com.example.final_project.repository.LandingPageRepository;
+import com.example.final_project.service.LandingPageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class LandingPageServiceImpl implements LandingPageService{
+public class LandingPageServiceImpl implements LandingPageService {
     private final ModelMapper modelMapper;
     private  final LandingPageRepository landingPageRepository;
 
