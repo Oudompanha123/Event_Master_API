@@ -4,7 +4,7 @@ package com.example.final_project.service.Impl;
 import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Asset;
-import com.example.final_project.model.dto.request.asset.AssetRequest;
+import com.example.final_project.model.dto.request.AssetRequest;
 import com.example.final_project.repository.AssetRepository;
 import com.example.final_project.service.AssetService;
 import com.example.final_project.util.Token;
@@ -41,6 +41,11 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset insertAsset(AssetRequest assetRequest) {
+        // check duplicate asset name
+        List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
+        for(String assetName : assetNames)
+            if(assetName.equalsIgnoreCase(assetRequest.getAssetName()))
+                throw new BadRequestException("Duplicate asset name");
         return assetRepository.insertAsset(assetRequest, Token.getOrgIdByToken());
     }
 
@@ -56,9 +61,15 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset updateAsset(Integer id, AssetRequest assetRequest) {
         Asset asset = assetRepository.findAssetById(id, Token.getOrgIdByToken());
-        if (asset == null) {
+        if (asset == null)
             throw new NotFoundException("Asset id : " + id + " not found");
-        }
+
+        // check duplicate asset name
+        List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
+        for(String assetName : assetNames)
+            if(assetName.equalsIgnoreCase(assetRequest.getAssetName()))
+                throw new BadRequestException("Duplicate asset name");
+
         return assetRepository.updateAsset(id, assetRequest, Token.getOrgIdByToken());
     }
 

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
-@OpenAPIDefinition(info = @Info(title = "Event Master API",
+@OpenAPIDefinition(info = @Info(title = "EventMaster API",
 		version = "v1",
 		description = "Watch as your vision comes to life flawlessly. \n" +
 				"EventMaster handles all the logistics, coordinating \n" +

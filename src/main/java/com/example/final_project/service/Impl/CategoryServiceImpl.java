@@ -29,8 +29,9 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(String categoryName) {
         // check category name not duplicate
         List<String> categoryNameList = categoryRepository.getAllCategoryName(Token.getOrgIdByToken());
-        if(categoryNameList.contains(categoryName))
-            throw new BadRequestException("Duplicate category name");
+        for(String cateName : categoryNameList)
+            if(cateName.equalsIgnoreCase(categoryName))
+                throw new BadRequestException("Duplicate category name");
         return categoryRepository.createCategory(categoryName,
                 Token.getOrgIdByToken(), Token.getMemberIdByToken());
     }
@@ -52,10 +53,11 @@ public class CategoryServiceImpl implements CategoryService {
         // check category exists or not
         if(categoryRepository.getCategoryById(categoryId, Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Cannot find this category");
-        // check category name that want to update already exists in table or not
+        // check category name not duplicate
         List<String> categoryNameList = categoryRepository.getAllCategoryName(Token.getOrgIdByToken());
-        if(categoryNameList.contains(categoryName))
-            throw new BadRequestException("Duplicate category name");
+        for(String cateName : categoryNameList)
+            if(cateName.equalsIgnoreCase(categoryName))
+                throw new BadRequestException("Duplicate category name");
         return categoryRepository.updateCategoryById(categoryId, categoryName);
     }
 }

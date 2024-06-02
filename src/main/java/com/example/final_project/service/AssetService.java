@@ -2,8 +2,7 @@ package com.example.final_project.service;
 
 
 import com.example.final_project.model.Asset;
-import com.example.final_project.model.dto.request.asset.AssetRequest;
-import com.example.final_project.model.dto.request.event.SearchEventRequest;
+import com.example.final_project.model.dto.request.AssetRequest;
 
 import java.util.List;
 

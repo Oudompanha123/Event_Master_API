@@ -6,6 +6,7 @@ import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
+import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.member.MemberResponse;
 import org.apache.ibatis.annotations.*;
 
@@ -190,4 +191,9 @@ public interface MemberRepository {
     @Result(property = "orgId", column = "org_id")
     @Result(property = "orgName", column = "org_name")
     Organization getOrganizationByCode(String orgCode);
+
+    @Select(("""
+        UPDATE member SET password = #{member.password} WHERE email = #{email}
+    """))
+    void changePassword(String email, @Param("member") ChangePasswordRequest changePasswordRequest);
 }

@@ -28,15 +28,15 @@ public class UserRequestController {
     }
 
     // accept member
-    @PutMapping("/approve/{id}")
+    @PutMapping("/approve/{memberId}")
     @Operation(summary = "accept member by id")
-    public ResponseEntity<?> approveMember(@PathVariable(name = "id") Integer memberId){
+    public ResponseEntity<?> approveMember(@PathVariable Integer memberId){
         return UpdateResponse.updateResponse("Approve member id " + memberId + " successfully", notificationService.approveMember(memberId));
     }
     // reject member
-    @DeleteMapping("/reject/{id}")
+    @DeleteMapping("/reject/{memberId}")
     @Operation(summary = "reject member by id")
-    public ResponseEntity<?> rejectMember(@PathVariable(name = "id") Integer memberId){
+    public ResponseEntity<?> rejectMember(@PathVariable Integer memberId){
         notificationService.rejectMemberById(memberId);
         return GetResponse.getResponse("reject member id : " + memberId + " successfully!", null );
     }

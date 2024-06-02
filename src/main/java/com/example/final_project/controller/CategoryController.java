@@ -24,7 +24,7 @@ public class CategoryController {
     @Operation(summary = "Get All categories")
     public ResponseEntity<?> getAllCategories(
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "6") @Positive Integer limit
+            @RequestParam(defaultValue = "8") @Positive Integer limit
     ){
         return GetResponse.getResponse("Get all categories successfully", categoryService.getAllCategories(offset, limit));
     }
@@ -35,16 +35,16 @@ public class CategoryController {
         return PostResponse.postResponse("Create category successfully", categoryService.createCategory(categoryName));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{categoryId}")
     @Operation(summary = "Delete category by id")
-    public ResponseEntity<?> deleteCategory(@PathVariable(name = "id") Integer categoryId){
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer categoryId){
         categoryService.deleteCategoryById(categoryId);
         return GetResponse.getResponse("Delete category id : " + categoryId + "  successfully", null);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{categoryId}")
     @Operation(summary = "Update category by id")
-    public ResponseEntity<?> updateCategory(@PathVariable(name = "id") Integer categoryId,
+    public ResponseEntity<?> updateCategory(@PathVariable Integer categoryId,
                                             @RequestParam @NotBlank @NotNull String categoryName){
         return UpdateResponse.updateResponse("Update category id : " + categoryId + " successfully"
                 ,categoryService.updateCategory(categoryId, categoryName));

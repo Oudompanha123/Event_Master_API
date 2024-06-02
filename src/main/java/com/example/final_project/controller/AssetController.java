@@ -1,7 +1,7 @@
 package com.example.final_project.controller;
 
 
-import com.example.final_project.model.dto.request.asset.AssetRequest;
+import com.example.final_project.model.dto.request.AssetRequest;
 import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -40,31 +40,31 @@ public class AssetController {
         return GetAllResponse.getAllResponse("Find asset by name successful", assetService.getTotalAssetRecordsFromSearch(name), assetService.getAllAssetsByName(name, offset, limit));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{assetId}")
     @Operation(summary = "Get asset by id")
-    public ResponseEntity<?> getAssetById(@PathVariable("id") @Positive Integer id) {
-        return GetResponse.getResponse("Find asset by id successful",assetService.findAssetById(id));
+    public ResponseEntity<?> getAssetById(@PathVariable("assetId") @Positive Integer id) {
+        return GetResponse.getResponse("Find asset by id successfully",assetService.findAssetById(id));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{assetId}")
     @Operation(summary = "Update asset by id")
     public ResponseEntity<?> createAsset(
-            @PathVariable("id") Integer id,
+            @PathVariable("assetId") Integer id,
             @RequestBody @Valid AssetRequest assetRequest
     ) {
-        return  GetResponse.getResponse("Update asset by id successful",assetService.updateAsset(id, assetRequest));
+        return  GetResponse.getResponse("Update asset by id successfully",assetService.updateAsset(id, assetRequest));
     }
 
     @PostMapping("/create")
     @Operation(summary = "Create asset")
     public ResponseEntity<?> createAsset(@RequestBody @Valid AssetRequest assetRequest) {
-        return PostResponse.postResponse("Create asset is successful",assetService.insertAsset(assetRequest));
+        return PostResponse.postResponse("Create asset is successfully",assetService.insertAsset(assetRequest));
 
     }
 
-    @DeleteMapping("/delete/{id}")
-    @Operation(summary = "Delete asset by id")
-    public ResponseEntity<?> deleteMemberById(@PathVariable(name = "id") Integer assetId){
+    @DeleteMapping("/delete/{assetId}")
+    @Operation(summary = "Delete asset by id successfully")
+    public ResponseEntity<?> deleteMemberById(@PathVariable Integer assetId){
         assetService.deleteAssetById(assetId);
         return GetResponse.getResponse("delete member successfully", null);
     }

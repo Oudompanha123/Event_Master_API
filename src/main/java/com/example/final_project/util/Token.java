@@ -12,4 +12,8 @@ public class Token {
         Member userDetails = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userDetails.getMemberId();
     }
+    public static String getEmailByToken(){
+        Member userDetails = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getEmail();
+    }
 }

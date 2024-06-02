@@ -1,7 +1,7 @@
 package com.example.final_project.repository;
 
 import com.example.final_project.model.Asset;
-import com.example.final_project.model.dto.request.asset.AssetRequest;
+import com.example.final_project.model.dto.request.AssetRequest;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -59,5 +59,10 @@ public interface AssetRepository {
         SELECT COUNT(*) FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId};
     """)
     Integer getTotalAssetRecordsFromSearch(String assetName, Integer orgId);
+
+    @Select("""
+        SELECT asset_name FROM asset WHERE org_id = #{orgId};
+    """)
+    List<String> getAllAssetNames(Integer orgId);
 }
 

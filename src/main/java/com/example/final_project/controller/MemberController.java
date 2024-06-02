@@ -23,22 +23,22 @@ public class MemberController {
     @Operation(summary = "Get All Members")
     public ResponseEntity<?> getAllMembers(
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "7") @Positive Integer limit
+            @RequestParam(defaultValue = "8") @Positive Integer limit
     ){
         return GetAllResponse.getAllResponse("Get all members successfully", memberService.getTotalMemberRecords(), memberService.getAllMembers(offset, limit));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMemberById(@PathVariable(name = "id") Integer memberId){
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<?> deleteMemberById(@PathVariable Integer memberId){
         memberService.deleteMemberById(memberId);
-        return GetResponse.getResponse("delete member id : " + memberId + " successfully!", null);
+        return GetResponse.getResponse("delete member id : " + memberId + " successfully", null);
     }
 
     // update role
-    @PutMapping("/{id}")
+    @PutMapping("/{memberId}")
     @Operation(summary = "change role")
     public ResponseEntity<?> updateMemberRole(
-            @PathVariable (name = "id") Integer memberId,
+            @PathVariable Integer memberId,
             @RequestParam Roles role
             ){
         return UpdateResponse.updateResponse("update role successfully", memberService.updateMemberRole(memberId, role));
@@ -49,7 +49,7 @@ public class MemberController {
     public ResponseEntity<?> searchMemberByName(
             @RequestParam String memberName,
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "7") @Positive Integer limit)
+            @RequestParam(defaultValue = "8") @Positive Integer limit)
     {
         return GetAllResponse.getAllResponse("Get member by name success", memberService.getTotalMemberRecordsFromSearch(memberName),
                 memberService.searchMemberByName(memberName, offset, limit));

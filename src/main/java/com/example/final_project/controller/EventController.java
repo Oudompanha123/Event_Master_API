@@ -28,15 +28,15 @@ public class EventController {
     @Operation(summary = "Get All Events")
     public ResponseEntity<?> getAllEvents(
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "15") @Positive Integer limit
+            @RequestParam(defaultValue = "8") @Positive Integer limit
     ){
         return GetAllResponse.getAllResponse("Get all events successfully",
                 eventService.getTotalEventRecords(), eventService.getAllEvents(offset, limit));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{eventId}")
     @Operation(summary = "Get Event By Id")
-    public ResponseEntity<?> getEventById(@PathVariable(name = "id") Integer eventId){
+    public ResponseEntity<?> getEventById(@PathVariable Integer eventId){
         return GetResponse.getResponse("Get event successfully", eventService.getEventById(eventId));
     }
 
@@ -46,24 +46,24 @@ public class EventController {
         return PostResponse.postResponse("Create event successfully", eventService.createEvent(eventRequest));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{eventId}")
     @Operation(summary = "Delete event by id")
-    public ResponseEntity<?> deleteEventById(@PathVariable(name = "id") Integer eventId){
+    public ResponseEntity<?> deleteEventById(@PathVariable Integer eventId){
         eventService.deleteEventById(eventId);
         return GetResponse.getResponse("Delete event id : " + eventId + "  successfully", null);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{eventId}")
     @Operation(summary = "Update event by id")
-    public ResponseEntity<?> updateEventById(@PathVariable(name = "id") Integer
+    public ResponseEntity<?> updateEventById(@PathVariable Integer
                 eventId, @RequestBody @Valid EventRequest eventRequest){
         return UpdateResponse.updateResponse("Update event successfully",
                 eventService.updateEventById(eventRequest, eventId));
     }
 
-    @PutMapping("/active/{id}")
+    @PutMapping("/active/{eventId}")
     @Operation(summary = "Toggle active status of the event between 'open' and 'closed' by id")
-    public ResponseEntity<?>updateActiveById(@Positive @PathVariable (name = "id") Integer eventId,
+    public ResponseEntity<?>updateActiveById(@Positive @PathVariable Integer eventId,
                                              @RequestParam Active active){
         eventService.updateActiveById(eventId, active);
         return UpdateResponse.updateResponse("Update event id : " + eventId + " to '" + active + "' successfully", null);
@@ -73,7 +73,7 @@ public class EventController {
     @Operation(summary = "Search and filter")
     public ResponseEntity<?> searchEvent(
             @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "15") @Positive Integer limit,
+            @RequestParam(defaultValue = "8") @Positive Integer limit,
             @RequestBody SearchEventRequest searchEventRequest
             ){
         return GetAllResponse.getAllResponse("Search event successfully",
@@ -81,10 +81,10 @@ public class EventController {
                 eventService.searchEvent(searchEventRequest, offset, limit));
     }
 
-    @PutMapping("/registration-form/{id}")
+    @PutMapping("/registration-form/{eventId}")
     @Operation(summary = "Insert, delete and update registration form")
     public ResponseEntity<?> modifyRegistrationForm(
-            @PathVariable(name = "id") Integer eventId,
+            @PathVariable Integer eventId,
             @RequestBody FormRequest formRequest
             ){
         return GetResponse.getResponse("Registration form is successfully modified",

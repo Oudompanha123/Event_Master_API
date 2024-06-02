@@ -37,6 +37,11 @@ public interface EventRepository {
     Event getEventById(Integer orgId, Integer eventId);
 
     @Select("""
+        SELECT * FROM event WHERE event_id = #{eventId};
+    """)
+    @ResultMap("eventMapper")
+    Event getEventByIdNoOrgId(Integer eventId);
+    @Select("""
         INSERT INTO event (event_name, start_date, end_date, duration, address, poster, description,
                 is_post, max_attendee, registration_form, cate_id, org_id)
             VALUES (#{event.eventName}, #{event.startDate}, #{event.endDate}, #{event.duration},

@@ -9,6 +9,7 @@ import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
+import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.authentication.AuthResponse;
 import com.example.final_project.model.dto.response.authentication.RegisterResponse;
 import com.example.final_project.model.dto.response.member.MemberResponse;
@@ -266,7 +267,7 @@ public class MemberServiceImpl implements MemberService {
         else{
             // check member is admin or not
             if(member.getRole().equals(Roles.ROLE_ADMIN))
-                throw new BadRequestException("You can't delete admin.");
+                throw new BadRequestException("You can't delete whose role as admin.");
 
             memberRepository.insertToHistory(member);
             memberRepository.deleteMemberById(memberId);
@@ -307,5 +308,26 @@ public class MemberServiceImpl implements MemberService {
         if(memberRepository.getOrganizationByCode(orgCode) == null)
             throw new NotFoundException("Organization not found");
         return memberRepository.getOrganizationByCode(orgCode);
+    }
+
+    @Override
+    public String changePassword(ChangePasswordRequest changePasswordRequest) {
+        Member member = memberRepository.findByEmail(Token.getEmailByToken());
+        if (member == null)
+            throw new BadRequestException("Member not found");
+
+        // check old password match or not
+        if(!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(), member.getPassword()))
+            throw new BadRequestException("Old password does not match");
+
+        // check password and confirm password match or not
+        if(!changePasswordRequest.getConfirmPassword().equals(changePasswordRequest.getPassword()))
+            throw new BadRequestException("Password and Confirm password do not matched");
+
+        // new password to the member
+        changePasswordRequest.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.getConfirmPassword()));
+        memberRepository.changePassword(Token.getEmailByToken(), changePasswordRequest);
+
+        return "Your password is changed successfully";
     }
 }
