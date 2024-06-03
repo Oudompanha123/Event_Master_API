@@ -196,4 +196,9 @@ public interface MemberRepository {
         UPDATE member SET password = #{member.password} WHERE email = #{email}
     """))
     void changePassword(String email, @Param("member") ChangePasswordRequest changePasswordRequest);
+
+    @Select("""
+        DELETE FROM otp WHERE member_id = #{memberId};
+    """)
+    void deleteOldOtp(Integer memberId);
 }

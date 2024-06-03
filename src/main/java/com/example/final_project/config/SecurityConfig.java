@@ -18,7 +18,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @AllArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig{
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthEntrypoint jwtAuthEntrypoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -29,7 +29,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
                 .cors(withDefaults()).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request

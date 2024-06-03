@@ -23,16 +23,16 @@ public class LandingPageController {
                 landingPageService.getAllEventsByCategory());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{eventId}")
     @Operation(summary = "Get detail event by event id")
-    public ResponseEntity<?> getDetailEventByEventId(@PathVariable(name = "id") Integer eventId){
+    public ResponseEntity<?> getDetailEventByEventId(@PathVariable Integer eventId){
         return GetResponse.getResponse("Get detail event successfully",
                 landingPageService.getDetailEventByEventId(eventId));
     }
 
-    @GetMapping("/form/{id}")
+    @GetMapping("/form/{eventId}")
     @Operation(summary = "Get form by event id")
-    public ResponseEntity<?> getFormByEventId(@PathVariable(name = "id") Integer eventId){
+    public ResponseEntity<?> getFormByEventId(@PathVariable Integer eventId){
         return GetResponse.getResponse("Get form successfully",
                 landingPageService.getFormByEventId(eventId));
     }

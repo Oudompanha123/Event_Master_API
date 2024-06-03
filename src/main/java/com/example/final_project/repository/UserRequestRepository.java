@@ -7,11 +7,13 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 @Mapper
-public interface NotificationRepository {
+public interface UserRequestRepository {
 
     @Select("""
-        SELECT member_id, member_name, gender, phone, email, picture
-         FROM member WHERE is_approve = false AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+        SELECT member.member_id, member_name, gender, phone, email, picture
+        FROM member INNER JOIN otp on member.member_id = otp.member_id WHERE is_approve = true
+                  AND member.role = 'ROLE_USER' AND otp.is_verify = false AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+        
     """)
     @Results(id = "memberMapper", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -39,4 +41,11 @@ public interface NotificationRepository {
         DELETE FROM member WHERE member_id = #{memberId} AND org_id = #{orgId}
     """)
     void rejectMemberById(Integer memberId, Integer orgId);
+
+    @Select("""
+        SELECT COUNT(*)
+        FROM member INNER JOIN otp on member.member_id = otp.member_id WHERE is_approve = true
+                  AND member.role = 'ROLE_USER' AND otp.is_verify = false AND org_id = #{orgId};
+    """)
+    Integer getAllUserRequestRecords(Integer orgId);
 }

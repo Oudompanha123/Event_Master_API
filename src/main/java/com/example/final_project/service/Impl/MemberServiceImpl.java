@@ -200,6 +200,10 @@ public class MemberServiceImpl implements MemberService {
             String otp = OtpUtil.generateOtp();
             // send mail
             emailingService.sendMail(email, otp);
+
+            // delete member's old otp
+            memberRepository.deleteOldOtp(member.getMemberId());
+
             // insert new record to OTP table
             LocalDateTime issuedAt = LocalDateTime.now();
             LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60);
@@ -238,16 +242,19 @@ public class MemberServiceImpl implements MemberService {
         if(member.getRole().equals(Roles.ROLE_ADMIN) && !member.isApprove())
             throw  new BadRequestException("This account is not verified otp code");
 
-        if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN))
-            if(!member.isApprove())
+        if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN)) {
+            if(!member.getIsVerify() && !member.isApprove())
+                throw new BadRequestException("This account is not verified yet");
+            if (!member.isApprove())
                 throw new BadRequestException("This account is not approved yet");
+        }
 
         final String token = jwtService.generateToken(userDetails);
 
         if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN) || member.getRole().equals(Roles.ROLE_ADMIN))
             return new AuthResponse(token);
         else
-            throw new NotFoundException("role is invalid!");
+            throw new NotFoundException("Role is invalid");
     }
 
 
@@ -267,7 +274,7 @@ public class MemberServiceImpl implements MemberService {
         else{
             // check member is admin or not
             if(member.getRole().equals(Roles.ROLE_ADMIN))
-                throw new BadRequestException("You can't delete whose role as admin.");
+                throw new BadRequestException("You can't delete whose role as admin");
 
             memberRepository.insertToHistory(member);
             memberRepository.deleteMemberById(memberId);

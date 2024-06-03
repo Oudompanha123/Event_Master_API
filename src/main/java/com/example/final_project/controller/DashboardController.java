@@ -24,7 +24,7 @@ public class DashboardController {
     @Operation(summary = "Get Dashboard Data")
     public ResponseEntity<?> getDashboardData(
     ){
-        return GetResponse.getResponse("Get Dashboard Data Successfully",
+        return GetResponse.getResponse("Get Data Successfully",
                 dashboardService.getDashboardData());
     }
 }
