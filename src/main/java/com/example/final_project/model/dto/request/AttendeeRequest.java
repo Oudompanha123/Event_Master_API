@@ -2,6 +2,8 @@ package com.example.final_project.model.dto.request;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,5 +14,6 @@ import lombok.NoArgsConstructor;
 public class AttendeeRequest {
     @JsonIgnore
     private JSONObject data;
+    @Positive
     private Integer eventId;
 }

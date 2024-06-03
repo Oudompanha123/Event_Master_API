@@ -14,6 +14,7 @@ public class AssetRequest {
     @NotBlank
     @NotNull
     private String assetName;
+    @NotNull
     @Positive
     private float qty;
     @NotBlank

@@ -3,6 +3,8 @@ package com.example.final_project.controller;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.service.LandingPageService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/landing-page")
+@RequestMapping("/api/landing-pages")
 public class LandingPageController {
     private final LandingPageService landingPageService;
 
@@ -25,14 +27,14 @@ public class LandingPageController {
 
     @GetMapping("/{eventId}")
     @Operation(summary = "Get detail event by event id")
-    public ResponseEntity<?> getDetailEventByEventId(@PathVariable Integer eventId){
+    public ResponseEntity<?> getDetailEventByEventId(@PathVariable @Positive @NotNull Integer eventId){
         return GetResponse.getResponse("Get detail event successfully",
                 landingPageService.getDetailEventByEventId(eventId));
     }
 
     @GetMapping("/form/{eventId}")
     @Operation(summary = "Get form by event id")
-    public ResponseEntity<?> getFormByEventId(@PathVariable Integer eventId){
+    public ResponseEntity<?> getFormByEventId(@PathVariable @Positive @NotNull Integer eventId){
         return GetResponse.getResponse("Get form successfully",
                 landingPageService.getFormByEventId(eventId));
     }

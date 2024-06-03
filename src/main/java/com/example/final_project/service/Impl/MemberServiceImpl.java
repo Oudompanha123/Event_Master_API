@@ -63,10 +63,6 @@ public class MemberServiceImpl implements MemberService {
         // validate phone
         Validation.validatePhoneNumber(adminRequest.getPhone());
 
-          // password must be more than 8
-//        if(adminRequest.getPassword().length() < 8)
-//            throw new BadRequestException("Password must be more than 8");
-
         // insert data into organization table
         String orgCode = RandomGenerator.generateRandomString();
         Integer orgId = memberRepository.createOrganization(orgCode);
@@ -104,10 +100,6 @@ public class MemberServiceImpl implements MemberService {
         // validate phone
         Validation.validatePhoneNumber(userRequest.getPhone());
 
-        // password must be more than 8
-//        if(adminRequest.getPassword().length() < 8)
-//            throw new BadRequestException("Password must be more than 8");
-
         //check password and confirm password matched
         if(!userRequest.getPassword().equals(userRequest.getConfirmPassword()))
             throw new BadRequestException("Password and Confirm password do not matched");
@@ -115,7 +107,7 @@ public class MemberServiceImpl implements MemberService {
         // get org_id by org_code
         Integer orgId = memberRepository.getOrgIdByOrgCode(userRequest.getOrgCode());
         if (orgId == null){
-            throw new NotFoundException("organization code is not found");
+            throw new NotFoundException("Organization code is not found");
         }
 
         // insert data into member table
@@ -173,12 +165,12 @@ public class MemberServiceImpl implements MemberService {
             // check otp is member opt or not
             Member member = memberRepository.findByEmail(email);
             if(member == null)
-                throw new NotFoundException("email does not exist");
+                throw new NotFoundException("Email does not exist");
             Integer memberId = memberRepository.getMemberIdByOtpId(otpId);
             if(!member.getMemberId().equals(memberId))
                 throw new BadRequestException("This otp is not yours");
             // check expired OTP
-            if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60)){
+            if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60 * 10)){
                 memberRepository.updateOtpStatus(otpId);
                 if(member.getRole().equals(Roles.ROLE_ADMIN)) {
                     // change is approve to true for admin
@@ -195,7 +187,7 @@ public class MemberServiceImpl implements MemberService {
     public String resendOTP(String email) {
         Member member = memberRepository.findByEmail(email);
         if(member == null)
-            throw new NotFoundException("email does not exist");
+            throw new NotFoundException("Email does not exist");
         try {
             String otp = OtpUtil.generateOtp();
             // send mail

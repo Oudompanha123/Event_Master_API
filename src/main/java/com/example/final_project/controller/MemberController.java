@@ -7,13 +7,16 @@ import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/members")
 @AllArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class MemberController {
@@ -22,36 +25,39 @@ public class MemberController {
     @GetMapping
     @Operation(summary = "Get All Members")
     public ResponseEntity<?> getAllMembers(
-            @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "8") @Positive Integer limit
+            @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
+            @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit
     ){
-        return GetAllResponse.getAllResponse("Get all members successfully", memberService.getTotalMemberRecords(), memberService.getAllMembers(offset, limit));
+        return GetAllResponse.getAllResponse("Get all members successfully",
+                memberService.getTotalMemberRecords(), memberService.getAllMembers(offset, limit));
     }
 
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> deleteMemberById(@PathVariable Integer memberId){
+    @Operation(summary = "Delete member by id")
+    public ResponseEntity<?> deleteMemberById(@PathVariable @Positive @NotNull Integer memberId){
         memberService.deleteMemberById(memberId);
-        return GetResponse.getResponse("delete member id : " + memberId + " successfully", null);
+        return GetResponse.getResponse("Delete member id : " + memberId + " successfully", null);
     }
 
     // update role
     @PutMapping("/{memberId}")
     @Operation(summary = "change role")
     public ResponseEntity<?> updateMemberRole(
-            @PathVariable Integer memberId,
-            @RequestParam Roles role
+            @PathVariable @Positive @NotNull Integer memberId,
+            @RequestParam @Valid Roles role
             ){
-        return UpdateResponse.updateResponse("update role successfully", memberService.updateMemberRole(memberId, role));
+        return UpdateResponse.updateResponse("Update role successfully", memberService.updateMemberRole(memberId, role));
     }
 
     @PostMapping("/search")
     @Operation(summary = "search by name")
     public ResponseEntity<?> searchMemberByName(
-            @RequestParam String memberName,
-            @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "8") @Positive Integer limit)
+            @RequestParam @Valid @NotNull @NotBlank String memberName,
+            @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
+            @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit)
     {
-        return GetAllResponse.getAllResponse("Get member by name success", memberService.getTotalMemberRecordsFromSearch(memberName),
+        return GetAllResponse.getAllResponse("Get member by name success",
+                memberService.getTotalMemberRecordsFromSearch(memberName),
                 memberService.searchMemberByName(memberName, offset, limit));
     }
 }

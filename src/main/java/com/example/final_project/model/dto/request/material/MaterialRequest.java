@@ -32,15 +32,13 @@ public class MaterialRequest {
     @NotNull
     @NotBlank
     private Status status;
-    @NotNull
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDate assignDate;
-    @NotNull
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDate dueDate;
     @NotNull
     @NotBlank
     private Member handlerId;
+    @NotNull
     private Event eventId;
+    @NotNull
     private JSONObject supporters;
 }

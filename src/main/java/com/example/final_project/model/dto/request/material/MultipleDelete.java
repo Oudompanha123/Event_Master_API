@@ -1,5 +1,6 @@
 package com.example.final_project.model.dto.request.material;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MultipleDelete {
+    @NotNull
     private List<Integer> materialIds;
 }

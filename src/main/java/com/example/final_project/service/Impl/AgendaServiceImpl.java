@@ -44,7 +44,7 @@ public class AgendaServiceImpl implements AgendaService {
     public void deleteAgendaById(Integer agendaId) {
         // check agenda id exists or not
         if(agendaRepository.findAgendaIdByAgendaId(agendaId) == null)
-            throw new NotFoundException("agenda id : " + agendaId + " not found in database");
+            throw new NotFoundException("Agenda id : " + agendaId + " not found in database");
 
         agendaRepository.deleteAgendaById(agendaId);
     }
@@ -53,7 +53,7 @@ public class AgendaServiceImpl implements AgendaService {
     public AgendaResponse updateAgendaById(Agenda agenda, Integer agendaId) {
         // check agenda id exists or not
         if(agendaRepository.findAgendaIdByAgendaId(agendaId) == null)
-            throw new NotFoundException("agenda id : " + agendaId + " not found in database");
+            throw new NotFoundException("Agenda id : " + agendaId + " not found in database");
 
         // clear data in agenda
         agendaRepository.clearDataInAgenda(agendaId);

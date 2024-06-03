@@ -1,5 +1,6 @@
 package com.example.final_project.model.dto.request.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +36,11 @@ public class EventRequest {
     private String poster;
     @NotNull
     private Boolean isPost;
+    @NotNull
     @Positive
     private Integer maxAttendee;
     @NotNull
+    @Positive
     private Integer categoryId;
     @JsonIgnore
     private String dataJsonString;

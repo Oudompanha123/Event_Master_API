@@ -7,6 +7,7 @@ import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +27,9 @@ public interface EventService {
 
     void updateActiveById(Integer eventId, Active active);
 
-    Integer getTotalEventRecordsFromSearch(SearchEventRequest searchEventRequest);
+    Integer getTotalEventRecordsFromSearch(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    List<Event> searchEvent(SearchEventRequest searchEventRequest, Integer offset, Integer limit);
+    List<Event> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer offset, Integer limit);
 
     Event modifyRegistrationForm(Integer eventId, FormRequest formRequest);
 }

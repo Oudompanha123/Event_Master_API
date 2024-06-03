@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 public class ChangePasswordRequest {
     @NotBlank
     @NotNull
-//    @Min(value = 8)
+    @Min(value = 8)
     private String oldPassword;
     @NotBlank
     @NotNull
-//    @Min(value = 8)
+    @Min(value = 8)
     private String password;
     @NotNull
     @NotBlank
-//    @Min(value = 8)
+    @Min(value = 8)
     private String confirmPassword;
 }

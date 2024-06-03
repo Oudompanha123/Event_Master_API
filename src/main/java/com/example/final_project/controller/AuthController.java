@@ -26,54 +26,58 @@ public class AuthController {
     private final MemberService memberService;
 
     @PostMapping("/login")
-    @Operation(summary = "login to Dashboard")
+    @Operation(summary = "Login to Dashboard")
     public ResponseEntity<?> authenticate(@RequestBody @Valid AuthRequest authRequest) throws Exception {
         memberService.authenticate(authRequest.getEmail(), authRequest.getPassword());
         Object loginResponse = memberService.getToken(authRequest.getEmail());
-        return PostResponse.postResponse("Login successfully", loginResponse);
+        return GetResponse.getResponse("Login successfully", loginResponse);
     }
 
     @PostMapping("/admin-register")
-    @Operation(summary = "register for admin")
+    @Operation(summary = "Register for admin")
     public ResponseEntity<?> adminRegister(@RequestBody @Valid AdminRequest adminRequest){
         return PostResponse.postResponse("Register successfully as admin", memberService.adminRegister(adminRequest));
     }
 
     @PostMapping("/user-register")
-    @Operation(summary = "register for user")
+    @Operation(summary = "Register for user")
     public ResponseEntity<?> userRegister(@RequestBody @Valid UserRequest userRequest){
         return PostResponse.postResponse("Register successfully as user", memberService.userRegister(userRequest));
 
     }
     @PutMapping("/set-new-password")
     @Operation(summary = "Set new password")
-    public ResponseEntity<?> forgetPassword(@RequestParam @NotBlank @NotBlank @Email String email, @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest ){
+    public ResponseEntity<?> forgetPassword(
+            @RequestParam @NotBlank @NotBlank @Email String email,
+            @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest
+    ){
         return UpdateResponse.updateResponse(memberService.forgetPassword(email,forgetPasswordRequest), null);
     }
 
     @PutMapping("/verify")
-    @Operation(summary = "verify email by OTP code")
+    @Operation(summary = "Verify email by OTP code")
     public ResponseEntity<?> verifyOTP(
             @RequestParam @NotBlank @NotNull String otp,
-            @RequestParam @NotBlank @NotNull String email
+            @RequestParam @NotBlank @NotNull @Email String email
     ){
         return UpdateResponse.updateResponse(memberService.verifyOTP(otp, email), null);
     }
 
     @PostMapping("/resend")
-    @Operation(summary = "resend OTP code to email")
+    @Operation(summary = "Resend OTP code to email")
     public ResponseEntity<?> resendOTP(@RequestParam @NotBlank @NotBlank @Email  String email){
         return PostResponse.postResponse(memberService.resendOTP(email), null);
     }
 
     @GetMapping("/org/{code}")
     @Operation(summary = "Get organization by organization code")
-    public ResponseEntity<?> getOrganizationByCode(@PathVariable(name = "code") String orgCode){
+    public ResponseEntity<?> getOrganizationByCode(@PathVariable(name = "code") @NotBlank @NotNull String orgCode){
         return GetResponse.getResponse("Get organization successfully", memberService.getOrganizationByCode(orgCode));
     }
 
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/change-password")
+    @Operation(summary = "To change new password")
     public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest ){
         return UpdateResponse.updateResponse(memberService.changePassword(changePasswordRequest),null);
     }

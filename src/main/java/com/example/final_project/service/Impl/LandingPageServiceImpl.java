@@ -58,7 +58,7 @@ public class LandingPageServiceImpl implements LandingPageService {
     public EventDetailInLandingPage getDetailEventByEventId(Integer eventId) {
         // check event is existed or not
         if(landingPageRepository.getDetailEventByEventId(eventId) == null)
-            throw new NotFoundException("event id : " + eventId + " not found");
+            throw new NotFoundException("Event id : " + eventId + " not found");
         return landingPageRepository.getDetailEventByEventId(eventId);
     }
 

@@ -13,6 +13,8 @@ import com.example.final_project.util.RegistrationFormString;
 import com.example.final_project.util.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -95,16 +97,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Integer getTotalEventRecordsFromSearch(SearchEventRequest searchEventRequest) {
+    public Integer getTotalEventRecordsFromSearch(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Integer orgId = Token.getOrgIdByToken();
-        return eventRepository.getTotalEventRecordsFromSearch(searchEventRequest, orgId);
+        return eventRepository.getTotalEventRecordsFromSearch(eventName, categoryId, status, startDateTime, endDateTime, orgId);
     }
 
     @Override
-    public List<Event> searchEvent(SearchEventRequest searchEventRequest, Integer offset, Integer limit) {
+    public List<Event> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer offset, Integer limit) {
         Integer orgId = Token.getOrgIdByToken();
         offset = (offset - 1) * limit;
-        return eventRepository.getSearchAllEvent(searchEventRequest, orgId, offset, limit);
+        return eventRepository.getSearchAllEvent(eventName, categoryId, status, startDateTime, endDateTime, orgId, offset, limit);
     }
 
     @Override

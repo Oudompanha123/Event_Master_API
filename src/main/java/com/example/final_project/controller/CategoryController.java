@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/category")
+@RequestMapping("/api/categories")
 @SecurityRequirement(name = "bearerAuth")
 public class CategoryController {
     private final CategoryService categoryService;
@@ -23,8 +23,8 @@ public class CategoryController {
     @GetMapping
     @Operation(summary = "Get All categories")
     public ResponseEntity<?> getAllCategories(
-            @RequestParam(defaultValue = "1") @Positive Integer offset,
-            @RequestParam(defaultValue = "8") @Positive Integer limit
+            @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
+            @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit
     ){
         return GetResponse.getResponse("Get all categories successfully", categoryService.getAllCategories(offset, limit));
     }
@@ -37,15 +37,17 @@ public class CategoryController {
 
     @DeleteMapping("/{categoryId}")
     @Operation(summary = "Delete category by id")
-    public ResponseEntity<?> deleteCategory(@PathVariable Integer categoryId){
+    public ResponseEntity<?> deleteCategory(@PathVariable @Positive @NotNull Integer categoryId){
         categoryService.deleteCategoryById(categoryId);
         return GetResponse.getResponse("Delete category id : " + categoryId + "  successfully", null);
     }
 
     @PutMapping("/{categoryId}")
     @Operation(summary = "Update category by id")
-    public ResponseEntity<?> updateCategory(@PathVariable Integer categoryId,
-                                            @RequestParam @NotBlank @NotNull String categoryName){
+    public ResponseEntity<?> updateCategory(
+            @PathVariable @Positive @NotNull Integer categoryId,
+            @RequestParam @NotBlank @NotNull String categoryName
+    ){
         return UpdateResponse.updateResponse("Update category id : " + categoryId + " successfully"
                 ,categoryService.updateCategory(categoryId, categoryName));
     }

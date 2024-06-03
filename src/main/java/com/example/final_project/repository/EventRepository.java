@@ -6,6 +6,8 @@ import com.example.final_project.model.dto.request.event.FormRequest;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.util.SqlScriptFilterEvent;
 import org.apache.ibatis.annotations.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -71,11 +73,11 @@ public interface EventRepository {
     void updateActiveById(Integer eventId, Integer orgId, boolean isOpen);
 
     @SelectProvider(type = SqlScriptFilterEvent.class, method = "getSqlScriptCountEventRecord")
-    Integer getTotalEventRecordsFromSearch(SearchEventRequest searchEventRequest, Integer orgId);
+    Integer getTotalEventRecordsFromSearch(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer orgId);
 
     @SelectProvider(type = SqlScriptFilterEvent.class, method = "getSqlScriptSearchEvent")
     @ResultMap("eventMapper")
-    List<Event> getSearchAllEvent(SearchEventRequest searchEventRequest, Integer orgId, Integer offset, Integer limit);
+    List<Event> getSearchAllEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer orgId, Integer offset, Integer limit);
 
     @Select("""
         UPDATE event SET registration_form = #{form.data, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB

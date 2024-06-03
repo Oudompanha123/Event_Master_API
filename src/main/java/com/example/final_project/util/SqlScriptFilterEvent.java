@@ -3,60 +3,62 @@ package com.example.final_project.util;
 import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 
 @Component
 public class SqlScriptFilterEvent {
     // count record when search event
-    public static String getSqlScriptCountEventRecord(SearchEventRequest searchEventRequest, Integer orgId){
+    public static String getSqlScriptCountEventRecord(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer orgId){
         String sql = "SELECT COUNT(*) FROM event WHERE org_id = " + orgId;
 
-        if(searchEventRequest.getEventName() != null && !searchEventRequest.getEventName().isEmpty())
-            sql += " AND event_name ILIKE '%" + searchEventRequest.getEventName() + "%'";
-        if(searchEventRequest.getCategoryId() != null)
-            sql += " AND cate_id = " + searchEventRequest.getCategoryId();
-        if(searchEventRequest.getStatus() != null)
-            sql += " AND is_open = " + searchEventRequest.getStatus();
+        if(eventName != null && !eventName.isEmpty())
+            sql += " AND event_name ILIKE '%" + eventName + "%'";
+        if(categoryId != null)
+            sql += " AND cate_id = " + categoryId;
+        if(status != null)
+            sql += " AND is_open = " + status;
 
-        if(searchEventRequest.getStartDateTime() != null && searchEventRequest.getEndDateTime() != null) {
-            sql += " AND (('" + searchEventRequest.getStartDateTime() + "' >= start_date AND '" +
-                    searchEventRequest.getEndDateTime() + "' <= end_date) OR ('" + searchEventRequest.getStartDateTime() + "' <= start_date AND '" +
+        if(startDateTime != null && endDateTime != null) {
+            sql += " AND (('" + startDateTime + "' >= start_date AND '" +
+                    endDateTime + "' <= end_date) OR ('" + startDateTime + "' <= start_date AND '" +
 
-                    searchEventRequest.getEndDateTime() + "' >= end_date))"
+                    endDateTime + "' >= end_date))"
             ;
         }
-        else if(searchEventRequest.getStartDateTime() != null)
-            sql += " AND DATE('" + searchEventRequest.getStartDateTime() + "') = DATE(start_date)";
-        else if(searchEventRequest.getEndDateTime() != null)
-            sql += " AND DATE('" + searchEventRequest.getEndDateTime() + "') = DATE(end_date)";
+        else if(startDateTime != null)
+            sql += " AND DATE('" + startDateTime + "') = DATE(start_date)";
+        else if(endDateTime != null)
+            sql += " AND DATE('" + endDateTime + "') = DATE(end_date)";
 
         return sql;
     }
 
-    public static String getSqlScriptSearchEvent(SearchEventRequest searchEventRequest, Integer orgId, Integer offset, Integer limit){
+    public static String getSqlScriptSearchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer orgId, Integer offset, Integer limit){
         String sql = "SELECT * FROM event WHERE org_id = " + orgId;
 
-        if(searchEventRequest.getEventName() != null && !searchEventRequest.getEventName().isEmpty())
-            sql += " AND event_name ILIKE '%" + searchEventRequest.getEventName() + "%' ";
+        if(eventName != null && !eventName.isEmpty())
+            sql += " AND event_name ILIKE '%" + eventName + "%' ";
 
-        if(searchEventRequest.getCategoryId() != null)
-            sql += " AND cate_id = " + searchEventRequest.getCategoryId();
-        if(searchEventRequest.getStatus() != null)
-            sql += " AND is_open = " + searchEventRequest.getStatus();
+        if(categoryId != null)
+            sql += " AND cate_id = " + categoryId;
+        if(status != null)
+            sql += " AND is_open = " + status;
 
-        if(searchEventRequest.getStartDateTime() != null && searchEventRequest.getEndDateTime() != null) {
+        if(startDateTime != null && endDateTime != null) {
             sql += " AND (" +
-                        "('" + searchEventRequest.getStartDateTime() + "' >= start_date AND '" +
-                        searchEventRequest.getEndDateTime() + "' <= end_date) OR ('" + searchEventRequest.getStartDateTime() + "' <= start_date AND '" +
+                        "('" + startDateTime + "' >= start_date AND '" +
+                        endDateTime + "' <= end_date) OR ('" + startDateTime + "' <= start_date AND '" +
 
-                        searchEventRequest.getEndDateTime() + "' >= end_date)" +
+                        endDateTime + "' >= end_date)" +
                     ")"
             ;
         }
-        else if(searchEventRequest.getStartDateTime() != null)
-            sql += " AND DATE('" + searchEventRequest.getStartDateTime() + "') = DATE(start_date)";
-        else if(searchEventRequest.getEndDateTime() != null)
-            sql += " AND DATE('" + searchEventRequest.getEndDateTime() + "') = DATE(end_date)";
-        sql += "ORDER BY event_name LIMIT " + limit + " OFFSET " + offset;
+        else if(startDateTime != null)
+            sql += " AND DATE('" + startDateTime + "') = DATE(start_date)";
+        else if(endDateTime != null)
+            sql += " AND DATE('" + endDateTime + "') = DATE(end_date)";
+        sql += " ORDER BY event_name LIMIT " + limit + " OFFSET " + offset;
         return sql;
     }
 }
