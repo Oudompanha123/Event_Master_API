@@ -17,10 +17,8 @@ public interface MaterialRepository {
     @Results(id = "materialMapper", value = {
             @Result(property = "materialId", column = "material_id"),
             @Result(property = "materialName", column = "material_name"),
-            @Result(property = "assignDate", column = "assign_date"),
             @Result(property = "dueDate", column = "due_date"),
-            @Result(property = "handlerId", column = "handler_id"),
-            @Result(property = "supporters", column = "supporters")
+            @Result(property = "handlerId", column = "handler_id")
     })
     List<MaterialResponse> getAllMaterial();
 

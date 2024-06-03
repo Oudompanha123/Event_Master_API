@@ -105,8 +105,8 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/deletes").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         .anyRequest().authenticated())
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
-                .exceptionHandling(e->e.accessDeniedHandler(customAccessDeniedHandler)
+                    .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
+                    .exceptionHandling(e->e.accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

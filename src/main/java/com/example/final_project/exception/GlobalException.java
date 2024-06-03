@@ -24,6 +24,17 @@ public class GlobalException {
         return problemDetail;
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ProblemDetail handleUnauthorizedException(UnauthorizedException ex){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                ex.getMessage()
+        );
+        problemDetail.setTitle("Unauthorized");
+        problemDetail.setProperty("dateTime", LocalDateTime.now());
+        return problemDetail;
+    }
+
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail handleBadRequestException(BadRequestException ex){
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(

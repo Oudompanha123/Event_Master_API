@@ -1,13 +1,11 @@
 package com.example.final_project.model.dto.response.material;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.example.final_project.model.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.json.JSONObject;
-
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,7 +19,7 @@ public class MaterialResponse {
     private Integer handlerId;
     private String handlerName;
     private String picture;
-    private List<JSONObject> supporters;
+    private JSONObject supporters;
     private Status status;
     private String remark;
 }

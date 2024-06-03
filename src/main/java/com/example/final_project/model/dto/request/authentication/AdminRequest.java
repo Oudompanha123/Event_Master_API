@@ -14,7 +14,7 @@ public class AdminRequest {
     @NotBlank
     @NotNull
     @Size(min = 8, max = 16)
-    @Pattern(regexp = "^0[0-9]", message = "Invalid phone number. The number start should 0")
+    @Pattern(regexp = "^0[0-9]", message = "Invalid phone number. The number should start with 0")
     private String phone;
     @NotBlank
     @NotNull

@@ -21,7 +21,7 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping
-    @Operation(summary = "Get all profile members")
+    @Operation(summary = "Get profile members")
     public ResponseEntity<?> getProfile() {
         return GetResponse.getResponse("Get profile member successfully", profileService.findProfileMember());
     }
