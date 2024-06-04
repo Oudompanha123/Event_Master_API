@@ -18,6 +18,6 @@ public class AuthRequest {
     private String email;
     @NotNull
     @NotBlank
-    @Min(value = 8)
+//    @Min(value = 8)
     private String password;
 }

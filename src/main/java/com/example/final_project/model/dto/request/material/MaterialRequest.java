@@ -1,10 +1,7 @@
 package com.example.final_project.model.dto.request.material;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.example.final_project.model.Event;
-import com.example.final_project.model.Member;
 import com.example.final_project.model.constant.Status;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,14 +25,14 @@ public class MaterialRequest {
     private String unit;
     private String remark;
     @NotNull
-    @NotBlank
     private Status status;
     private LocalDate assignDate;
     private LocalDate dueDate;
     @NotNull
-    @NotBlank
+    @Positive
     private Integer handlerId;
     @NotNull
+    @Positive
     private Integer eventId;
     private JSONObject supporters;
 }

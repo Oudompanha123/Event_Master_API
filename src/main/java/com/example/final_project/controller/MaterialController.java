@@ -2,6 +2,7 @@ package com.example.final_project.controller;
 
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
+import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -103,11 +104,9 @@ public class MaterialController {
 //    @PostMapping("/create")
 //    @Operation(summary = "Create material")
 //    public ResponseEntity<?> createMaterial(
-//            @RequestBody MaterialRequest materialRequest,
-//            @RequestBody AssetForCreateMaterial assetForCreateMaterial
-//
-//    ) {
+//            @RequestBody @Valid MaterialRequestForCreating materialRequest
+//            ) {
 //        return PostResponse.postResponse("create material successfully",
-//                materialService.createMaterial(materialRequest, assetForCreateMaterial));
+//                materialService.createMaterial(materialRequest));
 //    }
 }

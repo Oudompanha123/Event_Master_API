@@ -5,6 +5,8 @@ import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
+import com.example.final_project.model.dto.request.material.MaterialRequest;
+import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.material.MaterialResponse;
 import com.example.final_project.repository.EventRepository;
@@ -99,6 +101,26 @@ public class MaterialServiceImpl implements MaterialService {
             throw new NotFoundException("Material id : " + materialId + " not found");
 
         return materialRepository.updateSupportersByMaterialId(materialId, supporter);
+    }
+
+    @Override
+    public MaterialResponse createMaterial(MaterialRequestForCreating materialRequestForCreating) {
+        MaterialRequest materialRequest = materialRequestForCreating.getMaterialRequest();
+        // if user didn't pass asset, means that material is simply create
+        if(materialRequestForCreating.getAssetForCreateMaterial() == null){
+            // check handler id exists or not
+            if(memberRepository.getMemberByMemberId(materialRequest.getHandlerId()) == null)
+                throw new NotFoundException("Handler id : " + materialRequest.getHandlerId() + " Not found");
+
+            // check event id exists or not
+            if(eventRepository.getEventById(Token.getOrgIdByToken(), materialRequest.getEventId()) == null)
+                throw new NotFoundException("Event id : " + materialRequest.getEventId() + " Not found");
+
+            // create material
+//            return materialRepository.createMaterial(materialRequest);
+        }
+
+        return null;
     }
 
 }
