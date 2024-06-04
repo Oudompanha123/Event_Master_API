@@ -15,8 +15,6 @@ public class UserRequest {
     private String userName;
     @NotBlank
     @NotNull
-    @Min(value = 9)
-    @Pattern(regexp = "^0[0-9]", message = "Invalid phone number. The number start should 0")
     private String phone;
     @NotBlank
     @NotNull

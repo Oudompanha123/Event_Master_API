@@ -21,7 +21,6 @@ public class MemberRequest {
     private String gender;
     @NotNull
     @NotBlank
-    @Size(min = 9, max = 16)
     private String phone;
     @NotNull
     @NotBlank

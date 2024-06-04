@@ -9,6 +9,7 @@ import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -83,8 +84,11 @@ public class EventController {
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit,
             @RequestParam(required = false) String eventName,
             @RequestParam(required = false) @Positive Integer categoryId,
+            @Parameter(description = "Available values : false = close, true = open")
             @RequestParam(required = false) Boolean status,
+            @Parameter(description = "Format : yyyy-mm-ddThh:mm:ss. Example : 2024-06-04T12:00:00")
             @RequestParam(required = false) LocalDateTime startDateTime,
+            @Parameter(description = "Format : yyyy-mm-ddThh:mm:ss. Example : 2024-06-04T12:00:00")
             @RequestParam(required = false) LocalDateTime endDateTime
     ){
         return GetAllResponse.getAllResponse("Search event successfully",

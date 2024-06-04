@@ -6,6 +6,7 @@ import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.service.AttendeeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -54,6 +55,7 @@ public class AttendeeController {
     @Operation(summary = "Search attendees by name")
     public ResponseEntity<?> searchAttendeeByNameOrPhone(
             @RequestParam @Positive @NotNull Integer eventId,
+            @Parameter(description = "Input attendee name or phone number. Format : dara, 0123456789 ")
             @RequestParam @Valid @NotNull @NotBlank String attendeeNameOrPhone,
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit)
