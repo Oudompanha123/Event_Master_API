@@ -26,8 +26,6 @@ public class MaterialRequest {
     @NotNull
     @NotBlank
     private String unit;
-    @NotNull
-    @NotBlank
     private String remark;
     @NotNull
     @NotBlank
@@ -36,9 +34,8 @@ public class MaterialRequest {
     private LocalDate dueDate;
     @NotNull
     @NotBlank
-    private Member handlerId;
+    private Integer handlerId;
     @NotNull
-    private Event eventId;
-    @NotNull
+    private Integer eventId;
     private JSONObject supporters;
 }

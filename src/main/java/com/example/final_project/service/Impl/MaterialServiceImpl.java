@@ -1,11 +1,17 @@
 package com.example.final_project.service.Impl;
 
+import com.example.final_project.exception.BadRequestException;
+import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.MaterialStatusCount;
+import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.material.MaterialResponse;
+import com.example.final_project.repository.EventRepository;
 import com.example.final_project.repository.MaterialRepository;
+import com.example.final_project.repository.MemberRepository;
 import com.example.final_project.service.MaterialService;
+import com.example.final_project.util.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,39 +21,84 @@ import java.util.List;
 @AllArgsConstructor
 public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
+    private final EventRepository eventRepository;
+    private final MemberRepository memberRepository;
 
     @Override
-    public List<MaterialResponse> findAllMaterial() {
-        return materialRepository.getAllMaterial();
+    public List<MaterialResponse> getAllMaterials(Integer eventId) {
+        if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+
+        List<Integer> eventIdList = materialRepository.getAllEventIdInMaterialTable();
+        if(eventIdList.contains(eventId))
+            return materialRepository.getAllMaterial(eventId);
+        else
+            throw new NotFoundException("This event id : " + eventId + " has no any material");
     }
 
     @Override
-    public List<MaterialStatusCount> countMaterialByStatus(Integer eventId) {
+    public MaterialStatusCount countMaterialByStatus(Integer eventId) {
         return materialRepository.getMaterialStatusCount(eventId);
     }
 
     @Override
-    public MaterialResponse updateMaterialStatus(Integer materialId, Status status) {
-        return materialRepository.updateMaterialStatus(materialId, status);
+    public void updateMaterialStatus(Integer materialId, Status status) {
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+        materialRepository.updateMaterialStatus(materialId, status);
     }
 
     @Override
     public void deleteMaterialById(Integer materialId) {
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
         materialRepository.deleteMaterialById(materialId);
     }
 
     @Override
     public void deleteMaterialByIds(MultipleDelete materialIds) {
-        for (Integer materialId : materialIds.getMaterialIds()) {
-            materialRepository.deleteMaterialById(materialId);
-        }
+        // check empty data in list
+        if(materialIds.getMaterialIds().isEmpty())
+            throw new BadRequestException("Material cannot be empty");
+
+        // all id that pass from client must be match all, else throw exception
+        if(materialRepository.getMaterialByIds(materialIds) != materialIds.getMaterialIds().size())
+            throw new NotFoundException("Material id is not found");
         materialRepository.deleteMaterialByIds(materialIds);
     }
 
     @Override
-    public Integer totalMaterial() {
-        int totalMaterial = 0;
-        return materialRepository.totalMaterial(totalMaterial);
+    public MaterialResponse getMaterialById(Integer materialId) {
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+        return materialRepository.getMaterialById(materialId);
+    }
+
+    @Override
+    public List<MaterialResponse> SearchMaterialByName(String materialName, Integer eventId) {
+        if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
+            throw new NotFoundException("Event id : " + eventId + " not found");
+        return materialRepository.searchMaterialByName(materialName, eventId);
+    }
+
+    @Override
+    public void updateHandlerByMaterialId(Integer materialId, Integer handlerId) {
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+
+        if(memberRepository.getMemberByMemberId(handlerId) == null)
+            throw new NotFoundException("Handler id : " + handlerId + " not found");
+
+        materialRepository.updateHandlerByMaterialId(materialId, handlerId);
+    }
+
+    @Override
+    public Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter) {
+        // check material id exists or not
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+
+        return materialRepository.updateSupportersByMaterialId(materialId, supporter);
     }
 
 }

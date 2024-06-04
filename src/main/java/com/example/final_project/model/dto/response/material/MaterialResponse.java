@@ -15,6 +15,7 @@ public class MaterialResponse {
     private String materialName;
     private float qty;
     private String unit;
+    private LocalDate assignDate;
     private LocalDate dueDate;
     private Integer handlerId;
     private String handlerName;

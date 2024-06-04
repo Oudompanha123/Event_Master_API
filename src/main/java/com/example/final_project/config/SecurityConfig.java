@@ -98,7 +98,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.PUT, "/api/profiles/update-organization/{orgId}").hasRole("ADMIN")
 
                         // material controller
-                        .requestMatchers(HttpMethod.GET, "/api/materials").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/materials/getAll/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/materials/count-status/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/materials/status/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/delete/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
