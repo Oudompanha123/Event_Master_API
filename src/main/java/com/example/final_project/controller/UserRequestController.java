@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserRequestController {
     private final UserRequestService userRequestService;
 
-    // get all member is not approve
     @GetMapping
     @Operation(summary = "Get all user requests")
     public ResponseEntity<?> getAllNotifications(
@@ -31,14 +30,13 @@ public class UserRequestController {
                 userRequestService.findAllMember(offset, limit));
     }
 
-    // accept member
     @PutMapping("/approve/{memberId}")
     @Operation(summary = "Accept member by id")
     public ResponseEntity<?> approveMember(@PathVariable @Positive @NotNull Integer memberId){
         return UpdateResponse.updateResponse("Approve member id " + memberId + " successfully",
                 userRequestService.approveMember(memberId));
     }
-    // reject member
+
     @DeleteMapping("/reject/{memberId}")
     @Operation(summary = "Reject member by id")
     public ResponseEntity<?> rejectMember(@PathVariable @Positive @NotNull Integer memberId){

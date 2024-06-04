@@ -1,5 +1,6 @@
 package com.example.final_project.config;
 
+import com.example.final_project.jwt.CustomAuthenticationEntryPoint;
 import com.example.final_project.jwt.JwtAuthEntrypoint;
 import com.example.final_project.jwt.JwtAuthFilter;
 import lombok.AllArgsConstructor;
@@ -107,7 +108,7 @@ public class SecurityConfig{
                         .anyRequest().authenticated())
                     .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))
                     .exceptionHandling(e->e.accessDeniedHandler(customAccessDeniedHandler)
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }}

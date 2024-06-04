@@ -10,6 +10,7 @@ import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -48,6 +49,7 @@ public class AuthController {
     @PutMapping("/set-new-password")
     @Operation(summary = "Set new password")
     public ResponseEntity<?> forgetPassword(
+            @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotBlank @Email String email,
             @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest
     ){
@@ -57,7 +59,9 @@ public class AuthController {
     @PutMapping("/verify")
     @Operation(summary = "Verify email by OTP code")
     public ResponseEntity<?> verifyOTP(
+            @Parameter(description = "Format : 1234")
             @RequestParam @NotBlank @NotNull String otp,
+            @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotNull @Email String email
     ){
         return UpdateResponse.updateResponse(memberService.verifyOTP(otp, email), null);
@@ -65,13 +69,19 @@ public class AuthController {
 
     @PostMapping("/resend")
     @Operation(summary = "Resend OTP code to email")
-    public ResponseEntity<?> resendOTP(@RequestParam @NotBlank @NotBlank @Email  String email){
+    public ResponseEntity<?> resendOTP(
+            @Parameter(description = "Format : example@gmail.com")
+            @RequestParam @NotBlank @NotBlank @Email  String email
+    ){
         return PostResponse.postResponse(memberService.resendOTP(email), null);
     }
 
     @GetMapping("/org/{code}")
     @Operation(summary = "Get organization by organization code")
-    public ResponseEntity<?> getOrganizationByCode(@PathVariable(name = "code") @NotBlank @NotNull String orgCode){
+    public ResponseEntity<?> getOrganizationByCode(
+            @Parameter(description = "Format : 12v9d0")
+            @PathVariable(name = "code") @NotBlank @NotNull String orgCode
+    ){
         return GetResponse.getResponse("Get organization successfully", memberService.getOrganizationByCode(orgCode));
     }
 
