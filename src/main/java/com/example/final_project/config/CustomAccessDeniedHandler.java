@@ -1,7 +1,6 @@
 package com.example.final_project.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType("application/json");
 
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "You do not access this resource");
+        responseBody.put("message", "You can not access to this resource");
         responseBody.put("error", "Forbidden");
 
         responseBody.put("status", HttpStatus.FORBIDDEN.value());
