@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class AttendeeRequest {
     @JsonIgnore
     private JSONObject data;
+    @NotNull
     @Positive
     private Integer eventId;
 }

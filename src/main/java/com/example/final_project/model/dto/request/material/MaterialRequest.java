@@ -33,9 +33,10 @@ public class MaterialRequest {
     private LocalDate assignDate;
     private LocalDate dueDate;
     @NotNull
-    @NotBlank
+    @Positive
     private Integer handlerId;
     @NotNull
+    @Positive
     private Integer eventId;
     private JSONObject supporters;
 }
