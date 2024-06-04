@@ -16,6 +16,7 @@ public class SearchEventRequest {
     @NotNull
     @NotBlank
     private String eventName;
+    @NotNull
     @Positive
     private Integer categoryId;
     @NotNull

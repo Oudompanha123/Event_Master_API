@@ -17,6 +17,7 @@ public class AssetForCreateMaterial {
     @NotNull
     @NotBlank
     private String assetName;
+    @NotNull
     @Positive
     private Float qty;
     @NotNull
