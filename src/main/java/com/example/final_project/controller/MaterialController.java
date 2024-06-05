@@ -101,12 +101,12 @@ public class MaterialController {
                 materialService.updateSupportersByMaterialId(materialId, supporter) );
     }
 
-//    @PostMapping("/create")
-//    @Operation(summary = "Create material")
-//    public ResponseEntity<?> createMaterial(
-//            @RequestBody @Valid MaterialRequestForCreating materialRequest
-//            ) {
-//        return PostResponse.postResponse("create material successfully",
-//                materialService.createMaterial(materialRequest));
-//    }
+    @PostMapping("/create")
+    @Operation(summary = "Create material")
+    public ResponseEntity<?> createMaterial(
+            @RequestBody @Valid MaterialRequestForCreating materialRequest
+            ) {
+        return PostResponse.postResponse("create material successfully",
+                materialService.createMaterial(materialRequest));
+    }
 }

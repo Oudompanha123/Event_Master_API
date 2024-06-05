@@ -3,6 +3,7 @@ package com.example.final_project.repository;
 import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
+import com.example.final_project.model.dto.request.material.MaterialRequest;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.material.MaterialResponse;
 import com.example.final_project.util.MaterialSqlScript;
@@ -99,4 +100,16 @@ public interface MaterialRepository {
         WHERE material_id = #{materialId} RETURNING supporters;
     """)
     Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter);
+
+    @Select("""
+        INSERT INTO material
+        VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit},
+        #{material.remark}, #{material.status}, default, #{material.dueDate}, #{material.handlerId},
+        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId})
+        RETURNING *
+    """)
+    @ResultMap("materialMapper")
+    @Result(property = "handlerId", column = "handler_id")
+    @Result(property = "eventId", column = "event_id")
+    MaterialResponse createMaterial(@Param("material") MaterialRequest materialRequest);
 }

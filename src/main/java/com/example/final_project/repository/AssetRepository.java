@@ -64,5 +64,10 @@ public interface AssetRepository {
         SELECT asset_name FROM asset WHERE org_id = #{orgId};
     """)
     List<String> getAllAssetNames(Integer orgId);
+
+    @Update("""
+        UPDATE asset SET qty = #{assetQty} WHERE asset_id = #{assetId} AND org_id = #{orgId};
+    """)
+    void updateAssetQty(Integer assetId, Integer orgId, float assetQty);
 }
 
