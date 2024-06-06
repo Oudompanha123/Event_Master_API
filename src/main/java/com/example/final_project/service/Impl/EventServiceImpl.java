@@ -111,7 +111,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event modifyRegistrationForm(Integer eventId, FormRequest formRequest) {
-        System.out.println(formRequest);
         // check event id in database or not
         Event event = eventRepository.getEventById(Token.getOrgIdByToken(), eventId);
         if(event == null)

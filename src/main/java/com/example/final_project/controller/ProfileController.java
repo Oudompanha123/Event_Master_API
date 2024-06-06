@@ -1,8 +1,10 @@
 package com.example.final_project.controller;
 
+import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.request.profile.MemberRequest;
 import com.example.final_project.model.dto.request.profile.OrganizationRequest;
 import com.example.final_project.model.dto.response.GetResponse;
+import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.ProfileService;
 import io.swagger.annotations.Example;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,5 +58,10 @@ public class ProfileController {
     ){
         return GetResponse.getResponse("Update organization by id " + orgId + " successfully.",
                 profileService.updateProfileOrganization(orgId, organizationRequest));
+    }
+    @PutMapping("/change-password")
+    @Operation(summary = "To change new password")
+    public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest ){
+        return UpdateResponse.updateResponse(profileService.changePassword(changePasswordRequest),null);
     }
 }

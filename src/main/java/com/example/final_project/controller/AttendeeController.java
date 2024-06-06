@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class AttendeeController {
     private final AttendeeService attendeeService;
 
-    @PostMapping
+    @PostMapping("/create")
     @Operation(summary = "Create attendee")
     public ResponseEntity<?> createAttendee(@RequestBody @Valid AttendeeRequest attendeeRequest){
         return PostResponse.postResponse("Create attendee successfully",

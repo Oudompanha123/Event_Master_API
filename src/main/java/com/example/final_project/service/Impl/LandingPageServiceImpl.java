@@ -7,6 +7,8 @@ import com.example.final_project.service.LandingPageService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,5 +67,40 @@ public class LandingPageServiceImpl implements LandingPageService {
     @Override
     public FormResponse getFormByEventId(Integer eventId) {
         return landingPageRepository.getFormByEventId(eventId);
+    }
+
+    @Override
+    public List<EventsByCategory> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<AllFieldInLandingPage> allFieldInLandingPages = landingPageRepository.searchEvent(eventName, categoryId, status, startDateTime, endDateTime);
+        List<String> allCateNames = new ArrayList<>();
+        for (AllFieldInLandingPage obj : allFieldInLandingPages){
+            allCateNames.add(obj.getCateName());
+        }
+        // Using HashSet to remove duplicates
+        HashSet<String> uniqueSet = new HashSet<>(allCateNames);
+
+        // Creating a new ArrayList from the unique elements
+        allCateNames = new ArrayList<>(uniqueSet);
+
+        // data response to clients
+        List<EventsByCategory> eventsByCategories = new ArrayList<>();
+
+        for(String categoryName : allCateNames){
+            EventsByCategory eventsByCategory = new EventsByCategory();
+            eventsByCategory.setCateName(categoryName);
+            List<AllFieldInLandingPage> filteredList = allFieldInLandingPages.stream()
+                    .filter(item -> item.getCateName().equals(categoryName))
+                    .toList();
+
+            // convert all object in AllFieldInLandingPage to EventResponseLandingPage
+            List<EventResponseLandingPage> events = new ArrayList<>();
+            for(AllFieldInLandingPage item : filteredList){
+                EventResponseLandingPage e = modelMapper.map(item, EventResponseLandingPage.class);
+                events.add(e);
+            }
+            eventsByCategory.setEvents(events);
+            eventsByCategories.add(eventsByCategory);
+        }
+        return eventsByCategories;
     }
 }

@@ -23,7 +23,6 @@ public class EmailingServiceImpl {
     private String fromMail;
 
     @Async
-
     public void sendMail(String email, String otp) throws MessagingException {
         Context context = new Context();
         context.setVariable("content", otp);
@@ -39,4 +38,18 @@ public class EmailingServiceImpl {
         mailSender.send(mimeMessage);
     }
 
+    @Async
+    public void approveMail(String email) throws MessagingException {
+        Context context = new Context();
+        String processedString = templateEngine.process("approve", context);
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setSubject("Approve From Admin.");
+        mimeMessageHelper.setText(processedString, true);
+        ClassPathResource image = new ClassPathResource("image/logo.png");
+        mimeMessageHelper.addInline("logo", image);
+        mimeMessageHelper.setFrom(fromMail);
+        mimeMessageHelper.setTo(email);
+        mailSender.send(mimeMessage);
+    }
 }

@@ -6,6 +6,7 @@ import com.example.final_project.model.dto.response.member.NotificationResponse;
 import com.example.final_project.repository.UserRequestRepository;
 import com.example.final_project.service.UserRequestService;
 import com.example.final_project.util.Token;
+import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserRequestServiceImpl implements UserRequestService {
     private final UserRequestRepository userRequestRepository;
+    private final EmailingServiceImpl emailingService;
 
     @Override
     public List<NotificationResponse> findAllMember(Integer offset, Integer limit) {
@@ -27,7 +29,12 @@ public class UserRequestServiceImpl implements UserRequestService {
         Member member = userRequestRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
         if(member == null)
             throw new NotFoundException("Member not found");
-
+        // send mail to user
+        try {
+            emailingService.approveMail(member.getEmail());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
         return userRequestRepository.isApprove(memberId, Token.getOrgIdByToken());
     }
 

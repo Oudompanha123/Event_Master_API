@@ -1,6 +1,5 @@
 package com.example.final_project.util;
 
-import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -61,4 +60,39 @@ public class SqlScriptFilterEvent {
         sql += " ORDER BY event_name LIMIT " + limit + " OFFSET " + offset;
         return sql;
     }
+
+    public static String getSqlScriptSearchEventOnLandingPage(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime){
+        String sql = """
+                 SELECT c.cate_name, e.event_id, e.event_name, e.description, e.start_date,
+                 e.address, e.poster, e.is_open, o.org_name, o.logo FROM (event e INNER JOIN category c ON c.cate_id = e.cate_id)
+                 INNER JOIN organization o ON o.org_id = e.org_id
+                 WHERE e.is_post = true
+                """;
+
+        if(eventName != null && !eventName.isEmpty())
+            sql += " AND event_name ILIKE '%" + eventName + "%' ";
+
+        if(categoryId != null)
+            sql += " AND e.cate_id = " + categoryId;
+        if(status != null)
+            sql += " AND is_open = " + status;
+
+        if(startDateTime != null && endDateTime != null) {
+            sql += " AND (" +
+                    "('" + startDateTime + "' >= start_date AND '" +
+                    endDateTime + "' <= end_date) OR ('" + startDateTime + "' <= start_date AND '" +
+
+                    endDateTime + "' >= end_date)" +
+                    ")"
+            ;
+        }
+        else if(startDateTime != null)
+            sql += " AND DATE('" + startDateTime + "') = DATE(start_date)";
+        else if(endDateTime != null)
+            sql += " AND DATE('" + endDateTime + "') = DATE(end_date)";
+
+        sql += " ORDER BY c.cate_name";
+        return sql;
+    }
+
 }

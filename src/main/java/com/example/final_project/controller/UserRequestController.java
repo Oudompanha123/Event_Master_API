@@ -1,14 +1,17 @@
 package com.example.final_project.controller;
 
+import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.UserRequestService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +35,12 @@ public class UserRequestController {
 
     @PutMapping("/approve/{memberId}")
     @Operation(summary = "Accept member by id")
-    public ResponseEntity<?> approveMember(@PathVariable @Positive @NotNull Integer memberId){
+    public ResponseEntity<?> approveMember (@PathVariable @Positive @NotNull Integer memberId)
+    {
+
         return UpdateResponse.updateResponse("Approve member id " + memberId + " successfully",
                 userRequestService.approveMember(memberId));
+
     }
 
     @DeleteMapping("/reject/{memberId}")

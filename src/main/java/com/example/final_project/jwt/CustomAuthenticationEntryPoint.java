@@ -22,7 +22,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json");
 
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "This endpoint cannot be used to access this resource without authorization");
+        responseBody.put("message", "cannot access this resource without authorization");
         responseBody.put("error", "Unauthorized access");
 
         responseBody.put("status", HttpStatus.UNAUTHORIZED.value());

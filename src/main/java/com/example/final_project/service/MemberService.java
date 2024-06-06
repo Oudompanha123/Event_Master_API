@@ -41,5 +41,4 @@ public interface MemberService extends UserDetailsService {
 
     Organization getOrganizationByCode(String orgCode);
 
-    String changePassword(ChangePasswordRequest changePasswordRequest);
 }

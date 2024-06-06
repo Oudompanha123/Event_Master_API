@@ -118,11 +118,7 @@ public interface MemberRepository {
     """)
     void updateIsApprovedToTrue(Integer memberId);
 
-
-
-
-
-
+    // member sidebar
     @Select("""
         SELECT member_id, member_name, gender, phone, email, address, picture,
         date_of_birth, role FROM member WHERE org_id = #{orgId} AND is_approve = true ORDER BY role LIMIT #{limit} OFFSET #{offset};

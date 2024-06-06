@@ -11,8 +11,8 @@ public interface UserRequestRepository {
 
     @Select("""
         SELECT member.member_id, member_name, gender, phone, email, picture
-        FROM member INNER JOIN otp on member.member_id = otp.member_id WHERE is_approve = true
-                  AND member.role = 'ROLE_USER' AND otp.is_verify = false AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+        FROM member INNER JOIN otp on member.member_id = otp.member_id WHERE is_approve = false
+                  AND member.role = 'ROLE_USER' AND otp.is_verify = true AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "memberMapper", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -43,8 +43,8 @@ public interface UserRequestRepository {
 
     @Select("""
         SELECT COUNT(*)
-        FROM member INNER JOIN otp on member.member_id = otp.member_id WHERE is_approve = true
-                  AND member.role = 'ROLE_USER' AND otp.is_verify = false AND org_id = #{orgId};
+        FROM member INNER JOIN otp on member.member_id = otp.member_id WHERE is_approve = false
+                  AND member.role = 'ROLE_USER' AND otp.is_verify = true AND org_id = #{orgId};
     """)
     Integer getAllUserRequestRecords(Integer orgId);
 }

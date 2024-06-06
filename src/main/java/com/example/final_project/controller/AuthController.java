@@ -85,10 +85,4 @@ public class AuthController {
         return GetResponse.getResponse("Get organization successfully", memberService.getOrganizationByCode(orgCode));
     }
 
-    @SecurityRequirement(name = "bearerAuth")
-    @PutMapping("/change-password")
-    @Operation(summary = "To change new password")
-    public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest ){
-        return UpdateResponse.updateResponse(memberService.changePassword(changePasswordRequest),null);
-    }
 }

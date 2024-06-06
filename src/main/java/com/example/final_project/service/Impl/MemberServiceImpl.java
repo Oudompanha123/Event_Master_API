@@ -308,25 +308,4 @@ public class MemberServiceImpl implements MemberService {
             throw new NotFoundException("Organization not found");
         return memberRepository.getOrganizationByCode(orgCode);
     }
-
-    @Override
-    public String changePassword(ChangePasswordRequest changePasswordRequest) {
-        Member member = memberRepository.findByEmail(Token.getEmailByToken());
-        if (member == null)
-            throw new BadRequestException("Member not found");
-
-        // check old password match or not
-        if(!bCryptPasswordEncoder.matches(changePasswordRequest.getOldPassword(), member.getPassword()))
-            throw new BadRequestException("Old password does not match");
-
-        // check password and confirm password match or not
-        if(!changePasswordRequest.getConfirmPassword().equals(changePasswordRequest.getPassword()))
-            throw new BadRequestException("Password and Confirm password do not matched");
-
-        // new password to the member
-        changePasswordRequest.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.getConfirmPassword()));
-        memberRepository.changePassword(Token.getEmailByToken(), changePasswordRequest);
-
-        return "Your password is changed successfully";
-    }
 }

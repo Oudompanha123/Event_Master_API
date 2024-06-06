@@ -32,15 +32,13 @@ public class SecurityConfig{
         http
                 .cors(withDefaults()).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/login", "/api/auth/admin-register", "/api/auth/user-register",
-                                "/api/auth/set-new-password", "/api/auth/verify", "/api/auth/resend", "/api/auth/org/{code}",
-                                "/v3/api-docs/**", "/api/attendees",
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs/**", "/api/attendees/create",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/api/landing-page/**"
                         ).permitAll()
-                        // auth controller
-                        .requestMatchers(HttpMethod.PUT, "/api/auth/change-password").hasAnyRole( "ADMIN", "SUB_ADMIN", "/USER")
 
                         // member controller
                         .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole( "ADMIN", "SUB_ADMIN")
@@ -95,14 +93,19 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.PUT, "/api/profiles/update-member/{profileId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/profiles/organization").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/profiles/update-organization/{orgId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/profiles/change-password").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
 
                         // material controller
                         .requestMatchers(HttpMethod.GET, "/api/materials/getAll/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/materials/count-status/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/api/materials/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/materials/status/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/delete/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/deletes").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/materials/create").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/materials/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/materials/handler/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/materials/supporters/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         .anyRequest().authenticated())
                     .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntrypoint))

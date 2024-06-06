@@ -1,20 +1,21 @@
 package com.example.final_project.controller;
 
+import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.service.LandingPageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/landing-pages")
+@RequestMapping("/api/landing-page")
 public class LandingPageController {
     private final LandingPageService landingPageService;
 
@@ -37,5 +38,21 @@ public class LandingPageController {
     public ResponseEntity<?> getFormByEventId(@PathVariable @Positive @NotNull Integer eventId){
         return GetResponse.getResponse("Get form successfully",
                 landingPageService.getFormByEventId(eventId));
+    }
+
+    @PostMapping("/search")
+    @Operation(summary = "Search and filter")
+    public ResponseEntity<?> searchEvent(
+            @RequestParam(required = false) String eventName,
+            @RequestParam(required = false) @Positive Integer categoryId,
+            @Parameter(description = "Available values : false = close, true = open")
+            @RequestParam(required = false) Boolean status,
+            @Parameter(description = "Format : yyyy-mm-ddThh:mm:ss. Example : 2024-06-04T12:00:00")
+            @RequestParam(required = false) LocalDateTime startDateTime,
+            @Parameter(description = "Format : yyyy-mm-ddThh:mm:ss. Example : 2024-06-04T12:00:00")
+            @RequestParam(required = false) LocalDateTime endDateTime
+    ){
+        return GetResponse.getResponse("Search event successfully",
+                landingPageService.searchEvent(eventName, categoryId, status, startDateTime, endDateTime));
     }
 }

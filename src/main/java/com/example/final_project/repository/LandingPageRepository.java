@@ -1,11 +1,12 @@
 package com.example.final_project.repository;
 
-import com.example.final_project.model.Agenda;
 import com.example.final_project.model.dto.response.landingPage.AllFieldInLandingPage;
 import com.example.final_project.model.dto.response.landingPage.EventDetailInLandingPage;
 import com.example.final_project.model.dto.response.landingPage.FormResponse;
+import com.example.final_project.util.SqlScriptFilterEvent;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -42,13 +43,12 @@ public interface LandingPageRepository {
     EventDetailInLandingPage getDetailEventByEventId(Integer eventId);
 
     @Select("""
-        SELECT data FROM agenda WHERE event_id = #{eventId};
-    """)
-    Agenda getAgendaByEventId(Integer eventId);
-
-    @Select("""
         SELECT registration_form FROM event WHERE event_id = #{eventId};
     """)
     @Result(property = "data", column = "registration_form")
     FormResponse getFormByEventId(Integer eventId);
+
+    @SelectProvider(type = SqlScriptFilterEvent.class, method = "getSqlScriptSearchEventOnLandingPage")
+    @ResultMap("landingPageMapper")
+    List<AllFieldInLandingPage> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
