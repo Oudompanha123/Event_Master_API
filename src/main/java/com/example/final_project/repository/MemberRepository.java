@@ -203,4 +203,9 @@ public interface MemberRepository {
         SELECT cate_id FROM category WHERE created_by = #{memberId};
     """)
     Integer getCreatedByInCategory(Integer memberId);
+
+    @Select("""
+        SELECT otp_id FROM otp WHERE otp_code = #{otp} AND member_id = #{memberId};
+    """)
+    Integer memberOtp(String otp, Integer memberId);
 }

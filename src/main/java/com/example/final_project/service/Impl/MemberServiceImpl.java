@@ -136,28 +136,36 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String forgetPassword(String email, ForgetPasswordRequest forgetPasswordRequest) {
-        // check email have or not
-        Member member = memberRepository.findByEmail(email);
-        if (member == null){
-            throw new BadRequestException("Member not found");
+    public String forgetPassword(String otp, String email, ForgetPasswordRequest forgetPasswordRequest) {
+        if(memberRepository.isOtpExist(otp) == null) {
+            throw new NotFoundException("OTP code is not found");
+        }else {
+            // check email have or not
+            Member member = memberRepository.findByEmail(email);
+            if (member == null){
+                throw new NotFoundException("Member not found");
+            }
+
+            // check member's OTP or not
+            if(memberRepository.memberOtp(otp, member.getMemberId()) == null)
+                throw new BadRequestException("This OTP code is not match with your email");
+
+            // check verify otp code or not
+            boolean isVerify = memberRepository.isVerifiedOTP(member.getMemberId());
+            if(!isVerify)
+                throw new BadRequestException("OTP code is not verified");
+
+            // check password match or not
+            if(!forgetPasswordRequest.getConfirmPassword().equals(forgetPasswordRequest.getPassword())){
+                throw new BadRequestException("Password and Confirm password do not matched");
+            }
+
+            // new password to the member
+            forgetPasswordRequest.setPassword(bCryptPasswordEncoder.encode(forgetPasswordRequest.getConfirmPassword()));
+            memberRepository.newPassword(email,forgetPasswordRequest);
+
+            return "Your password is changed successful";
         }
-
-        // check verify otp code or not
-        boolean isVerify = memberRepository.isVerifiedOTP(member.getMemberId());
-        if(!isVerify)
-            throw new BadRequestException("OTP code is not verified");
-
-        // check password match or not
-        if(!forgetPasswordRequest.getConfirmPassword().equals(forgetPasswordRequest.getPassword())){
-            throw new BadRequestException("Password and Confirm password do not matched");
-        }
-
-        // new password to the member
-        forgetPasswordRequest.setPassword(bCryptPasswordEncoder.encode(forgetPasswordRequest.getConfirmPassword()));
-        memberRepository.newPassword(email,forgetPasswordRequest);
-
-        return "Your password is changed successful";
     }
 
     @Override
