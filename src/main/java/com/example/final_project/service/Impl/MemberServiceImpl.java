@@ -9,7 +9,6 @@ import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
-import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.authentication.AuthResponse;
 import com.example.final_project.model.dto.response.authentication.RegisterResponse;
 import com.example.final_project.model.dto.response.member.MemberResponse;
@@ -63,6 +62,9 @@ public class MemberServiceImpl implements MemberService {
         // validate phone
         Validation.validatePhoneNumber(adminRequest.getPhone());
 
+        // trim String
+        adminRequest.setAdminName(adminRequest.getAdminName().trim());
+
         // insert data into organization table
         String orgCode = RandomGenerator.generateRandomString();
         Integer orgId = memberRepository.createOrganization(orgCode);
@@ -76,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
 
         String otp = OtpUtil.generateOtp();
         // insert data into otp table
-        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60);
+        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60 * 2);
         LocalDateTime issuedAt = LocalDateTime.now();
         memberRepository.createOTP(otp, issuedAt, expirationDate, member.getMemberId());
 
@@ -110,6 +112,9 @@ public class MemberServiceImpl implements MemberService {
             throw new NotFoundException("Organization code is not found");
         }
 
+        // trim string
+        userRequest.setUserName(userRequest.getUserName().trim());
+
         // insert data into member table
         userRequest.setPassword(bCryptPasswordEncoder.encode(userRequest.getPassword()));
         Member member = memberRepository.createUser(userRequest, orgId);
@@ -117,7 +122,7 @@ public class MemberServiceImpl implements MemberService {
         String otp = OtpUtil.generateOtp();
         // insert data into otp table
         LocalDateTime issuedAt = LocalDateTime.now();
-        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60);
+        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60 * 2);
         memberRepository.createOTP(otp, issuedAt, expirationDate, member.getMemberId());
 
         // send mail
@@ -169,8 +174,8 @@ public class MemberServiceImpl implements MemberService {
             Integer memberId = memberRepository.getMemberIdByOtpId(otpId);
             if(!member.getMemberId().equals(memberId))
                 throw new BadRequestException("This otp is not yours");
-            // check expired OTP
-            if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60 * 10)){
+            // check expired OTP (2 minutes long)
+            if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60 * 2)){
                 memberRepository.updateOtpStatus(otpId);
                 if(member.getRole().equals(Roles.ROLE_ADMIN)) {
                     // change is approve to true for admin
@@ -198,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
 
             // insert new record to OTP table
             LocalDateTime issuedAt = LocalDateTime.now();
-            LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60);
+            LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(60 * 2);
             memberRepository.createOTP(otp, issuedAt, expirationDate, member.getMemberId());
         } catch (MessagingException e) {
             throw new RuntimeException("Unable to send OTP code.");
@@ -225,29 +230,40 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Object getToken(String email) {
+        // Load user details
         final UserDetails userDetails = this.loadUserByUsername(email);
-
-        // validate before login
         Member member = (Member) userDetails;
 
-        // for admin, if is_approve = false means never verify otp code
-        if(member.getRole().equals(Roles.ROLE_ADMIN) && !member.isApprove())
-            throw  new BadRequestException("This account is not verified otp code");
-
-        if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN)) {
-            if(!member.getIsVerify() && !member.isApprove())
-                throw new BadRequestException("This account is not verified yet");
-            if (!member.isApprove())
-                throw new BadRequestException("This account is not approved yet");
+        // Validate based on roles and statuses
+        if (!isValidRole(member.getRole())) {
+            throw new NotFoundException("Role is invalid");
         }
 
-        final String token = jwtService.generateToken(userDetails);
+        // for role admin, if didn't approved, means never verify otp
+        if (member.getRole().equals(Roles.ROLE_ADMIN)) {
+            if (!member.isApprove())
+                throw new BadRequestException("This account is not verified otp code");
+        // Handle non-admin roles
+        }else if (member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN)) {
+            if (!member.isApprove()) {
+                if (!memberRepository.isVerifiedOTP(member.getMemberId())) {
+                    throw new BadRequestException("This account is not verified yet");
+                } else {
+                    throw new BadRequestException("This account is not approved yet");
+                }
+            }
+        }
 
-        if(member.getRole().equals(Roles.ROLE_USER) || member.getRole().equals(Roles.ROLE_SUB_ADMIN) || member.getRole().equals(Roles.ROLE_ADMIN))
-            return new AuthResponse(token);
-        else
-            throw new NotFoundException("Role is invalid");
+        // Generate and return the token
+        final String token = jwtService.generateToken(userDetails);
+        return new AuthResponse(token);
     }
+
+    // Helper method to validate roles
+    private boolean isValidRole(Roles role) {
+        return role.equals(Roles.ROLE_USER) || role.equals(Roles.ROLE_SUB_ADMIN) || role.equals(Roles.ROLE_ADMIN);
+    }
+
 
 
     @Override
@@ -267,6 +283,8 @@ public class MemberServiceImpl implements MemberService {
             // check member is admin or not
             if(member.getRole().equals(Roles.ROLE_ADMIN))
                 throw new BadRequestException("You can't delete whose role as admin");
+            if(memberRepository.getCreatedByInCategory(memberId) != null)
+                throw new BadRequestException("Cannot delete this member because this member has create category");
 
             memberRepository.insertToHistory(member);
             memberRepository.deleteMemberById(memberId);
@@ -285,6 +303,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberResponse> searchMemberByName(String memberName, Integer offset, Integer limit) {
+        memberName = memberName.trim();
         offset = (offset - 1) * limit;
         Integer orgId = Token.getOrgIdByToken();
         return memberRepository.searchMemberByName(memberName, offset, limit, orgId);

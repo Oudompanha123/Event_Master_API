@@ -6,7 +6,6 @@ import com.example.final_project.model.Asset;
 import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
-import com.example.final_project.model.dto.request.material.AssetForCreateMaterial;
 import com.example.final_project.model.dto.request.material.MaterialRequest;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
@@ -110,7 +109,7 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequestForCreating) {
+    public MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequestForCreating, Integer assetId) {
         MaterialRequest materialRequest = materialRequestForCreating.getMaterialRequest();
 
         // check handler id exists or not
@@ -121,34 +120,31 @@ public class MaterialServiceImpl implements MaterialService {
         if(eventRepository.getEventById(Token.getOrgIdByToken(), materialRequest.getEventId()) == null)
             throw new NotFoundException("Event id : " + materialRequest.getEventId() + " Not found");
 
-        // if asset is passed, update asset qty
-        if(materialRequestForCreating.getAssetForCreateMaterial() != null){
-            AssetForCreateMaterial assetForCreateMaterial = materialRequestForCreating.getAssetForCreateMaterial();
+        // if asset id is passed, update asset qty
+        if(assetId != null){
             // check asset id exists or not
-            if(assetRepository.findAssetById(assetForCreateMaterial.getAssetId(), Token.getOrgIdByToken()) == null){
-                throw new NotFoundException("Asset id : " + assetForCreateMaterial.getAssetId() + " Not found");
+            if(assetRepository.findAssetById(assetId, Token.getOrgIdByToken()) == null){
+                throw new NotFoundException("Asset id : " + assetId + " Not found");
             }
             else{
-                Asset asset = assetRepository.findAssetById(assetForCreateMaterial.getAssetId(), Token.getOrgIdByToken());
+                Asset asset = assetRepository.findAssetById(assetId, Token.getOrgIdByToken());
 
                 // check asset unit is match with material unit or not
                 if(!asset.getUnit().equalsIgnoreCase(materialRequest.getUnit()))
-                    throw new BadRequestException("Asset id : " + assetForCreateMaterial.getAssetId() + ", unit is not match with material unit");
+                    throw new BadRequestException("Asset id : " + assetId + ", unit is not match with material unit");
 
                 // check asset name is match with material name or not
                 if(!asset.getAssetName().equalsIgnoreCase(materialRequest.getMaterialName()))
-                    throw new BadRequestException("Asset id : " + assetForCreateMaterial.getAssetId() + ", name is not match with material name");
+                    throw new BadRequestException("Asset id : " + assetId + ", name is not match with material name");
 
                 // check asset qty is enough to create material or not
                 if(asset.getQty() < materialRequest.getQty()){
-                    throw new BadRequestException("Asset id : " + assetForCreateMaterial.getAssetId() + ", qty is not enough to create material");
+                    throw new BadRequestException("Asset id : " + assetId + ", qty is not enough to create material");
                 }
 
                 // update asset qty
-                assetRepository.updateAssetQty(assetForCreateMaterial.getAssetId(), Token.getOrgIdByToken(), asset.getQty() - materialRequest.getQty());
+                assetRepository.updateAssetQty(assetId, Token.getOrgIdByToken(), asset.getQty() - materialRequest.getQty());
             }
-
-
         }
 
         // create material

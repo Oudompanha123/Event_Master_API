@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface AssetRepository {
     @Select("""
-        SELECT * FROM asset WHERE org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+        SELECT * FROM asset WHERE org_id = #{orgId} ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "AssetMapper", value = {
             @Result(property = "assetId", column = "asset_id"),
@@ -19,7 +19,7 @@ public interface AssetRepository {
     List<Asset> findAllAssets(Integer offset, Integer limit, Integer orgId);
 
     @Select("""
-        SELECT * FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
+        SELECT * FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId} ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset};
     """)
     @ResultMap("AssetMapper")
     List<Asset> getAllAssetsByName(String assetName, Integer offset, Integer limit, Integer orgId);

@@ -1,6 +1,5 @@
 package com.example.final_project.controller;
 
-import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.service.LandingPageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,9 +19,9 @@ public class LandingPageController {
     private final LandingPageService landingPageService;
 
     @GetMapping
-    @Operation(summary = "Get all events by category")
+    @Operation(summary = "Get all events by categories")
     public ResponseEntity<?> getAllEventsByCategory(){
-        return GetResponse.getResponse("Get all events by category successfully",
+        return GetResponse.getResponse("Get all events by categories successfully",
                 landingPageService.getAllEventsByCategory());
     }
 

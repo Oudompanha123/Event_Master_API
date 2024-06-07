@@ -1,10 +1,7 @@
 package com.example.final_project.model.dto.request.event;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +17,7 @@ public class EventRequest {
     private String eventName;
     @NotNull
     @NotBlank
+    @Size(min = 1, max = 255)
     private String description;
     @NotNull
     private LocalDateTime startDate;
@@ -37,7 +35,7 @@ public class EventRequest {
     @NotNull
     private Boolean isPost;
     @NotNull
-    @Positive
+    @PositiveOrZero
     private Integer maxAttendee;
     @NotNull
     @Positive

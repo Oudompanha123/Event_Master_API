@@ -1,38 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 <!--
 HTML code would be added to the below div tag
 which would be taken as an input from the user.
 -->
-<center>
-    <div >
+<div >
+    <center>
         <img width="55" height="55" data-bit="iit" src="cid:logo">
         <h1 style="padding: 5px; line-height: 18px;" class="text-2xl font-bold">EventMaster</h1>
-        <p style="padding: 5px; ">
-            Before you sign in, we need to verify your identity. <br>
-            Please copy this code to use.
-        </p>
-        <p style="
-                    margin-top: 10px ;
-                    margin-bottom: 10px;
-                    background-color: #8C59FE;
-                    border-radius: 10px; padding: 1rem 2.5rem;
-                    font-size: 2rem; color: white;
-                    font-weight: bold;
-                    width: fit-content"
-           class="px-16 py-4 bg-gray-200 w-fit mx-auto text-2xl font-semibold"
-           th:utext="${content}">
-            8 8 8 8
-        </p>
-        <p style="padding: 5px; ">Welcome to the EventMaster Application. Here, <br>
-            you can manage your events materials and quests.
-        </p>
-    </div>
-</center>
+    </center>
+
+    <p style="padding: 5px; ">
+        Hello <b>User</b>, <br>
+        Thank you for choosing <b>EventMaster</b>. Use this OTP to complete your Sign Up procedures and verify your account on <b>EventMaster</b>.
+        <br><br>
+        <b>Remember</b> , Never share this OTP with
+        anyone, not even if <b>EventMaster</b> ask to you.
+    </p>
+
+    <p style="
+                    border-radius: 10px;
+                    width: fit-content;
+                    padding: 1rem 3rem;
+                    background-color: #c4cbd7;
+                    margin-left: auto;
+                    margin-right: auto;
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    color: rgb(192, 52, 52);
+                    "
+
+
+       th:utext="${content}">
+        8 8 8 8
+    </p>
+    <p style="padding: 5px; ">
+        Regards, <br>
+        Team <b>EventMaster</b>
+    </p>
+</div>
 </body>
 </html>

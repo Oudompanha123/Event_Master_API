@@ -8,7 +8,7 @@ import java.util.List;
 public interface CategoryRepository {
     @Select("""
         SELECT cate_id, cate_name, created_at, member.member_name as created_by FROM category INNER JOIN member ON
-            category.created_by = member.member_id  WHERE category.org_id = #{orgId} ORDER BY cate_name LIMIT #{limit} OFFSET #{offset};
+            category.created_by = member.member_id  WHERE category.org_id = #{orgId} ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "categoryMapper", value = {
             @Result(property = "categoryId", column = "cate_id"),
@@ -17,6 +17,12 @@ public interface CategoryRepository {
             @Result(property = "createBy", column = "created_by")
     })
     List<Category> getAllCategories(Integer orgId, Integer offset, Integer limit);
+
+    @Select("""
+        SELECT count(*) FROM category INNER JOIN member ON
+        category.created_by = member.member_id  WHERE category.org_id = #{orgId};
+    """)
+    Integer getAllCategoryRecords(Integer orgId);
 
     @Select("""
         INSERT INTO category (cate_name, org_id, created_by)

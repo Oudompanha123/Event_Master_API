@@ -4,18 +4,14 @@ import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.AuthRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
-import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +46,9 @@ public class AuthController {
     @Operation(summary = "Set new password")
     public ResponseEntity<?> forgetPassword(
             @Parameter(description = "Format : example@gmail.com")
-            @RequestParam @NotBlank @NotBlank @Email String email,
+            @RequestParam @NotBlank @NotBlank @Email(message = "Invalid email format")
+            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
+            String email,
             @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest
     ){
         return UpdateResponse.updateResponse(memberService.forgetPassword(email,forgetPasswordRequest), null);
@@ -62,7 +60,9 @@ public class AuthController {
             @Parameter(description = "Format : 1234")
             @RequestParam @NotBlank @NotNull String otp,
             @Parameter(description = "Format : example@gmail.com")
-            @RequestParam @NotBlank @NotNull @Email String email
+            @RequestParam @NotBlank @NotNull @Size(min = 11, max = 40) @Email(message = "Invalid email format")
+            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
+            String email
     ){
         return UpdateResponse.updateResponse(memberService.verifyOTP(otp, email), null);
     }
@@ -71,7 +71,9 @@ public class AuthController {
     @Operation(summary = "Resend OTP code to email")
     public ResponseEntity<?> resendOTP(
             @Parameter(description = "Format : example@gmail.com")
-            @RequestParam @NotBlank @NotBlank @Email  String email
+            @RequestParam @NotBlank @NotBlank @Size(min = 11, max = 40) @Email(message = "Invalid email format")
+            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
+            String email
     ){
         return PostResponse.postResponse(memberService.resendOTP(email), null);
     }
@@ -79,6 +81,7 @@ public class AuthController {
     @GetMapping("/org/{code}")
     @Operation(summary = "Get organization by organization code")
     public ResponseEntity<?> getOrganizationByCode(
+            @Size(min = 6, max = 6, message = "Organization code must be 6 lengths")
             @Parameter(description = "Format : 12v9d0")
             @PathVariable(name = "code") @NotBlank @NotNull String orgCode
     ){

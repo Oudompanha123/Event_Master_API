@@ -11,10 +11,12 @@ import lombok.NoArgsConstructor;
 public class AuthRequest {
     @NotNull
     @NotBlank
-    @Email
+    @Size(min = 11, max = 40)
+    @Email(message = "Invalid email format")
+    @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
     private String email;
     @NotNull
     @NotBlank
-    @Size(min = 8, max = 20)
+    @Size(min = 8, message = "size must be greater than or equal 8")
     private String password;
 }

@@ -120,6 +120,7 @@ public class RegistrationFormString {
                             "header": "Contact Information"
                         }
                     ]
+               }
                 """;
     }
 }

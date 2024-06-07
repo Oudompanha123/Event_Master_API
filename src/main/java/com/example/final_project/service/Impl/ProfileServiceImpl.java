@@ -1,6 +1,7 @@
 package com.example.final_project.service.Impl;
 
 import com.example.final_project.exception.BadRequestException;
+import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Member;
 import com.example.final_project.model.Organization;
 import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
@@ -11,6 +12,7 @@ import com.example.final_project.repository.MemberRepository;
 import com.example.final_project.repository.ProfileRepository;
 import com.example.final_project.service.ProfileService;
 import com.example.final_project.util.Token;
+import com.example.final_project.util.Validation;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Member updateProfile(Integer profileId, MemberRequest memberRequest) {
+        if(memberRepository.getMemberByMemberId(profileId) == null)
+            throw new NotFoundException("Member id : " + profileId + " not found");
+        Validation.validatePhoneNumber(memberRequest.getPhone());
         return profileRepository.updateProfile(profileId, memberRequest, Token.getMemberIdByToken());
     }
 
@@ -39,6 +44,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Organization updateProfileOrganization(Integer orgId, OrganizationRequest organizationRequest) {
+        if(memberRepository.getOrganizationById(orgId) == null)
+            throw new NotFoundException("Organization id : " + orgId + " not found");
         return profileRepository.updateProfileOrganization(orgId, organizationRequest);
     }
 

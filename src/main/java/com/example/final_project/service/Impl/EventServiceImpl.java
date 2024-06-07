@@ -5,12 +5,12 @@ import com.example.final_project.model.Event;
 import com.example.final_project.model.constant.Active;
 import com.example.final_project.model.dto.request.event.EventRequest;
 import com.example.final_project.model.dto.request.event.FormRequest;
-import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.example.final_project.repository.CategoryRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.service.EventService;
 import com.example.final_project.util.RegistrationFormString;
 import com.example.final_project.util.Token;
+import com.example.final_project.util.Validation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +46,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event createEvent(EventRequest eventRequest){
+
+        // check image format
+        Validation.validateImage(eventRequest.getPoster());
+
         // check categoryId in EventRequest has been found in database or not
         if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Category id : " + eventRequest.getCategoryId() + " not found");
@@ -82,6 +86,10 @@ public class EventServiceImpl implements EventService {
         // check categoryId in EventRequest has been found in database or not
         if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Category id : " + eventRequest.getCategoryId() + " not found");
+
+        // check image format
+        Validation.validateImage(eventRequest.getPoster());
+
         return eventRepository.updateEventById(eventRequest, eventId, Token.getOrgIdByToken());
     }
 
@@ -98,12 +106,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Integer getTotalEventRecordsFromSearch(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if(eventName != null)
+            eventName = eventName.trim();
         Integer orgId = Token.getOrgIdByToken();
         return eventRepository.getTotalEventRecordsFromSearch(eventName, categoryId, status, startDateTime, endDateTime, orgId);
     }
 
     @Override
     public List<Event> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime, Integer offset, Integer limit) {
+        if(eventName != null)
+            eventName = eventName.trim();
         Integer orgId = Token.getOrgIdByToken();
         offset = (offset - 1) * limit;
         return eventRepository.getSearchAllEvent(eventName, categoryId, status, startDateTime, endDateTime, orgId, offset, limit);

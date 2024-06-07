@@ -104,9 +104,10 @@ public class MaterialController {
     @PostMapping("/create")
     @Operation(summary = "Create material")
     public ResponseEntity<?> createMaterial(
-            @RequestBody @Valid MaterialRequestForCreating materialRequest
+            @RequestBody @Valid MaterialRequestForCreating materialRequest,
+            @RequestParam(required = false) @Positive Integer assetId
             ) {
         return PostResponse.postResponse("create material successfully",
-                materialService.createMaterial(materialRequest));
+                materialService.createMaterial(materialRequest, assetId));
     }
 }

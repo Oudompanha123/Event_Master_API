@@ -30,5 +30,5 @@ public interface MaterialService {
 
     Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter);
 
-    MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequest);
+    MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequest, Integer assetId);
 }

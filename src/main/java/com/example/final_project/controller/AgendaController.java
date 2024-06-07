@@ -23,8 +23,8 @@ public class AgendaController {
 
     @PostMapping("/{eventId}")
     @Operation(summary = "Create agenda through event id")
-    public ResponseEntity<?> createAgenda(@RequestBody @Valid Agenda agenda, @PathVariable @Positive @NotNull Integer eventId) {
-        return PostResponse.postResponse("Create agenda is successfully",agendaService.createAgenda(agenda, eventId));
+    public ResponseEntity<?> createAgenda(@RequestBody @Valid Agenda agenda, @PathVariable  @Positive @NotNull Integer eventId) {
+        return PostResponse.postResponse("Create agenda successfully",agendaService.createAgenda(agenda, eventId));
     }
 
     @GetMapping("/{eventId}")

@@ -27,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(String categoryName) {
+        categoryName = categoryName.trim();
         // check category name not duplicate
         List<String> categoryNameList = categoryRepository.getAllCategoryName(Token.getOrgIdByToken());
         for(String cateName : categoryNameList)
@@ -50,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(Integer categoryId, String categoryName) {
+        categoryName = categoryName.trim();
         // check category exists or not
         if(categoryRepository.getCategoryById(categoryId, Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Cannot find this category");
@@ -59,5 +61,10 @@ public class CategoryServiceImpl implements CategoryService {
             if(cateName.equalsIgnoreCase(categoryName))
                 throw new BadRequestException("Duplicate category name");
         return categoryRepository.updateCategoryById(categoryId, categoryName);
+    }
+
+    @Override
+    public Integer getTotalCategoryRecords() {
+        return categoryRepository.getAllCategoryRecords(Token.getOrgIdByToken());
     }
 }
