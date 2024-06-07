@@ -41,23 +41,23 @@ public class AgendaServiceImpl implements AgendaService {
     }
 
     @Override
-    public void deleteAgendaById(Integer agendaId) {
-        // check agenda id exists or not
-        if(agendaRepository.findAgendaIdByAgendaId(agendaId) == null)
-            throw new NotFoundException("Agenda id : " + agendaId + " not found in database");
+    public void deleteAgendaByEventId(Integer eventId) {
+        // check event id exists or not
+        if(agendaRepository.findEventIdByEventIdInAgendaTable(eventId) == null)
+            throw new NotFoundException("Event id : " + eventId + " not found in database");
 
-        agendaRepository.deleteAgendaById(agendaId);
+        agendaRepository.deleteAgendaByEventId(eventId);
     }
 
     @Override
-    public AgendaResponse updateAgendaById(Agenda agenda, Integer agendaId) {
-        // check agenda id exists or not
-        if(agendaRepository.findAgendaIdByAgendaId(agendaId) == null)
-            throw new NotFoundException("Agenda id : " + agendaId + " not found in database");
+    public AgendaResponse updateAgendaByEventId(Agenda agenda, Integer eventId) {
+        // check event id exists or not
+        if(agendaRepository.findEventIdByEventIdInAgendaTable(eventId) == null)
+            throw new NotFoundException("event id : " + eventId + " not found in database");
 
         // clear data in agenda
-        agendaRepository.clearDataInAgenda(agendaId);
+        agendaRepository.clearDataInAgenda(eventId);
 
-        return agendaRepository.updateAgendaById(agendaId, agenda);
+        return agendaRepository.updateAgendaByEventId(eventId, agenda);
     }
 }

@@ -8,7 +8,7 @@ public interface AgendaService {
 
     AgendaResponse getAgendaByEventId(Integer eventId);
 
-    void deleteAgendaById(Integer agendaId);
+    void deleteAgendaByEventId(Integer eventId);
 
-    AgendaResponse updateAgendaById(Agenda agenda, Integer agendaId);
+    AgendaResponse updateAgendaByEventId(Agenda agenda, Integer eventId);
 }
