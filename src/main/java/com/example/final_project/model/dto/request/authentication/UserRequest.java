@@ -18,11 +18,11 @@ public class UserRequest {
     private String phone;
     @NotBlank
     @NotNull
-    @Min(value = 8)
+    @Size(min = 8, max = 20)
     private String password;
     @NotBlank
     @NotNull
-    @Min(value = 8)
+    @Size(min = 8, max = 20)
     private String confirmPassword;
     @NotBlank
     @NotNull
