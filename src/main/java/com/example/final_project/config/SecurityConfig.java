@@ -72,7 +72,7 @@ public class SecurityConfig{
 
                         // asset controller
                         .requestMatchers(HttpMethod.GET, "/api/assets").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/assets/search/{name}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/assets/search").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/assets/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/assets/update/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/assets/create").hasAnyRole("ADMIN", "SUB_ADMIN")
@@ -90,7 +90,7 @@ public class SecurityConfig{
 
                         // profile controller
                         .requestMatchers(HttpMethod.GET, "/api/profiles").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/profiles/update-member/{profileId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/profiles/update-member/{memberId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/profiles/organization").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/profiles/update-organization/{orgId}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/profiles/change-password").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")

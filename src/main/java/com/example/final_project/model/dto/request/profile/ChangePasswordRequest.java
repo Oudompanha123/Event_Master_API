@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 public class ChangePasswordRequest {
     @NotBlank
     @NotNull
-    @Size(min = 8, max = 20)
+    @Size(min = 8, message = "size must be greater than or equal 8")
     private String oldPassword;
     @NotBlank
     @NotNull
-    @Size(min = 8, max = 20)
+    @Size(min = 8, message = "size must be greater than or equal 8")
     private String password;
     @NotNull
     @NotBlank
-    @Size(min = 8, max = 20)
+    @Size(min = 8, message = "size must be greater than or equal 8")
     private String confirmPassword;
 }

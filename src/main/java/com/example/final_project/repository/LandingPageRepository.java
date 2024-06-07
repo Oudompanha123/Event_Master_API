@@ -16,7 +16,7 @@ public interface LandingPageRepository {
         SELECT c.cate_name, e.event_id, e.event_name, e.description, e.start_date,
                e.address, e.poster, e.is_open, o.org_name, o.logo FROM (event e INNER JOIN category c ON c.cate_id = e.cate_id)
                                               INNER JOIN organization o ON o.org_id = e.org_id
-                WHERE e.is_post = true ORDER BY c.cate_name
+                WHERE e.is_post = true ORDER BY e.start_date
         ;
     """)
     @Results(id = "landingPageMapper", value = {
@@ -38,7 +38,7 @@ public interface LandingPageRepository {
             @Result(property = "eventName", column = "event_name"),
             @Result(property = "startDateTime", column = "start_date"),
             @Result(property = "location", column = "address"),
-            @Result(property = "agenda", column = "event_id", one = @One(select = "getAgendaByEventId"))
+            @Result(property = "agenda", column = "event_id", one = @One(select = "com.example.final_project.repository.AgendaRepository.getAgendaByEventId"))
     })
     EventDetailInLandingPage getDetailEventByEventId(Integer eventId);
 

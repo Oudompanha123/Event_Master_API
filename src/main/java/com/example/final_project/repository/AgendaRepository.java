@@ -27,24 +27,25 @@ public interface AgendaRepository {
     AgendaResponse getAgendaByEventId(Integer eventId);
 
     @Select("""
-        SELECT agenda_id FROM agenda WHERE agenda_id = #{agendaId};
+        SELECT event_id FROM agenda WHERE event_id = #{eventId};
     """)
-    Integer findAgendaIdByAgendaId(Integer agendaId);
+    Integer findEventIdByEventIdInAgendaTable(Integer eventId);
 
     @Select("""
-        DELETE FROM agenda WHERE agenda_id = #{agendaId};
+        DELETE FROM agenda WHERE event_id = #{eventId};
     """)
-    void deleteAgendaById(Integer agendaId);
+    void deleteAgendaByEventId(Integer eventId);
 
     @Update("""
-        UPDATE agenda SET data = null WHERE agenda_id = #{agendaId};
+        UPDATE agenda SET data = null WHERE event_id = #{eventId};
     """)
-    void clearDataInAgenda(Integer agendaId);
+    void clearDataInAgenda(Integer eventId);
 
     @Select("""
         UPDATE agenda SET data = #{agenda.data, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
-        WHERE agenda_id = #{agendaId} RETURNING *;
+        WHERE event_id = #{eventId} RETURNING *;
     """)
     @ResultMap("agendaMapper")
-    AgendaResponse updateAgendaById(Integer agendaId, @Param("agenda") Agenda agendaData);
+    AgendaResponse updateAgendaByEventId(Integer eventId, @Param("agenda") Agenda agendaData);
+
 }

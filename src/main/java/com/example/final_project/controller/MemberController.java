@@ -52,7 +52,7 @@ public class MemberController {
     @PostMapping("/search")
     @Operation(summary = "search by name")
     public ResponseEntity<?> searchMemberByName(
-            @RequestParam @Valid @NotNull @NotBlank String memberName,
+            @RequestParam @NotNull String memberName,
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit)
     {

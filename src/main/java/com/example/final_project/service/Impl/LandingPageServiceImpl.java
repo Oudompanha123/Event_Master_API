@@ -66,6 +66,8 @@ public class LandingPageServiceImpl implements LandingPageService {
 
     @Override
     public FormResponse getFormByEventId(Integer eventId) {
+        if(landingPageRepository.getFormByEventId(eventId) == null)
+            throw new NotFoundException("Event id : " + eventId + " don't have form");
         return landingPageRepository.getFormByEventId(eventId);
     }
 

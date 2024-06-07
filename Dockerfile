@@ -3,13 +3,9 @@ FROM eclipse-temurin:21-jre
 #set current path
 WORKDIR /app
 
-#build project file
-RUN #mvn clean package
-
 #copy jar file to container
-#COPY target/*.jar .
+COPY */target/*.jar .
 COPY . .
-COPY target/*.jar event-master.jar
 
 #set container port
 EXPOSE 8080

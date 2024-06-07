@@ -6,21 +6,14 @@ import com.example.final_project.model.dto.request.profile.OrganizationRequest;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.ProfileService;
-import io.swagger.annotations.Example;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import org.hibernate.validator.constraints.ParameterScriptAssert;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/profiles")
@@ -29,19 +22,19 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping
-    @Operation(summary = "Get profile members")
+    @Operation(summary = "Get member profile ")
     public ResponseEntity<?> getProfile() {
         return GetResponse.getResponse("Get profile member successfully", profileService.findProfileMember());
     }
 
-    @PutMapping("/update-member/{profileId}")
+    @PutMapping("/update-member/{memberId}")
     @Operation(summary = "Update profile by id")
     public ResponseEntity<?> updateProfile(
-            @PathVariable @Positive @NotNull Integer profileId,
+            @PathVariable @Positive @NotNull Integer memberId,
             @RequestBody @Valid MemberRequest memberRequest
     ){
-        return GetResponse.getResponse("Update profile by id " + profileId + " successfully.",
-                profileService.updateProfile(profileId, memberRequest));
+        return GetResponse.getResponse("Update profile by id " + memberId + " successfully.",
+                profileService.updateProfile(memberId, memberRequest));
     }
 
     @GetMapping("/organization")
@@ -60,7 +53,7 @@ public class ProfileController {
                 profileService.updateProfileOrganization(orgId, organizationRequest));
     }
     @PutMapping("/change-password")
-    @Operation(summary = "To change new password")
+    @Operation(summary = "Change password")
     public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest ){
         return UpdateResponse.updateResponse(profileService.changePassword(changePasswordRequest),null);
     }

@@ -14,13 +14,4 @@ public class AssetForCreateMaterial {
     @NotNull
     @Positive
     private Integer assetId;
-    @NotNull
-    @NotBlank
-    private String assetName;
-    @NotNull
-    @Positive
-    private Float qty;
-    @NotNull
-    @NotBlank
-    private String unit;
 }

@@ -21,7 +21,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType("application/json");
 
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "You can not access to this resource");
+        responseBody.put("message", "You don't have permission to access this resource");
         responseBody.put("error", "Forbidden");
 
         responseBody.put("status", HttpStatus.FORBIDDEN.value());

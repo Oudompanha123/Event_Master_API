@@ -1,17 +1,14 @@
 package com.example.final_project.controller;
 
-import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.UserRequestService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +21,7 @@ public class UserRequestController {
 
     @GetMapping
     @Operation(summary = "Get all user requests")
-    public ResponseEntity<?> getAllNotifications(
+    public ResponseEntity<?> getAllUserRequest(
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit
     ) {

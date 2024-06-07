@@ -4,6 +4,7 @@ import com.example.final_project.model.dto.request.AssetRequest;
 import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
+import com.example.final_project.model.dto.response.UpdateResponse;
 import com.example.final_project.service.AssetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,19 +28,19 @@ public class AssetController {
             @RequestParam(value = "offset",defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(value = "limit",defaultValue = "8") @Positive @NotNull Integer limit
     ) {
-        return GetAllResponse.getAllResponse("Get all assets successful",
+        return GetAllResponse.getAllResponse("Get all assets successfully",
                 assetService.getTotalAssetRecords(), assetService.findALlAsset(offset,limit));
     }
 
-    @GetMapping("/search/{name}")
+    @PostMapping("/search")
     @Operation(summary = "Search all assets by name")
     public ResponseEntity<?> getAssetByName(
-            @PathVariable String name,
+            @RequestParam String name,
             @RequestParam(value = "offset",defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(value = "limit",defaultValue = "8") @Positive @NotNull Integer limit
     ) {
-        return GetAllResponse.getAllResponse("Find asset by name successful",
-                assetService.getTotalAssetRecordsFromSearch(name), assetService.getAllAssetsByName(name, offset, limit));
+        return GetAllResponse.getAllResponse("Find asset by name successfully",
+                assetService.getTotalAssetRecordsFromSearch(name.trim()), assetService.getAllAssetsByName(name.trim(), offset, limit));
     }
 
     @GetMapping("/{assetId}")
@@ -50,16 +51,20 @@ public class AssetController {
 
     @PutMapping("/update/{assetId}")
     @Operation(summary = "Update asset by id")
-    public ResponseEntity<?> createAsset(
+    public ResponseEntity<?> UpdateAsset(
             @PathVariable("assetId") @Positive @NotNull Integer id,
             @RequestBody @Valid AssetRequest assetRequest
     ) {
-        return  GetResponse.getResponse("Update asset by id successfully",assetService.updateAsset(id, assetRequest));
+        assetRequest.setAssetName(assetRequest.getAssetName().trim());
+        assetRequest.setUnit(assetRequest.getUnit().trim());
+        return UpdateResponse.updateResponse("Update asset by id successfully",assetService.updateAsset(id, assetRequest));
     }
 
     @PostMapping("/create")
     @Operation(summary = "Create asset")
     public ResponseEntity<?> createAsset(@RequestBody @Valid AssetRequest assetRequest) {
+        assetRequest.setAssetName(assetRequest.getAssetName().trim());
+        assetRequest.setUnit(assetRequest.getUnit().trim());
         return PostResponse.postResponse("Create asset is successfully",assetService.insertAsset(assetRequest));
 
     }
@@ -68,7 +73,7 @@ public class AssetController {
     @Operation(summary = "Delete asset by id successfully")
     public ResponseEntity<?> deleteMemberById(@PathVariable @Positive @NotNull Integer assetId){
         assetService.deleteAssetById(assetId);
-        return GetResponse.getResponse("Delete member successfully", null);
+        return GetResponse.getResponse("Delete asset id : " + assetId + " successfully", null);
     }
 }
 

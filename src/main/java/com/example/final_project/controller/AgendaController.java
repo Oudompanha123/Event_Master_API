@@ -22,9 +22,9 @@ public class AgendaController {
     private final AgendaService agendaService;
 
     @PostMapping("/{eventId}")
-    @Operation(summary = "Create agenda through event id")
-    public ResponseEntity<?> createAgenda(@RequestBody @Valid Agenda agenda, @PathVariable @Positive @NotNull Integer eventId) {
-        return PostResponse.postResponse("Create agenda is successfully",agendaService.createAgenda(agenda, eventId));
+    @Operation(summary = "Create agenda by event id")
+    public ResponseEntity<?> createAgenda(@RequestBody @Valid Agenda agenda, @PathVariable  @Positive @NotNull Integer eventId) {
+        return PostResponse.postResponse("Create agenda successfully",agendaService.createAgenda(agenda, eventId));
     }
 
     @GetMapping("/{eventId}")
@@ -33,16 +33,16 @@ public class AgendaController {
         return GetResponse.getResponse("Get agenda successfully", agendaService.getAgendaByEventId(eventId));
     }
 
-    @DeleteMapping("/{agendaId}")
-    @Operation(summary = "Delete agenda by agenda id")
-    public ResponseEntity<?> deleteAgendaById(@PathVariable @Positive @NotNull Integer agendaId){
-        agendaService.deleteAgendaById(agendaId);
-        return GetResponse.getResponse("Delete agenda id : " + agendaId + "  successfully", null);
+    @DeleteMapping("/{eventId}")
+    @Operation(summary = "Delete agenda by event id")
+    public ResponseEntity<?> deleteAgendaByEventId(@PathVariable @Positive @NotNull Integer eventId){
+        agendaService.deleteAgendaByEventId(eventId);
+        return GetResponse.getResponse("Delete agenda by event id : " + eventId + "  successfully", null);
     }
 
-    @PutMapping("/{agendaId}")
-    @Operation(summary = "Update agenda by agenda id")
-    public ResponseEntity<?> updateAgendaById(@PathVariable @Positive @NotNull Integer agendaId, @RequestBody @Valid Agenda agenda){
-        return UpdateResponse.updateResponse("Update agenda successfully", agendaService.updateAgendaById(agenda, agendaId));
+    @PutMapping("/{eventId}")
+    @Operation(summary = "Update agenda by event id")
+    public ResponseEntity<?> updateAgendaById(@PathVariable @Positive @NotNull Integer eventId, @RequestBody @Valid Agenda agenda){
+        return UpdateResponse.updateResponse("Update agenda successfully", agendaService.updateAgendaByEventId(agenda, eventId));
     }
 }

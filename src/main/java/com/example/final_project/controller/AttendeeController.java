@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -55,12 +54,12 @@ public class AttendeeController {
     @Operation(summary = "Search attendees by name")
     public ResponseEntity<?> searchAttendeeByNameOrPhone(
             @RequestParam @Positive @NotNull Integer eventId,
-            @Parameter(description = "Input attendee name or phone number. Format : dara, 0123456789 ")
-            @RequestParam @Valid @NotNull @NotBlank String attendeeNameOrPhone,
+            @Parameter(description = "Input attendee name or phone number. Format : dara or 0123456789 ")
+            @RequestParam @NotNull String attendeeNameOrPhone,
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit)
     {
-        return GetAllResponse.getAllResponse("Get attendee by name or phone successfully", attendeeService.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone),
-                attendeeService.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone, offset, limit));
+        return GetAllResponse.getAllResponse("Get attendee by name or phone successfully", attendeeService.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone.trim()),
+                attendeeService.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone.trim(), offset, limit));
     }
 }

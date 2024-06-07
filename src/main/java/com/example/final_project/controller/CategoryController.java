@@ -1,5 +1,6 @@
 package com.example.final_project.controller;
 
+import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
 import com.example.final_project.model.dto.response.UpdateResponse;
@@ -26,7 +27,9 @@ public class CategoryController {
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit
     ){
-        return GetResponse.getResponse("Get all categories successfully", categoryService.getAllCategories(offset, limit));
+        return GetAllResponse.getAllResponse("Get all categories successfully",
+                categoryService.getTotalCategoryRecords(),
+                categoryService.getAllCategories(offset, limit));
     }
 
     @PostMapping

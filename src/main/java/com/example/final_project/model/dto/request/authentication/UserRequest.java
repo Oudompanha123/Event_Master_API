@@ -1,6 +1,5 @@
 package com.example.final_project.model.dto.request.authentication;
 
-import com.example.final_project.model.constant.Roles;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,11 +17,11 @@ public class UserRequest {
     private String phone;
     @NotBlank
     @NotNull
-    @Size(min = 8, max = 20)
+    @Size(min = 8, message = "size must be greater than or equal 8")
     private String password;
     @NotBlank
     @NotNull
-    @Size(min = 8, max = 20)
+    @Size(min = 8, message = "size must be greater than or equal 8")
     private String confirmPassword;
     @NotBlank
     @NotNull
@@ -30,6 +29,8 @@ public class UserRequest {
     private String orgCode;
     @NotBlank
     @NotNull
-    @Email
+    @Size(min = 11, max = 40)
+    @Email(message = "Invalid email format")
+    @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
     private String email;
 }
