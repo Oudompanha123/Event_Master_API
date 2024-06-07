@@ -4,8 +4,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 #copy jar file to container
-COPY */target/*.jar .
-COPY . .
+COPY *.jar .
 
 #set container port
 EXPOSE 8080
