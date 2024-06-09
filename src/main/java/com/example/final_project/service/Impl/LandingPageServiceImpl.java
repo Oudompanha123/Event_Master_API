@@ -105,4 +105,9 @@ public class LandingPageServiceImpl implements LandingPageService {
         }
         return eventsByCategories;
     }
+
+    @Override
+    public List<PopularEventResponse> getAllPopularEvent() {
+        return landingPageRepository.getAllPopularEvent();
+    }
 }

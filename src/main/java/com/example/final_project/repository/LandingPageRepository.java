@@ -3,6 +3,7 @@ package com.example.final_project.repository;
 import com.example.final_project.model.dto.response.landingPage.AllFieldInLandingPage;
 import com.example.final_project.model.dto.response.landingPage.EventDetailInLandingPage;
 import com.example.final_project.model.dto.response.landingPage.FormResponse;
+import com.example.final_project.model.dto.response.landingPage.PopularEventResponse;
 import com.example.final_project.util.SqlScriptFilterEvent;
 import org.apache.ibatis.annotations.*;
 
@@ -51,4 +52,26 @@ public interface LandingPageRepository {
     @SelectProvider(type = SqlScriptFilterEvent.class, method = "getSqlScriptSearchEventOnLandingPage")
     @ResultMap("landingPageMapper")
     List<AllFieldInLandingPage> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    @Select("""
+        SELECT DISTINCT ON (c.cate_name)
+            c.cate_name,
+            e.event_id,
+            e.event_name,
+            e.poster,
+            e.description,
+            COUNT(a.attendee_id) AS attendee
+        FROM event e
+                 INNER JOIN category c ON e.cate_id = c.cate_id
+                 LEFT JOIN attendee a ON e.event_id = a.event_id
+        WHERE e.is_post = TRUE
+        GROUP BY c.cate_name, e.event_id, e.event_name
+        ORDER BY c.cate_name, attendee DESC;
+    """)
+    @Results(id = "popularEventMapper", value = {
+            @Result(property = "categoryName", column = "cate_name"),
+            @Result(property = "eventId", column = "event_id"),
+            @Result(property = "eventName", column = "event_name")
+    })
+    List<PopularEventResponse> getAllPopularEvent();
 }

@@ -18,6 +18,13 @@ import java.time.LocalDateTime;
 public class LandingPageController {
     private final LandingPageService landingPageService;
 
+    @GetMapping("/getAllPopularEvent")
+    @Operation(summary = "Get all popular events for each category name")
+    public ResponseEntity<?> getAllPopularEvent(){
+        return GetResponse.getResponse("Get all popular events successfully",
+                landingPageService.getAllPopularEvent());
+    }
+
     @GetMapping
     @Operation(summary = "Get all events by categories")
     public ResponseEntity<?> getAllEventsByCategory(){

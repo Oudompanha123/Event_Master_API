@@ -70,7 +70,7 @@ public class AssetController {
     }
 
     @DeleteMapping("/delete/{assetId}")
-    @Operation(summary = "Delete asset by id successfully")
+    @Operation(summary = "Delete asset by id")
     public ResponseEntity<?> deleteMemberById(@PathVariable @Positive @NotNull Integer assetId){
         assetService.deleteAssetById(assetId);
         return GetResponse.getResponse("Delete asset id : " + assetId + " successfully", null);
