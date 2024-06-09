@@ -17,7 +17,7 @@ public interface MemberService extends UserDetailsService {
 
     RegisterResponse userRegister(UserRequest userRequest);
 
-    String forgetPassword(String email, ForgetPasswordRequest forgetPasswordRequest);
+    String forgetPassword(String otp, String email, ForgetPasswordRequest forgetPasswordRequest);
 
     String verifyOTP(String otp, String email);
 

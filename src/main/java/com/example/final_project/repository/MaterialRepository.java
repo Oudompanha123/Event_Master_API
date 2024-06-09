@@ -4,6 +4,7 @@ import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequest;
+import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.material.MaterialResponse;
 import com.example.final_project.util.MaterialSqlScript;
@@ -111,5 +112,5 @@ public interface MaterialRepository {
     @ResultMap("materialMapper")
     @Result(property = "handlerId", column = "handler_id")
     @Result(property = "eventId", column = "event_id")
-    MaterialResponse createMaterial(@Param("material") MaterialRequest materialRequest);
+    MaterialResponse createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
 }

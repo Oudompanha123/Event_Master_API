@@ -109,9 +109,7 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequestForCreating, Integer assetId) {
-        MaterialRequest materialRequest = materialRequestForCreating.getMaterialRequest();
-
+    public MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequest, Integer assetId) {
         // check handler id exists or not
         if(memberRepository.getMemberByMemberId(materialRequest.getHandlerId()) == null)
             throw new NotFoundException("Handler id : " + materialRequest.getHandlerId() + " Not found");
@@ -149,8 +147,6 @@ public class MaterialServiceImpl implements MaterialService {
 
         // create material
         return modelMapper.map(materialRepository.createMaterial(materialRequest), MaterialResponseForCreating.class);
-
-
     }
 
 }
