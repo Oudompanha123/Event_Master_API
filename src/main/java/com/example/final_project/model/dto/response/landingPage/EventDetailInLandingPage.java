@@ -17,5 +17,6 @@ public class EventDetailInLandingPage {
     private String location;
     private LocalDateTime startDateTime;
     private String poster;
+    private Boolean isOpen;
     private AgendaResponse agenda;
 }

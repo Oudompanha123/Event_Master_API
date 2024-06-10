@@ -15,7 +15,8 @@ public interface LandingPageRepository {
 
     @Select("""
         SELECT c.cate_name, e.event_id, e.event_name, e.description, e.start_date,
-               e.address, e.poster, e.is_open, o.org_name, o.logo FROM (event e INNER JOIN category c ON c.cate_id = e.cate_id)
+               e.address, e.poster, e.is_open, o.org_name, o.logo FROM
+               (event e INNER JOIN category c ON c.cate_id = e.cate_id)
                                               INNER JOIN organization o ON o.org_id = e.org_id
                 WHERE e.is_post = true ORDER BY e.start_date
         ;
@@ -31,7 +32,7 @@ public interface LandingPageRepository {
     List<AllFieldInLandingPage> getAllEventsByCategory();
 
     @Select("""
-        SELECT event.event_id as event_id, event_name, description, address, start_date, poster, agenda_id
+        SELECT event.event_id as event_id, event_name, description, address, start_date, poster, is_open, agenda_id
         FROM event LEFT JOIN agenda ON event.event_id = agenda.event_id WHERE is_post = true AND event.event_id = #{eventId};
     """)
     @Results(id = "eventDetailMapper", value = {
@@ -39,6 +40,7 @@ public interface LandingPageRepository {
             @Result(property = "eventName", column = "event_name"),
             @Result(property = "startDateTime", column = "start_date"),
             @Result(property = "location", column = "address"),
+            @Result(property = "isOpen", column = "is_open"),
             @Result(property = "agenda", column = "event_id", one = @One(select = "com.example.final_project.repository.AgendaRepository.getAgendaByEventId"))
     })
     EventDetailInLandingPage getDetailEventByEventId(Integer eventId);

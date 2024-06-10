@@ -110,4 +110,15 @@ public class LandingPageServiceImpl implements LandingPageService {
     public List<PopularEventResponse> getAllPopularEvent() {
         return landingPageRepository.getAllPopularEvent();
     }
+
+    @Override
+    public EventsByCategory getEventByCategoryName(String cateName) {
+        List<EventsByCategory> eventsByCategories = getAllEventsByCategory();
+        for(EventsByCategory eventsByCategory : eventsByCategories){
+            if(eventsByCategory.getCateName().equalsIgnoreCase(cateName)){
+                return eventsByCategory;
+            }
+        }
+        throw new NotFoundException("Category name : " + cateName + " not found");
+    }
 }

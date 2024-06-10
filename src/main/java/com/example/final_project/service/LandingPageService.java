@@ -18,4 +18,6 @@ public interface LandingPageService {
     List<EventsByCategory> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     List<PopularEventResponse> getAllPopularEvent();
+
+    EventsByCategory getEventByCategoryName(String cateName);
 }

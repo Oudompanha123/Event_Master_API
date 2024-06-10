@@ -26,10 +26,17 @@ public class LandingPageController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all events by categories")
+    @Operation(summary = "Get all events by each category")
     public ResponseEntity<?> getAllEventsByCategory(){
         return GetResponse.getResponse("Get all events by categories successfully",
                 landingPageService.getAllEventsByCategory());
+    }
+
+    @GetMapping("/filter/{cateName}")
+    @Operation(summary = "Get events by category name")
+    public ResponseEntity<?> getAllEventsByCategoryName(@PathVariable @NotNull String cateName){
+        return GetResponse.getResponse("Get events by category name successfully",
+                landingPageService.getEventByCategoryName(cateName));
     }
 
     @GetMapping("/{eventId}")
