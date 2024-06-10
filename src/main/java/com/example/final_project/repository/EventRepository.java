@@ -89,6 +89,13 @@ public interface EventRepository {
         UPDATE event SET registration_form = null WHERE event_id = #{eventId} AND org_id = #{orgId};
     """)
     void clearRegistrationFormById(Integer eventId, Integer orgId);
+
+    @Update("""
+        UPDATE event
+            SET is_open = FALSE
+            WHERE is_open = TRUE AND end_date <= CURRENT_TIMESTAMP;
+    """)
+    void autoCloseEvent();
 }
 
 

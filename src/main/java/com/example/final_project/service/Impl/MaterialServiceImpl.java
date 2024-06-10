@@ -4,9 +4,10 @@ import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Asset;
 import com.example.final_project.model.MaterialStatusCount;
+import com.example.final_project.model.Member;
 import com.example.final_project.model.Supporter;
+import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.constant.Status;
-import com.example.final_project.model.dto.request.material.MaterialRequest;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.material.MaterialResponse;
@@ -21,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +52,16 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public void updateMaterialStatus(Integer materialId, Status status) {
+
+        // check permission, if role user and is not a handler, don't have permission to change status
+        Integer memberId = Token.getMemberIdByToken();
+        Member member = memberRepository.getMemberByMemberId(memberId);
+        if(member.getRole().equals(Roles.ROLE_USER)){
+            MaterialResponse materialResponse = materialRepository.getMaterialById(materialId);
+            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
+                throw new BadRequestException("You don't have permission to change status even if You are a handler");
+        }
+
         if(materialRepository.getMaterialById(materialId) == null)
             throw new NotFoundException("Material id : " + materialId + " not found");
         materialRepository.updateMaterialStatus(materialId, status);
