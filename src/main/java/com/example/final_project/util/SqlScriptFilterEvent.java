@@ -62,6 +62,11 @@ public class SqlScriptFilterEvent {
     }
 
     public static String getSqlScriptSearchEventOnLandingPage(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime){
+
+        if (eventName == null && categoryId == null && status == null && startDateTime == null && endDateTime == null) {
+            return "SELECT * FROM event WHERE 1=0"; // No rows will be returned
+        }
+
         String sql = """
                  SELECT c.cate_name, e.event_id, e.event_name, e.description, e.start_date,
                  e.address, e.poster, e.is_open, o.org_name, o.logo FROM (event e INNER JOIN category c ON c.cate_id = e.cate_id)

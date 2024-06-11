@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PopularEventResponse {
-    private String categoryName;
     private Integer eventId;
     private String eventName;
     private String poster;

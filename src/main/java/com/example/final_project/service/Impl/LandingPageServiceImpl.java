@@ -21,42 +21,6 @@ public class LandingPageServiceImpl implements LandingPageService {
     private  final LandingPageRepository landingPageRepository;
 
     @Override
-    public List<EventsByCategory> getAllEventsByCategory() {
-        List<AllFieldInLandingPage> allFieldInLandingPages = landingPageRepository.getAllEventsByCategory();
-
-        List<String> allCateNames = new ArrayList<>();
-        for (AllFieldInLandingPage obj : allFieldInLandingPages){
-            allCateNames.add(obj.getCateName());
-        }
-        // Using HashSet to remove duplicates
-        HashSet<String> uniqueSet = new HashSet<>(allCateNames);
-
-        // Creating a new ArrayList from the unique elements
-        allCateNames = new ArrayList<>(uniqueSet);
-
-        // data response to clients
-        List<EventsByCategory> eventsByCategories = new ArrayList<>();
-
-        for(String categoryName : allCateNames){
-            EventsByCategory eventsByCategory = new EventsByCategory();
-            eventsByCategory.setCateName(categoryName);
-            List<AllFieldInLandingPage> filteredList = allFieldInLandingPages.stream()
-                    .filter(item -> item.getCateName().equals(categoryName))
-                    .toList();
-
-            // convert all object in AllFieldInLandingPage to EventResponseLandingPage
-            List<EventResponseLandingPage> events = new ArrayList<>();
-            for(AllFieldInLandingPage item : filteredList){
-                EventResponseLandingPage e = modelMapper.map(item, EventResponseLandingPage.class);
-                events.add(e);
-            }
-            eventsByCategory.setEvents(events);
-            eventsByCategories.add(eventsByCategory);
-        }
-        return eventsByCategories;
-    }
-
-    @Override
     public EventDetailInLandingPage getDetailEventByEventId(Integer eventId) {
         // check event is existed or not
         if(landingPageRepository.getDetailEventByEventId(eventId) == null)
@@ -112,13 +76,16 @@ public class LandingPageServiceImpl implements LandingPageService {
     }
 
     @Override
-    public EventsByCategory getEventByCategoryName(String cateName) {
-        List<EventsByCategory> eventsByCategories = getAllEventsByCategory();
-        for(EventsByCategory eventsByCategory : eventsByCategories){
-            if(eventsByCategory.getCateName().equalsIgnoreCase(cateName)){
-                return eventsByCategory;
-            }
-        }
-        throw new NotFoundException("Category name : " + cateName + " not found");
+    public List<EventResponseLandingPage> getEventByCategoryName(String cateName, Integer offset, Integer limit) {
+        if(landingPageRepository.getEventByCategoryName(cateName, offset, limit).isEmpty())
+            throw new NotFoundException("Category name : " + cateName + " not found");
+
+        offset = (offset - 1) * limit;
+        return landingPageRepository.getEventByCategoryName(cateName, offset, limit);
+    }
+
+    @Override
+    public List<String> getAllCategoryNames() {
+        return landingPageRepository.getAllCategoryNames();
     }
 }

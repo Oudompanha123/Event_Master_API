@@ -27,6 +27,5 @@ public class AdminRequest {
     @NotNull
     @Size(min = 11, max = 40)
     @Email(message = "Invalid email format")
-    @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
     private String email;
 }

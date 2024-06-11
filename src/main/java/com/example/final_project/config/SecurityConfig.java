@@ -37,7 +37,8 @@ public class SecurityConfig{
                                 "/v3/api-docs/**", "/api/attendees/create",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/api/landing-page/**"
+                                "/api/landing-page/**",
+                                "/api/file/**"
                         ).permitAll()
 
                         // member controller

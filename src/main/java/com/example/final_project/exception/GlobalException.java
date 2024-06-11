@@ -5,6 +5,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,17 @@ public class GlobalException {
         problemDetail.setProperty("dateTime", LocalDateTime.now());
         return problemDetail;
     }
+
+//    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+//    public ProblemDetail handleForbiddenException(ForbiddenException ex){
+//        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+//                HttpStatus.UNAUTHORIZED,
+//                ex.getMessage()
+//        );
+//        problemDetail.setTitle("Unauthorized");
+//        problemDetail.setProperty("dateTime", LocalDateTime.now());
+//        return problemDetail;
+//    }
 
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail handleBadRequestException(BadRequestException ex){

@@ -49,7 +49,6 @@ public class AuthController {
             @RequestParam @NotBlank @NotNull @Pattern(regexp = "^\\d{4}$", message = "OTP is 4 digits and must be number") String otp,
             @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotBlank @Email(message = "Invalid email format")
-            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
             String email,
             @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest
     ){
@@ -63,7 +62,6 @@ public class AuthController {
             @RequestParam @NotBlank @NotNull @Pattern(regexp = "^\\d{4}$", message = "OTP is 4 digits and must be number") String otp,
             @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotNull @Size(min = 11, max = 40) @Email(message = "Invalid email format")
-            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
             String email
     ){
         return UpdateResponse.updateResponse(memberService.verifyOTP(otp, email), null);
@@ -75,7 +73,6 @@ public class AuthController {
             @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotBlank @Size(min = 11, max = 40)
             @Email(message = "Invalid email format")
-            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
             String email
     ){
         return PostResponse.postResponse(memberService.resendOTP(email), null);

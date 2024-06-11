@@ -19,24 +19,21 @@ public class LandingPageController {
     private final LandingPageService landingPageService;
 
     @GetMapping("/getAllPopularEvent")
-    @Operation(summary = "Get all popular events for each category name")
+    @Operation(summary = "Get all popular events")
     public ResponseEntity<?> getAllPopularEvent(){
         return GetResponse.getResponse("Get all popular events successfully",
                 landingPageService.getAllPopularEvent());
     }
 
-    @GetMapping
-    @Operation(summary = "Get all events by each category")
-    public ResponseEntity<?> getAllEventsByCategory(){
-        return GetResponse.getResponse("Get all events by categories successfully",
-                landingPageService.getAllEventsByCategory());
-    }
-
     @GetMapping("/filter/{cateName}")
     @Operation(summary = "Get events by category name")
-    public ResponseEntity<?> getAllEventsByCategoryName(@PathVariable @NotNull String cateName){
+    public ResponseEntity<?> getAllEventsByCategoryName(
+            @PathVariable @NotNull String cateName,
+            @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
+            @RequestParam(defaultValue = "6") @Positive @NotNull Integer limit
+    ){
         return GetResponse.getResponse("Get events by category name successfully",
-                landingPageService.getEventByCategoryName(cateName));
+                landingPageService.getEventByCategoryName(cateName, offset, limit));
     }
 
     @GetMapping("/{eventId}")
@@ -67,5 +64,12 @@ public class LandingPageController {
     ){
         return GetResponse.getResponse("Search event successfully",
                 landingPageService.searchEvent(eventName, categoryId, status, startDateTime, endDateTime));
+    }
+
+    @GetMapping("/getAllCategoryNames")
+    @Operation(summary = "get all category names that have posted events")
+    public ResponseEntity<?> getAllCategoryNames(){
+        return GetResponse.getResponse("Get all category names successfully",
+                landingPageService.getAllCategoryNames());
     }
 }
