@@ -49,15 +49,25 @@ public interface LandingPageRepository {
             e.description,
             COUNT(a.attendee_id) AS attendee
         FROM event e INNER JOIN attendee a ON e.event_id = a.event_id
-        WHERE e.is_post = true
+        WHERE e.is_post = true AND e.is_open = true
         GROUP BY e.event_id
+        HAVING COUNT(a.attendee_id) >= #{attendees} AND COUNT(a.attendee_id) != 0
         ORDER BY attendee DESC LIMIT 8
     """)
     @Results(id = "popularEventMapper", value = {
             @Result(property = "eventId", column = "event_id"),
             @Result(property = "eventName", column = "event_name")
     })
-    List<PopularEventResponse> getAllPopularEvent();
+    List<PopularEventResponse> getAllPopularEvent(Double attendees);
+
+    @Select("""
+        SELECT COUNT(a.attendee_id) AS attendee
+        FROM event e INNER JOIN attendee a ON e.event_id = a.event_id
+        WHERE e.is_post = true AND e.is_open = true
+        GROUP BY e.event_id
+        ORDER BY attendee DESC LIMIT 1
+    """)
+    Integer getMaximumAttendeeInEvents();
 
     @Select("""
         SELECT distinct on (c.cate_name) c.cate_name FROM category c

@@ -55,7 +55,7 @@ create table category
 (
     cate_id   serial primary key,
     cate_name varchar(40) not null,
-    created_at date default current_date,
+    created_at timestamp default CURRENT_TIMESTAMP,
     created_by integer not null,
     org_id    integer     not null,
     constraint org_id_category_fk

@@ -41,6 +41,10 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset insertAsset(AssetRequest assetRequest) {
+        // qty must be greater than 0
+        if(assetRequest.getQty() == 0)
+            throw new BadRequestException("Qty must be greater than 0");
+
         // check duplicate asset name
         List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
         for(String assetName : assetNames)

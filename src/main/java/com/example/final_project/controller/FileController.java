@@ -3,15 +3,12 @@ package com.example.final_project.controller;
 import com.example.final_project.model.dto.response.APIResponse;
 import com.example.final_project.model.dto.response.FileResponse;
 import com.example.final_project.service.FileService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -32,8 +29,8 @@ public class FileController {
 
         String fileUrl = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path(fileName)
-                .toUriString();
+                .path("/api/file/getFile__Query__fileName=" + fileName)
+                .toUriString().replace("__Query__", "?");
 
         APIResponse<FileResponse> response = new APIResponse<>(
                 "Uploaded file successfully",

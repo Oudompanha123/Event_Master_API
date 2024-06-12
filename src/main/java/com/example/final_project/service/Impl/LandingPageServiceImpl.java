@@ -72,7 +72,10 @@ public class LandingPageServiceImpl implements LandingPageService {
 
     @Override
     public List<PopularEventResponse> getAllPopularEvent() {
-        return landingPageRepository.getAllPopularEvent();
+        Integer maxAttendee = landingPageRepository.getMaximumAttendeeInEvents();
+        // calculate to find 60% of maxAttendee
+        Double attendees = Math.ceil(maxAttendee * 0.6);
+        return landingPageRepository.getAllPopularEvent(attendees);
     }
 
     @Override
