@@ -52,6 +52,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/categories/{categoryId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/categories/{categoryId}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/categories/{cateName}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
 
                         // event controller
                         .requestMatchers(HttpMethod.GET, "/api/events").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")

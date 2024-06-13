@@ -27,7 +27,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Asset> getAllAssetsByName(String assetName, Integer offset, Integer limit) {
         offset = (offset - 1) * limit;
-        return assetRepository.getAllAssetsByName(assetName, offset, limit, Token.getOrgIdByToken());
+        if(assetName == null || assetName.isBlank())
+            return assetRepository.findAllAssets(offset, limit, Token.getOrgIdByToken());
+        return assetRepository.getAllAssetsByName(assetName.trim(), offset, limit, Token.getOrgIdByToken());
     }
 
     @Override
@@ -84,7 +86,9 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Integer getTotalAssetRecordsFromSearch(String assetName) {
-        return assetRepository.getTotalAssetRecordsFromSearch(assetName, Token.getOrgIdByToken());
+        if(assetName == null || assetName.isBlank())
+            return getTotalAssetRecords();
+        return assetRepository.getTotalAssetRecordsFromSearch(assetName.trim(), Token.getOrgIdByToken());
     }
 
 }

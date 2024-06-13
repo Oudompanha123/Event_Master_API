@@ -14,4 +14,6 @@ public interface CategoryService {
     Category updateCategory(Integer categoryId, String categoryName);
 
     Integer getTotalCategoryRecords();
+
+    Category getCategoryByCategoryName(String cateName);
 }

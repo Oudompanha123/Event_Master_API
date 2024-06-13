@@ -54,4 +54,13 @@ public class CategoryController {
         return UpdateResponse.updateResponse("Update category id : " + categoryId + " successfully"
                 ,categoryService.updateCategory(categoryId, categoryName));
     }
+
+    @GetMapping("/{cateName}")
+    @Operation(summary = "Get category by category name")
+    public ResponseEntity<?> getCategoryByCategoryName(
+        @PathVariable @NotNull String cateName
+    ){
+        return GetResponse.getResponse("Get category by name successfully",
+                categoryService.getCategoryByCategoryName(cateName));
+    }
 }

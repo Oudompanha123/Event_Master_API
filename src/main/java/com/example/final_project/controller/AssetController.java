@@ -35,12 +35,12 @@ public class AssetController {
     @PostMapping("/search")
     @Operation(summary = "Search all assets by name")
     public ResponseEntity<?> getAssetByName(
-            @RequestParam String name,
+            @RequestParam(required = false) String name,
             @RequestParam(value = "offset",defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(value = "limit",defaultValue = "8") @Positive @NotNull Integer limit
     ) {
         return GetAllResponse.getAllResponse("Find asset by name successfully",
-                assetService.getTotalAssetRecordsFromSearch(name.trim()), assetService.getAllAssetsByName(name.trim(), offset, limit));
+                assetService.getTotalAssetRecordsFromSearch(name), assetService.getAllAssetsByName(name, offset, limit));
     }
 
     @GetMapping("/{assetId}")

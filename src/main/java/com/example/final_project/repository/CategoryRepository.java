@@ -59,4 +59,11 @@ public interface CategoryRepository {
     """)
     @ResultMap("categoryMapper")
     Category updateCategoryById(Integer categoryId, String categoryName);
+
+    @Select("""
+        SELECT cate_id, cate_name, created_at, created_by
+            FROM category WHERE cate_name = #{cateName} AND org_id = #{orgId};
+    """)
+    @ResultMap("categoryMapper")
+    Category getCategoryByName(String cateName, Integer orgId);
 }
