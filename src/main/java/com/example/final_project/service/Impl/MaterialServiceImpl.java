@@ -9,8 +9,9 @@ import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
+import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
-import com.example.final_project.model.dto.response.material.MaterialResponse;
+import com.example.final_project.model.Material;
 import com.example.final_project.model.dto.response.material.MaterialResponseForCreating;
 import com.example.final_project.repository.AssetRepository;
 import com.example.final_project.repository.EventRepository;
@@ -34,7 +35,7 @@ public class MaterialServiceImpl implements MaterialService {
     private final AssetRepository assetRepository;
 
     @Override
-    public List<MaterialResponse> getAllMaterials(Integer eventId) {
+    public List<Material> getAllMaterials(Integer eventId) {
         if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
             throw new NotFoundException("Event id : " + eventId + " not found");
 
@@ -57,7 +58,7 @@ public class MaterialServiceImpl implements MaterialService {
         Integer memberId = Token.getMemberIdByToken();
         Member member = memberRepository.getMemberByMemberId(memberId);
         if(member.getRole().equals(Roles.ROLE_USER)){
-            MaterialResponse materialResponse = materialRepository.getMaterialById(materialId);
+            Material materialResponse = materialRepository.getMaterialById(materialId);
             if(!Objects.equals(memberId, materialResponse.getHandlerId()))
                 throw new BadRequestException("You don't have permission to change status even if You are a handler");
         }
@@ -87,14 +88,14 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public MaterialResponse getMaterialById(Integer materialId) {
+    public Material getMaterialById(Integer materialId) {
         if(materialRepository.getMaterialById(materialId) == null)
             throw new NotFoundException("Material id : " + materialId + " not found");
         return materialRepository.getMaterialById(materialId);
     }
 
     @Override
-    public List<MaterialResponse> SearchMaterialByName(String materialName, Integer eventId) {
+    public List<Material> SearchMaterialByName(String materialName, Integer eventId) {
         if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
             throw new NotFoundException("Event id : " + eventId + " not found");
         return materialRepository.searchMaterialByName(materialName, eventId);
@@ -161,4 +162,12 @@ public class MaterialServiceImpl implements MaterialService {
         return modelMapper.map(materialRepository.createMaterial(materialRequest), MaterialResponseForCreating.class);
     }
 
+    @Override
+    public void createMultipleMaterials(List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList) {
+        MaterialRequestForCreating materialRequestForCreating;
+        for(MaterialRequestForMultiCreate materialRequestForMultiCreate : materialRequestForMultiCreateList){
+            materialRequestForCreating = modelMapper.map(materialRequestForMultiCreate, MaterialRequestForCreating.class);
+            createMaterial(materialRequestForCreating, materialRequestForMultiCreate.getAssetId());
+        }
+    }
 }

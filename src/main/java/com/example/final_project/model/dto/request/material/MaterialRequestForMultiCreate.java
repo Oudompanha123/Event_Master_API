@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialRequest {
+public class MaterialRequestForMultiCreate {
     @NotNull
     @NotBlank
     private String materialName;
@@ -35,4 +35,5 @@ public class MaterialRequest {
     @Positive
     private Integer eventId;
     private JSONObject supporters;
+    private Integer assetId;
 }

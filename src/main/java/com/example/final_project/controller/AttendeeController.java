@@ -55,11 +55,11 @@ public class AttendeeController {
     public ResponseEntity<?> searchAttendeeByNameOrPhone(
             @RequestParam @Positive @NotNull Integer eventId,
             @Parameter(description = "Input attendee name or phone number. Format : dara or 0123456789 ")
-            @RequestParam @NotNull String attendeeNameOrPhone,
+            @RequestParam(required = false) String attendeeNameOrPhone,
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(defaultValue = "8") @Positive @NotNull Integer limit)
     {
-        return GetAllResponse.getAllResponse("Get attendee by name or phone successfully", attendeeService.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone.trim()),
-                attendeeService.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone.trim(), offset, limit));
+        return GetAllResponse.getAllResponse("Get attendee by name or phone successfully", attendeeService.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone),
+                attendeeService.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone, offset, limit));
     }
 }

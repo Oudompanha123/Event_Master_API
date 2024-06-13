@@ -2,8 +2,8 @@ package com.example.final_project.controller;
 
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
-import com.example.final_project.model.dto.request.material.MaterialRequest;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
+import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -17,6 +17,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -110,5 +112,12 @@ public class MaterialController {
             ) {
         return PostResponse.postResponse("create material successfully",
                 materialService.createMaterial(materialRequest, assetId));
+    }
+
+    @PostMapping("/multipleCreate")
+    @Operation(summary = "Create multiple materials in one time")
+    public ResponseEntity<?> createMultipleMaterials(@RequestBody @Valid List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList) {
+        materialService.createMultipleMaterials(materialRequestForMultiCreateList);
+        return PostResponse.postResponse("Create multiple materials successfully", null);
     }
 }

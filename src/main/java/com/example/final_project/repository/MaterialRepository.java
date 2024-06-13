@@ -3,10 +3,9 @@ package com.example.final_project.repository;
 import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
-import com.example.final_project.model.dto.request.material.MaterialRequest;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
-import com.example.final_project.model.dto.response.material.MaterialResponse;
+import com.example.final_project.model.Material;
 import com.example.final_project.util.MaterialSqlScript;
 import org.apache.ibatis.annotations.*;
 
@@ -31,7 +30,7 @@ public interface MaterialRepository {
             @Result(property = "assignDate", column = "assign_date"),
             @Result(property = "dueDate", column = "due_date"),
     })
-    List<MaterialResponse> getAllMaterial(Integer eventId);
+    List<Material> getAllMaterial(Integer eventId);
 
     @Select("""
         select
@@ -71,7 +70,7 @@ public interface MaterialRepository {
         WHERE material_id = #{materialId};
     """)
     @ResultMap("materialMapper")
-    MaterialResponse getMaterialById(Integer materialId);
+    Material getMaterialById(Integer materialId);
 
     @Select("""
         SELECT event_id FROM material;
@@ -89,7 +88,7 @@ public interface MaterialRepository {
         WHERE event_id = #{eventId} AND material_name ILIKE CONCAT('%', #{materialName}, '%') ;
     """)
     @ResultMap("materialMapper")
-    List<MaterialResponse> searchMaterialByName(String materialName, Integer eventId);
+    List<Material> searchMaterialByName(String materialName, Integer eventId);
 
     @Update("""
         UPDATE material SET handler_id = #{handlerId} WHERE material_id = #{materialId};
@@ -112,5 +111,5 @@ public interface MaterialRepository {
     @ResultMap("materialMapper")
     @Result(property = "handlerId", column = "handler_id")
     @Result(property = "eventId", column = "event_id")
-    MaterialResponse createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
+    Material createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
 }
