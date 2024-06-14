@@ -21,9 +21,10 @@ public class MaterialRequestForMultiCreate {
     @Positive
     private float qty;
     @NotNull
+    private float toGet;
+    @NotNull
     @NotBlank
     private String unit;
-    private String remark;
     @NotNull
     private Status status;
     private LocalDate assignDate;

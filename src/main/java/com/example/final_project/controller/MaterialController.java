@@ -4,6 +4,7 @@ import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -102,6 +103,16 @@ public class MaterialController {
             ) {
         return UpdateResponse.updateResponse("Update supporters successfully",
                 materialService.updateSupportersByMaterialId(materialId, supporter) );
+    }
+
+    @PutMapping("/update/{materialId}")
+    @Operation(summary = "Update material data by material id")
+    public ResponseEntity<?> updateMaterialDataByMaterialId(
+            @PathVariable @Positive @NotNull Integer materialId,
+            @RequestBody MaterialRequestForUpdating materialRequestForUpdating
+    ) {
+        return UpdateResponse.updateResponse("Update material data successfully",
+                materialService.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating) );
     }
 
     @PostMapping("/create")

@@ -5,9 +5,10 @@ import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.Material;
-import com.example.final_project.model.dto.response.material.MaterialResponseForCreating;
+import com.example.final_project.model.dto.response.material.MaterialResponse;
 
 import java.util.List;
 
@@ -30,7 +31,9 @@ public interface MaterialService {
 
     Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter);
 
-    MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequest, Integer assetId);
+    MaterialResponse createMaterial(MaterialRequestForCreating materialRequest, Integer assetId);
 
     void createMultipleMaterials(List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList);
+
+    MaterialResponse updateMaterialDataByMaterialId(Integer materialId, MaterialRequestForUpdating materialRequestForUpdating);
 }

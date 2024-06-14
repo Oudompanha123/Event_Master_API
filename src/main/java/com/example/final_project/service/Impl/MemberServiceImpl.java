@@ -284,7 +284,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void deleteMemberById(Integer memberId) {
         // check member is existed or not
-        Member member = memberRepository.getMemberByMemberId(memberId);
+        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
         if(member == null)
             throw new NotFoundException("Member not found");
         else{
@@ -303,7 +303,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberResponse updateMemberRole(Integer memberId, Roles role) {
         // check member is existed or not
-        Member member = memberRepository.getMemberByMemberId(memberId);
+        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
         if(member == null)
             throw new NotFoundException("Member not found");
         return memberRepository.updateMemberRole(memberId, role);

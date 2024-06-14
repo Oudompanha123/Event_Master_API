@@ -110,6 +110,7 @@ create table material
     material_id   serial primary key,
     material_name varchar(50) not null,
     qty           decimal(6, 2) not null,
+    to_get        decimal(6, 2) not null,
     unit          varchar(20) not null,
     remark        text,
     status        varchar(10) not null default 'pending',

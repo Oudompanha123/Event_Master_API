@@ -15,7 +15,7 @@ import java.util.List;
 public interface MaterialRepository {
 
     @Select("""
-        SELECT material_id, material_name, qty, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -29,6 +29,7 @@ public interface MaterialRepository {
             @Result(property = "materialName", column = "material_name"),
             @Result(property = "assignDate", column = "assign_date"),
             @Result(property = "dueDate", column = "due_date"),
+            @Result(property = "toGet", column = "to_get"),
     })
     List<Material> getAllMaterial(Integer eventId);
 
@@ -60,7 +61,7 @@ public interface MaterialRepository {
     Integer getMaterialByIds(MultipleDelete materialIds);
 
     @Select("""
-        SELECT material_id, material_name, qty, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -78,7 +79,7 @@ public interface MaterialRepository {
     List<Integer> getAllEventIdInMaterialTable();
 
     @Select("""
-        SELECT material_id, material_name, qty, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -103,13 +104,14 @@ public interface MaterialRepository {
 
     @Select("""
         INSERT INTO material
-        VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit},
-        #{material.remark}, #{material.status}, default, #{material.dueDate}, #{material.handlerId},
-        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId})
+        VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit}, 'No Remark',
+         #{material.status}, default, #{material.dueDate}, #{material.handlerId},
+        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId}, #{material.toGet})
         RETURNING *
     """)
     @ResultMap("materialMapper")
     @Result(property = "handlerId", column = "handler_id")
     @Result(property = "eventId", column = "event_id")
+    @Result(property = "toGet", column = "to_get")
     Material createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
 }

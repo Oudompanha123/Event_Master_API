@@ -10,10 +10,11 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MaterialResponseForCreating {
+public class MaterialResponse {
     private int materialId;
     private String materialName;
     private float qty;
+    private float toGet;
     private String unit;
     private LocalDate assignDate;
     private LocalDate dueDate;
