@@ -17,8 +17,6 @@ public interface MaterialService {
 
     MaterialStatusCount countMaterialByStatus(Integer eventId);
 
-    void updateMaterialStatus(Integer materialId, Status statusId);
-
     void deleteMaterialById(Integer materialId);
 
     void deleteMaterialByIds(MultipleDelete materialIds);
@@ -27,13 +25,11 @@ public interface MaterialService {
 
     List<Material> SearchMaterialByName(String materialName, Integer eventId);
 
-    void updateHandlerByMaterialId(Integer materialId, Integer handlerId);
-
-    Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter);
-
     MaterialResponse createMaterial(MaterialRequestForCreating materialRequest, Integer assetId);
 
     void createMultipleMaterials(List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList);
 
     MaterialResponse updateMaterialDataByMaterialId(Integer materialId, MaterialRequestForUpdating materialRequestForUpdating);
+
+    void updateMaterialStatus(Integer materialId, Status statusId);
 }

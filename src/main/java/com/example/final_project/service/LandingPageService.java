@@ -11,7 +11,7 @@ public interface LandingPageService {
 
     FormResponse getFormByEventId(Integer eventId);
 
-    List<EventsByCategory> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<EventsByCategory> searchEvent(String eventName, String categoryName, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     List<PopularEventResponse> getAllPopularEvent();
 

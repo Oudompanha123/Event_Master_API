@@ -4,8 +4,10 @@ import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.Material;
+import com.example.final_project.model.dto.response.material.MaterialResponse;
 import com.example.final_project.util.MaterialSqlScript;
 import org.apache.ibatis.annotations.*;
 
@@ -43,11 +45,6 @@ public interface MaterialRepository {
         from material WHERE event_id = #{eventId};
     """)
     MaterialStatusCount getMaterialStatusCount(Integer eventId);
-
-    @Select("""
-        UPDATE material SET status = #{status} WHERE material_id = #{materialId};
-    """)
-    void updateMaterialStatus(Integer materialId, Status status);
 
     @Delete("""
         DELETE FROM material WHERE material_id = #{materialId};
@@ -91,17 +88,6 @@ public interface MaterialRepository {
     @ResultMap("materialMapper")
     List<Material> searchMaterialByName(String materialName, Integer eventId);
 
-    @Update("""
-        UPDATE material SET handler_id = #{handlerId} WHERE material_id = #{materialId};
-    """)
-    void updateHandlerByMaterialId(Integer materialId, Integer handlerId);
-
-    @Select("""
-        UPDATE material SET supporters = #{supporter.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
-        WHERE material_id = #{materialId} RETURNING supporters;
-    """)
-    Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter);
-
     @Select("""
         INSERT INTO material
         VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit}, 'No Remark',
@@ -114,4 +100,23 @@ public interface MaterialRepository {
     @Result(property = "eventId", column = "event_id")
     @Result(property = "toGet", column = "to_get")
     Material createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
+
+    @Select("""
+        UPDATE material
+        SET material_name = #{material.materialName},
+            qty = #{material.qty},
+            to_get = #{material.toGet},
+            unit = #{material.unit},
+            status = #{material.status},
+            due_date = #{material.dueDate},
+            handler_id = #{material.handlerId},
+            supporters = #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
+        WHERE material_id = #{materialId}
+    """)
+    MaterialResponse updateMaterialDataByMaterialId(Integer materialId,@Param("material") MaterialRequestForUpdating materialRequestForUpdating);
+
+    @Select("""
+        UPDATE material SET status = #{status} WHERE material_id = #{materialId};
+    """)
+    void updateMaterialStatus(Integer materialId, Status status);
 }

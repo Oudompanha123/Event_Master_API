@@ -29,7 +29,6 @@ public class MaterialRequestForUpdating {
     private String unit;
     @NotNull
     private Status status;
-    private LocalDate assignDate;
     private LocalDate dueDate;
     @NotNull
     @Positive

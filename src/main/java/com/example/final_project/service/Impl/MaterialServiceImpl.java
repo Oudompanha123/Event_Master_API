@@ -53,23 +53,6 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public void updateMaterialStatus(Integer materialId, Status status) {
-
-        // check permission, if role user and is not a handler, don't have permission to change status
-        Integer memberId = Token.getMemberIdByToken();
-        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
-        if(member.getRole().equals(Roles.ROLE_USER)){
-            Material materialResponse = materialRepository.getMaterialById(materialId);
-            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
-                throw new BadRequestException("You don't have permission to change status even if You are a handler");
-        }
-
-        if(materialRepository.getMaterialById(materialId) == null)
-            throw new NotFoundException("Material id : " + materialId + " not found");
-        materialRepository.updateMaterialStatus(materialId, status);
-    }
-
-    @Override
     public void deleteMaterialById(Integer materialId) {
         if(materialRepository.getMaterialById(materialId) == null)
             throw new NotFoundException("Material id : " + materialId + " not found");
@@ -100,26 +83,6 @@ public class MaterialServiceImpl implements MaterialService {
         if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
             throw new NotFoundException("Event id : " + eventId + " not found");
         return materialRepository.searchMaterialByName(materialName, eventId);
-    }
-
-    @Override
-    public void updateHandlerByMaterialId(Integer materialId, Integer handlerId) {
-        if(materialRepository.getMaterialById(materialId) == null)
-            throw new NotFoundException("Material id : " + materialId + " not found");
-
-        if(memberRepository.getMemberByMemberId(handlerId, Token.getOrgIdByToken()) == null)
-            throw new NotFoundException("Handler id : " + handlerId + " not found");
-
-        materialRepository.updateHandlerByMaterialId(materialId, handlerId);
-    }
-
-    @Override
-    public Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter) {
-        // check material id exists or not
-        if(materialRepository.getMaterialById(materialId) == null)
-            throw new NotFoundException("Material id : " + materialId + " not found");
-
-        return materialRepository.updateSupportersByMaterialId(materialId, supporter);
     }
 
     @Override
@@ -188,6 +151,43 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public MaterialResponse updateMaterialDataByMaterialId(Integer materialId, MaterialRequestForUpdating materialRequestForUpdating) {
-        return null;
+
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+        // check permission, if role user and is not a handler, don't have permission to change status
+        Integer memberId = Token.getMemberIdByToken();
+        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
+        if(member.getRole().equals(Roles.ROLE_USER)){
+            Material materialResponse = materialRepository.getMaterialById(materialId);
+            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
+                throw new BadRequestException("You don't have permission to change status even if You are a handler");
+        }
+
+        // check handler id exists or not
+        if(memberRepository.getMemberByMemberId(materialRequestForUpdating.getHandlerId(), Token.getOrgIdByToken()) == null)
+            throw new NotFoundException("Handler id : " + materialRequestForUpdating.getHandlerId() + " not found");
+
+        // check toGet must be <= desire material qty that use in event
+        if(materialRequestForUpdating.getToGet() > materialRequestForUpdating.getQty())
+            throw new BadRequestException("The toGet cannot be greater than material qty that use in event");
+
+        return materialRepository.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating);
+    }
+
+    @Override
+    public void updateMaterialStatus(Integer materialId, Status status) {
+
+        // check permission, if role user and is not a handler, don't have permission to change status
+        Integer memberId = Token.getMemberIdByToken();
+        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
+        if(member.getRole().equals(Roles.ROLE_USER)){
+            Material materialResponse = materialRepository.getMaterialById(materialId);
+            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
+                throw new BadRequestException("You don't have permission to change status even if You are a handler");
+        }
+
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+        materialRepository.updateMaterialStatus(materialId, status);
     }
 }

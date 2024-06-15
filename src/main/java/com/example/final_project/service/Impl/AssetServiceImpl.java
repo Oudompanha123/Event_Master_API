@@ -72,9 +72,13 @@ public class AssetServiceImpl implements AssetService {
 
         // check duplicate asset name
         List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
-        for(String assetName : assetNames)
-            if(assetName.equalsIgnoreCase(assetRequest.getAssetName()))
+        for(String assetName : assetNames){
+            if(assetName.equalsIgnoreCase(assetRequest.getAssetName())){
+                if(asset.getAssetName().equalsIgnoreCase(assetRequest.getAssetName()))
+                    break;
                 throw new BadRequestException("Duplicate asset name");
+            }
+        }
 
         return assetRepository.updateAsset(id, assetRequest, Token.getOrgIdByToken());
     }

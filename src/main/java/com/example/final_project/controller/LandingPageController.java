@@ -54,7 +54,7 @@ public class LandingPageController {
     @Operation(summary = "Search and filter")
     public ResponseEntity<?> searchEvent(
             @RequestParam(required = false) String eventName,
-            @RequestParam(required = false) @Positive Integer categoryId,
+            @RequestParam(required = false) String categoryName,
             @Parameter(description = "Available values : false = close, true = open")
             @RequestParam(required = false) Boolean status,
             @Parameter(description = "Format : yyyy-mm-ddThh:mm:ss. Example : 2024-06-04T12:00:00")
@@ -63,7 +63,7 @@ public class LandingPageController {
             @RequestParam(required = false) LocalDateTime endDateTime
     ){
         return GetResponse.getResponse("Search event successfully",
-                landingPageService.searchEvent(eventName, categoryId, status, startDateTime, endDateTime));
+                landingPageService.searchEvent(eventName, categoryName, status, startDateTime, endDateTime));
     }
 
     @GetMapping("/getAllCategoryNames")

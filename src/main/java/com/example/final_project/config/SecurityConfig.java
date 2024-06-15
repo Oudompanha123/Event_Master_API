@@ -106,7 +106,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/deletes").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/materials/create").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/materials/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/materials/handler/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/materials/update/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/materials/supporters/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         .anyRequest().authenticated())

@@ -44,7 +44,7 @@ create table asset
     asset_name varchar(40) not null,
     qty        decimal(6, 2)   not null,
     unit       varchar(20) not null,
-    created_at   date    default current_date,
+    created_at   timestamp    default current_timestamp,
     org_id     integer     not null,
     constraint org_id_asset_fk
         foreign key (org_id)
