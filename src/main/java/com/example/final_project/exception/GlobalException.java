@@ -62,51 +62,35 @@ public class GlobalException {
         return problemDetail;
     }
 
-//    @ExceptionHandler(HandlerMethodValidationException.class)
-//    public ProblemDetail handlerMethodValidationException(HandlerMethodValidationException ex){
-//        Map<String, String> errors = new HashMap<>();
-//
-//        for (var parameterError : ex.getAllValidationResults()){
-//            String parameterName = parameterError.getMethodParameter().getParameterName();
-//            for (var error : parameterError.getResolvableErrors()){
-//                errors.put(parameterName, error.getDefaultMessage());
-//            }
-//        }
-//
-//        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-//        problemDetail.setTitle("Bad Request");
-//        problemDetail.setProperty("Errors", errors);
-//        return problemDetail;
-//    }
-@ExceptionHandler(HandlerMethodValidationException.class)
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public ProblemDetail handleMethodValidationException(HandlerMethodValidationException ex) {
-    Map<String, String> errors = new HashMap<>();
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleMethodValidationException(HandlerMethodValidationException ex) {
+        Map<String, String> errors = new HashMap<>();
 
-    // Iterate over all validation results
-    for (var parameterError : ex.getAllValidationResults()) {
-        // Get parameter name
-        String parameterName = parameterError.getMethodParameter().getParameterName();
+        // Iterate over all validation results
+        for (var parameterError : ex.getAllValidationResults()) {
+            // Get parameter name
+            String parameterName = parameterError.getMethodParameter().getParameterName();
 
-        // Iterate over all resolvable errors for the parameter
-        for (var error : parameterError.getResolvableErrors()) {
-            // Check if error is an instance of FieldError for detailed field information
-            if (error instanceof FieldError fieldError) {
-                String fieldName = fieldError.getField();
-                String errorMessage = fieldError.getDefaultMessage();
-                errors.put(fieldName, errorMessage);
-            } else {
-                errors.put(parameterName, error.getDefaultMessage());
+            // Iterate over all resolvable errors for the parameter
+            for (var error : parameterError.getResolvableErrors()) {
+                // Check if error is an instance of FieldError for detailed field information
+                if (error instanceof FieldError fieldError) {
+                    String fieldName = fieldError.getField();
+                    String errorMessage = fieldError.getDefaultMessage();
+                    errors.put(fieldName, errorMessage);
+                } else {
+                    errors.put(parameterName, error.getDefaultMessage());
+                }
             }
         }
+
+        // Create and return ProblemDetail object
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setProperty("Errors", errors);
+
+        return problemDetail;
     }
-
-    // Create and return ProblemDetail object
-    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-    problemDetail.setTitle("Bad Request");
-    problemDetail.setProperty("Errors", errors);
-
-    return problemDetail;
-}
 
 }
