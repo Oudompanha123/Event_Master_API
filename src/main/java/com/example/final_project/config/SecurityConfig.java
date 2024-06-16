@@ -45,7 +45,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole( "ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/members/{memberId}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/members/{memberId}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/members/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/members/search").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // category controller
                         .requestMatchers(HttpMethod.GET, "/api/categories").hasAnyRole("ADMIN", "SUB_ADMIN")
@@ -58,7 +58,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.GET, "/api/events").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/events/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/events/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/events/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/events/{eventId}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/events/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/events/active/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN")
@@ -74,7 +74,7 @@ public class SecurityConfig{
 
                         // asset controller
                         .requestMatchers(HttpMethod.GET, "/api/assets").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/assets/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/assets/search").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/assets/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/assets/update/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/assets/create").hasAnyRole("ADMIN", "SUB_ADMIN")
@@ -86,9 +86,10 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.PUT, "/api/agendas/{agendaId}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // attendee controller
+                        .requestMatchers(HttpMethod.POST, "/api/attendees/create").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/attendees/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/attendees/{attendeeId}").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/attendees/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/attendees/search").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // profile controller
                         .requestMatchers(HttpMethod.GET, "/api/profiles").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
@@ -100,7 +101,7 @@ public class SecurityConfig{
                         // material controller
                         .requestMatchers(HttpMethod.GET, "/api/materials/getAll/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/materials/count-status/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST, "/api/materials/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/materials/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/materials/status/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/delete/{materialId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/materials/deletes").hasAnyRole("ADMIN", "SUB_ADMIN")

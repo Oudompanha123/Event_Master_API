@@ -32,7 +32,7 @@ public class AssetController {
                 assetService.getTotalAssetRecords(), assetService.findALlAsset(offset,limit));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search all assets by name")
     public ResponseEntity<?> getAssetByName(
             @RequestParam(required = false) String name,

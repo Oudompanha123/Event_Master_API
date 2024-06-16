@@ -50,7 +50,7 @@ public class AttendeeController {
         return GetResponse.getResponse("Delete attendee id : " + attendeeId + "  successfully", null);
     }
     @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search attendees by name")
     public ResponseEntity<?> searchAttendeeByNameOrPhone(
             @RequestParam @Positive @NotNull Integer eventId,

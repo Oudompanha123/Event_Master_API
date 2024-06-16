@@ -50,7 +50,7 @@ public class LandingPageController {
                 landingPageService.getFormByEventId(eventId));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search and filter")
     public ResponseEntity<?> searchEvent(
             @RequestParam(required = false) String eventName,

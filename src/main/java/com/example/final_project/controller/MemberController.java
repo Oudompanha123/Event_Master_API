@@ -49,7 +49,7 @@ public class MemberController {
         return UpdateResponse.updateResponse("Update role successfully", memberService.updateMemberRole(memberId, role));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "search by name")
     public ResponseEntity<?> searchMemberByName(
             @RequestParam @NotNull String memberName,

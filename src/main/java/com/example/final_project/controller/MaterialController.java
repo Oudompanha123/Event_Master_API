@@ -62,7 +62,7 @@ public class MaterialController {
         return GetResponse.getResponse("Delete materials by id list successfully", null);
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search materials by name")
     public ResponseEntity<?> SearchMaterialByName(
             @RequestParam @NotNull String materialName,

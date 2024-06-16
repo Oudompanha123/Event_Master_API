@@ -76,7 +76,7 @@ public class EventController {
         return UpdateResponse.updateResponse("Update event id : " + eventId + " to '" + active + "' successfully", null);
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search and filter")
     public ResponseEntity<?> searchEvent(
             @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
