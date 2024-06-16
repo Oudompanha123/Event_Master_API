@@ -133,7 +133,7 @@ public interface MemberRepository {
     List<MemberResponse> getAllMembers(Integer offset, Integer limit, Integer orgId);
 
     @Select("""
-        SELECT * FROM member WHERE member_id = #{memberId}
+        SELECT * FROM member WHERE member_id = #{memberId} AND org_id = #{orgId}
     """)
     @Results(id = "memberMappers", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -141,7 +141,7 @@ public interface MemberRepository {
             @Result(property = "dateOfBirth", column = "date_of_birth"),
             @Result(property = "organization", column = "org_id", one = @One(select = "getOrganizationById"))
     })
-    Member getMemberByMemberId(Integer memberId);
+    Member getMemberByMemberId(Integer memberId, Integer orgId);
 
     @Select("""
         DELETE FROM member WHERE member_id = #{memberId}

@@ -4,6 +4,7 @@ import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -47,17 +48,6 @@ public class MaterialController {
                 materialService.countMaterialByStatus(eventId));
     }
 
-    @PutMapping("/status/{materialId}")
-    @Operation(summary = "Update material status by id")
-    public ResponseEntity<?> updateMaterialStatus(
-            @PathVariable @Positive @NotNull Integer materialId,
-            @RequestParam  Status status
-    ) {
-        materialService.updateMaterialStatus(materialId, status);
-        return UpdateResponse.updateResponse("Update status to " + status + " successfully",
-              null );
-    }
-
     @DeleteMapping("/delete/{materialId}")
     @Operation(summary = "Delete material by id")
     public ResponseEntity<?> deleteMaterialById(@PathVariable @Positive @NotNull Integer materialId) {
@@ -83,25 +73,14 @@ public class MaterialController {
                 materialService.SearchMaterialByName(materialName, eventId));
     }
 
-    @PutMapping("/handler/{materialId}")
-    @Operation(summary = "Update handler by material id")
-    public ResponseEntity<?> updateHandlerByMaterialId(
+    @PutMapping("/update/{materialId}")
+    @Operation(summary = "Update material data by material id")
+    public ResponseEntity<?> updateMaterialDataByMaterialId(
             @PathVariable @Positive @NotNull Integer materialId,
-            @RequestParam @Positive @NotNull Integer handlerId
+            @RequestBody MaterialRequestForUpdating materialRequestForUpdating
     ) {
-        materialService.updateHandlerByMaterialId(materialId, handlerId);
-        return UpdateResponse.updateResponse("Update handler successfully",
-                null );
-    }
-
-    @PutMapping("/supporters/{materialId}")
-    @Operation(summary = "Update supporters by material id")
-    public ResponseEntity<?> updateSupportersByMaterialId(
-            @PathVariable @Positive @NotNull Integer materialId,
-            @RequestBody Supporter supporter
-            ) {
-        return UpdateResponse.updateResponse("Update supporters successfully",
-                materialService.updateSupportersByMaterialId(materialId, supporter) );
+        return UpdateResponse.updateResponse("Update material data successfully",
+                materialService.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating) );
     }
 
     @PostMapping("/create")
@@ -119,5 +98,16 @@ public class MaterialController {
     public ResponseEntity<?> createMultipleMaterials(@RequestBody @Valid List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList) {
         materialService.createMultipleMaterials(materialRequestForMultiCreateList);
         return PostResponse.postResponse("Create multiple materials successfully", null);
+    }
+
+    @PutMapping("/status/{materialId}")
+    @Operation(summary = "Update material status by id")
+    public ResponseEntity<?> updateMaterialStatus(
+            @PathVariable @Positive @NotNull Integer materialId,
+            @RequestParam  Status status
+    ) {
+        materialService.updateMaterialStatus(materialId, status);
+        return UpdateResponse.updateResponse("Update status to " + status + " successfully",
+                null );
     }
 }

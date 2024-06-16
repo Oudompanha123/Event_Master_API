@@ -14,6 +14,7 @@ public class Material {
     private int materialId;
     private String materialName;
     private float qty;
+    private float toGet;
     private String unit;
     private LocalDate assignDate;
     private LocalDate dueDate;

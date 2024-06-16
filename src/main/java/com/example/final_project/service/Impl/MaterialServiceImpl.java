@@ -10,9 +10,10 @@ import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.Material;
-import com.example.final_project.model.dto.response.material.MaterialResponseForCreating;
+import com.example.final_project.model.dto.response.material.MaterialResponse;
 import com.example.final_project.repository.AssetRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.repository.MaterialRepository;
@@ -52,23 +53,6 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public void updateMaterialStatus(Integer materialId, Status status) {
-
-        // check permission, if role user and is not a handler, don't have permission to change status
-        Integer memberId = Token.getMemberIdByToken();
-        Member member = memberRepository.getMemberByMemberId(memberId);
-        if(member.getRole().equals(Roles.ROLE_USER)){
-            Material materialResponse = materialRepository.getMaterialById(materialId);
-            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
-                throw new BadRequestException("You don't have permission to change status even if You are a handler");
-        }
-
-        if(materialRepository.getMaterialById(materialId) == null)
-            throw new NotFoundException("Material id : " + materialId + " not found");
-        materialRepository.updateMaterialStatus(materialId, status);
-    }
-
-    @Override
     public void deleteMaterialById(Integer materialId) {
         if(materialRepository.getMaterialById(materialId) == null)
             throw new NotFoundException("Material id : " + materialId + " not found");
@@ -102,34 +86,18 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public void updateHandlerByMaterialId(Integer materialId, Integer handlerId) {
-        if(materialRepository.getMaterialById(materialId) == null)
-            throw new NotFoundException("Material id : " + materialId + " not found");
-
-        if(memberRepository.getMemberByMemberId(handlerId) == null)
-            throw new NotFoundException("Handler id : " + handlerId + " not found");
-
-        materialRepository.updateHandlerByMaterialId(materialId, handlerId);
-    }
-
-    @Override
-    public Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter) {
-        // check material id exists or not
-        if(materialRepository.getMaterialById(materialId) == null)
-            throw new NotFoundException("Material id : " + materialId + " not found");
-
-        return materialRepository.updateSupportersByMaterialId(materialId, supporter);
-    }
-
-    @Override
-    public MaterialResponseForCreating createMaterial(MaterialRequestForCreating materialRequest, Integer assetId) {
+    public MaterialResponse createMaterial(MaterialRequestForCreating materialRequest, Integer assetId) {
         // check handler id exists or not
-        if(memberRepository.getMemberByMemberId(materialRequest.getHandlerId()) == null)
+        if(memberRepository.getMemberByMemberId(materialRequest.getHandlerId(), Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Handler id : " + materialRequest.getHandlerId() + " Not found");
 
         // check event id exists or not
         if(eventRepository.getEventById(Token.getOrgIdByToken(), materialRequest.getEventId()) == null)
             throw new NotFoundException("Event id : " + materialRequest.getEventId() + " Not found");
+
+        // check toGet must be <= desire material qty that use in event
+        if(materialRequest.getToGet() > materialRequest.getQty())
+            throw new BadRequestException("The toGet cannot be greater than material qty that use in event");
 
         // if asset id is passed, update asset qty
         if(assetId != null){
@@ -148,18 +116,28 @@ public class MaterialServiceImpl implements MaterialService {
                 if(!asset.getAssetName().equalsIgnoreCase(materialRequest.getMaterialName()))
                     throw new BadRequestException("Asset id : " + assetId + ", name is not match with material name");
 
-                // check asset qty is enough to create material or not
-                if(asset.getQty() < materialRequest.getQty()){
-                    throw new BadRequestException("Asset id : " + assetId + ", qty is not enough to create material");
+                // if desire material qty in event is greater than asset qty, update new asset qty new 0
+                float newAssetQty;
+                if(asset.getQty() - materialRequest.getQty() < 0f) {
+                    newAssetQty = 0f;
+                    if (materialRequest.getToGet() != materialRequest.getQty() - asset.getQty())
+                        throw new BadRequestException("toGet must be equal to " + (materialRequest.getQty() - asset.getQty()));
+
+                }else{
+                    // if asset is enough to create material, that means
+                    // don't need to buy more material so (toGet = 0)
+                    if(materialRequest.getToGet() != 0)
+                        throw new BadRequestException("toGet must be equal to 0 because asset qty is enough to create material");
+                    newAssetQty = asset.getQty() - materialRequest.getQty();
                 }
 
                 // update asset qty
-                assetRepository.updateAssetQty(assetId, Token.getOrgIdByToken(), asset.getQty() - materialRequest.getQty());
+                assetRepository.updateAssetQty(assetId, Token.getOrgIdByToken(), newAssetQty);
             }
         }
 
         // create material
-        return modelMapper.map(materialRepository.createMaterial(materialRequest), MaterialResponseForCreating.class);
+        return modelMapper.map(materialRepository.createMaterial(materialRequest), MaterialResponse.class);
     }
 
     @Override
@@ -169,5 +147,47 @@ public class MaterialServiceImpl implements MaterialService {
             materialRequestForCreating = modelMapper.map(materialRequestForMultiCreate, MaterialRequestForCreating.class);
             createMaterial(materialRequestForCreating, materialRequestForMultiCreate.getAssetId());
         }
+    }
+
+    @Override
+    public MaterialResponse updateMaterialDataByMaterialId(Integer materialId, MaterialRequestForUpdating materialRequestForUpdating) {
+
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+        // check permission, if role user and is not a handler, don't have permission to change status
+        Integer memberId = Token.getMemberIdByToken();
+        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
+        if(member.getRole().equals(Roles.ROLE_USER)){
+            Material materialResponse = materialRepository.getMaterialById(materialId);
+            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
+                throw new BadRequestException("You don't have permission to change status even if You are a handler");
+        }
+
+        // check handler id exists or not
+        if(memberRepository.getMemberByMemberId(materialRequestForUpdating.getHandlerId(), Token.getOrgIdByToken()) == null)
+            throw new NotFoundException("Handler id : " + materialRequestForUpdating.getHandlerId() + " not found");
+
+        // check toGet must be <= desire material qty that use in event
+        if(materialRequestForUpdating.getToGet() > materialRequestForUpdating.getQty())
+            throw new BadRequestException("The toGet cannot be greater than material qty that use in event");
+
+        return materialRepository.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating);
+    }
+
+    @Override
+    public void updateMaterialStatus(Integer materialId, Status status) {
+
+        // check permission, if role user and is not a handler, don't have permission to change status
+        Integer memberId = Token.getMemberIdByToken();
+        Member member = memberRepository.getMemberByMemberId(memberId, Token.getOrgIdByToken());
+        if(member.getRole().equals(Roles.ROLE_USER)){
+            Material materialResponse = materialRepository.getMaterialById(materialId);
+            if(!Objects.equals(memberId, materialResponse.getHandlerId()))
+                throw new BadRequestException("You don't have permission to change status even if You are a handler");
+        }
+
+        if(materialRepository.getMaterialById(materialId) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
+        materialRepository.updateMaterialStatus(materialId, status);
     }
 }

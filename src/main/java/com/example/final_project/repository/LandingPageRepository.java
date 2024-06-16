@@ -39,7 +39,7 @@ public interface LandingPageRepository {
             @Result(property = "isOpen", column = "is_open"),
             @Result(property = "orgName", column = "org_name")
     })
-    List<AllFieldInLandingPage> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<AllFieldInLandingPage> searchEvent(String eventName, String categoryName, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     @Select("""
         SELECT

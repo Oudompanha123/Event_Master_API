@@ -4,8 +4,10 @@ import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.Material;
+import com.example.final_project.model.dto.response.material.MaterialResponse;
 import com.example.final_project.util.MaterialSqlScript;
 import org.apache.ibatis.annotations.*;
 
@@ -15,7 +17,7 @@ import java.util.List;
 public interface MaterialRepository {
 
     @Select("""
-        SELECT material_id, material_name, qty, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -29,6 +31,7 @@ public interface MaterialRepository {
             @Result(property = "materialName", column = "material_name"),
             @Result(property = "assignDate", column = "assign_date"),
             @Result(property = "dueDate", column = "due_date"),
+            @Result(property = "toGet", column = "to_get"),
     })
     List<Material> getAllMaterial(Integer eventId);
 
@@ -43,11 +46,6 @@ public interface MaterialRepository {
     """)
     MaterialStatusCount getMaterialStatusCount(Integer eventId);
 
-    @Select("""
-        UPDATE material SET status = #{status} WHERE material_id = #{materialId};
-    """)
-    void updateMaterialStatus(Integer materialId, Status status);
-
     @Delete("""
         DELETE FROM material WHERE material_id = #{materialId};
     """)
@@ -60,7 +58,7 @@ public interface MaterialRepository {
     Integer getMaterialByIds(MultipleDelete materialIds);
 
     @Select("""
-        SELECT material_id, material_name, qty, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -78,7 +76,7 @@ public interface MaterialRepository {
     List<Integer> getAllEventIdInMaterialTable();
 
     @Select("""
-        SELECT material_id, material_name, qty, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -90,26 +88,35 @@ public interface MaterialRepository {
     @ResultMap("materialMapper")
     List<Material> searchMaterialByName(String materialName, Integer eventId);
 
-    @Update("""
-        UPDATE material SET handler_id = #{handlerId} WHERE material_id = #{materialId};
-    """)
-    void updateHandlerByMaterialId(Integer materialId, Integer handlerId);
-
-    @Select("""
-        UPDATE material SET supporters = #{supporter.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
-        WHERE material_id = #{materialId} RETURNING supporters;
-    """)
-    Supporter updateSupportersByMaterialId(Integer materialId, Supporter supporter);
-
     @Select("""
         INSERT INTO material
-        VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit},
-        #{material.remark}, #{material.status}, default, #{material.dueDate}, #{material.handlerId},
-        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId})
+        VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit}, 'No Remark',
+         #{material.status}, default, #{material.dueDate}, #{material.handlerId},
+        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId}, #{material.toGet})
         RETURNING *
     """)
     @ResultMap("materialMapper")
     @Result(property = "handlerId", column = "handler_id")
     @Result(property = "eventId", column = "event_id")
+    @Result(property = "toGet", column = "to_get")
     Material createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
+
+    @Select("""
+        UPDATE material
+        SET material_name = #{material.materialName},
+            qty = #{material.qty},
+            to_get = #{material.toGet},
+            unit = #{material.unit},
+            status = #{material.status},
+            due_date = #{material.dueDate},
+            handler_id = #{material.handlerId},
+            supporters = #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB
+        WHERE material_id = #{materialId}
+    """)
+    MaterialResponse updateMaterialDataByMaterialId(Integer materialId,@Param("material") MaterialRequestForUpdating materialRequestForUpdating);
+
+    @Select("""
+        UPDATE material SET status = #{status} WHERE material_id = #{materialId};
+    """)
+    void updateMaterialStatus(Integer materialId, Status status);
 }

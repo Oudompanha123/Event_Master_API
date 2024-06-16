@@ -36,8 +36,8 @@ public class LandingPageServiceImpl implements LandingPageService {
     }
 
     @Override
-    public List<EventsByCategory> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<AllFieldInLandingPage> allFieldInLandingPages = landingPageRepository.searchEvent(eventName, categoryId, status, startDateTime, endDateTime);
+    public List<EventsByCategory> searchEvent(String eventName, String cateName, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<AllFieldInLandingPage> allFieldInLandingPages = landingPageRepository.searchEvent(eventName, cateName, status, startDateTime, endDateTime);
         List<String> allCateNames = new ArrayList<>();
         for (AllFieldInLandingPage obj : allFieldInLandingPages){
             allCateNames.add(obj.getCateName());

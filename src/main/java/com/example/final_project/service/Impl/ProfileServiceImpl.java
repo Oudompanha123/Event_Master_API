@@ -31,7 +31,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Member updateProfile(Integer profileId, MemberRequest memberRequest) {
-        if(memberRepository.getMemberByMemberId(profileId) == null)
+        if(memberRepository.getMemberByMemberId(profileId, Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Member id : " + profileId + " not found");
         Validation.validatePhoneNumber(memberRequest.getPhone());
         return profileRepository.updateProfile(profileId, memberRequest, Token.getMemberIdByToken());
