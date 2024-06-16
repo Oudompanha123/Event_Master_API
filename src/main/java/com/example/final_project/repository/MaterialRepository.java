@@ -24,7 +24,7 @@ public interface MaterialRepository {
                supporters, status, remark
         FROM (material LEFT JOIN member ON material.handler_id = member.member_id)
             LEFT JOIN member_history ON material.handler_id = member_history.member_id
-        WHERE event_id = #{eventId};
+        WHERE event_id = #{eventId} ORDER BY due_date ;
     """)
     @Results(id = "materialMapper", value = {
             @Result(property = "materialId", column = "material_id"),
@@ -106,7 +106,6 @@ public interface MaterialRepository {
         SET material_name = #{material.materialName},
             qty = #{material.qty},
             to_get = #{material.toGet},
-            unit = #{material.unit},
             status = #{material.status},
             due_date = #{material.dueDate},
             handler_id = #{material.handlerId},

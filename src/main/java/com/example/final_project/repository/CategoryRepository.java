@@ -8,7 +8,7 @@ import java.util.List;
 public interface CategoryRepository {
     @Select("""
         SELECT cate_id, cate_name, created_at, member.member_name as created_by FROM category INNER JOIN member ON
-            category.created_by = member.member_id  WHERE category.org_id = #{orgId} ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset};
+            category.created_by = member.member_id  WHERE category.org_id = #{orgId} ORDER BY update_at DESC LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "categoryMapper", value = {
             @Result(property = "categoryId", column = "cate_id"),
@@ -55,7 +55,7 @@ public interface CategoryRepository {
     Category getCategoryById(Integer cateId, Integer orgId);
 
     @Select("""
-        UPDATE category SET cate_name = #{categoryName} WHERE cate_id = #{categoryId} RETURNING *;
+        UPDATE category SET cate_name = #{categoryName}, update_at = current_timestamp WHERE cate_id = #{categoryId} RETURNING *;
     """)
     @ResultMap("categoryMapper")
     Category updateCategoryById(Integer categoryId, String categoryName);

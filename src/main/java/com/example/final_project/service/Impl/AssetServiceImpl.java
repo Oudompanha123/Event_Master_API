@@ -5,6 +5,7 @@ import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Asset;
 import com.example.final_project.model.dto.request.AssetRequest;
+import com.example.final_project.model.dto.request.AssetRequestUpdate;
 import com.example.final_project.repository.AssetRepository;
 import com.example.final_project.service.AssetService;
 import com.example.final_project.util.Token;
@@ -65,7 +66,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public Asset updateAsset(Integer id, AssetRequest assetRequest) {
+    public Asset updateAsset(Integer id, AssetRequestUpdate assetRequestUpdate) {
         Asset asset = assetRepository.findAssetById(id, Token.getOrgIdByToken());
         if (asset == null)
             throw new NotFoundException("Asset id : " + id + " not found");
@@ -73,14 +74,14 @@ public class AssetServiceImpl implements AssetService {
         // check duplicate asset name
         List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
         for(String assetName : assetNames){
-            if(assetName.equalsIgnoreCase(assetRequest.getAssetName())){
-                if(asset.getAssetName().equalsIgnoreCase(assetRequest.getAssetName()))
+            if(assetName.equalsIgnoreCase(assetRequestUpdate.getAssetName())){
+                if(asset.getAssetName().equalsIgnoreCase(assetRequestUpdate.getAssetName()))
                     break;
                 throw new BadRequestException("Duplicate asset name");
             }
         }
 
-        return assetRepository.updateAsset(id, assetRequest, Token.getOrgIdByToken());
+        return assetRepository.updateAsset(id, assetRequestUpdate, Token.getOrgIdByToken());
     }
 
     @Override

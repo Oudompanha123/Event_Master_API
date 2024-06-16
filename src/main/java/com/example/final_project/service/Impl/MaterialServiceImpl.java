@@ -95,6 +95,14 @@ public class MaterialServiceImpl implements MaterialService {
         if(eventRepository.getEventById(Token.getOrgIdByToken(), materialRequest.getEventId()) == null)
             throw new NotFoundException("Event id : " + materialRequest.getEventId() + " Not found");
 
+        // check valid status value (Issue, Done, OnGoing, Pending)
+//        if(!materialRequest.getStatus().equals("Issue")
+//            || !materialRequest.getStatus().equals("Done")
+//            || !materialRequest.getStatus().equals("OnGoing")
+//            || !materialRequest.getStatus().equals("Pending")
+//        )
+//            throw new BadRequestException("Invalid status : " + materialRequest.getStatus() + ". Correct values: Issue, Done, OnGoing, Pending ");
+
         // check toGet must be <= desire material qty that use in event
         if(materialRequest.getToGet() > materialRequest.getQty())
             throw new BadRequestException("The toGet cannot be greater than material qty that use in event");

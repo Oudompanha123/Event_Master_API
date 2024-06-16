@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -77,7 +78,7 @@ public class MaterialController {
     @Operation(summary = "Update material data by material id")
     public ResponseEntity<?> updateMaterialDataByMaterialId(
             @PathVariable @Positive @NotNull Integer materialId,
-            @RequestBody MaterialRequestForUpdating materialRequestForUpdating
+            @RequestBody @Valid MaterialRequestForUpdating materialRequestForUpdating
     ) {
         return UpdateResponse.updateResponse("Update material data successfully",
                 materialService.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating) );
@@ -104,7 +105,7 @@ public class MaterialController {
     @Operation(summary = "Update material status by id")
     public ResponseEntity<?> updateMaterialStatus(
             @PathVariable @Positive @NotNull Integer materialId,
-            @RequestParam  Status status
+            @RequestParam Status status
     ) {
         materialService.updateMaterialStatus(materialId, status);
         return UpdateResponse.updateResponse("Update status to " + status + " successfully",

@@ -86,7 +86,6 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.PUT, "/api/agendas/{agendaId}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // attendee controller
-                        .requestMatchers(HttpMethod.POST, "/api/attendees/create").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/attendees/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/attendees/{attendeeId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/attendees/search").hasAnyRole("ADMIN", "SUB_ADMIN")

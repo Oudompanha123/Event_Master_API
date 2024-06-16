@@ -3,6 +3,7 @@ package com.example.final_project.service;
 
 import com.example.final_project.model.Asset;
 import com.example.final_project.model.dto.request.AssetRequest;
+import com.example.final_project.model.dto.request.AssetRequestUpdate;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface AssetService {
 
     Asset findAssetById(Integer id);
 
-    Asset updateAsset(Integer id, AssetRequest assetRequest);
+    Asset updateAsset(Integer id, AssetRequestUpdate assetRequestUpdate);
 
     Asset insertAsset(AssetRequest assetRequest);
 

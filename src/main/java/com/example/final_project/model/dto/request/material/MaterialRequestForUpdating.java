@@ -25,9 +25,6 @@ public class MaterialRequestForUpdating {
     @NotNull
     private float toGet;
     @NotNull
-    @NotBlank
-    private String unit;
-    @NotNull
     private Status status;
     private LocalDate dueDate;
     @NotNull
