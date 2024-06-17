@@ -4,8 +4,8 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -22,6 +22,6 @@ public class Event{
     private Boolean isOpen;
     private Boolean isPost;
     private Integer maxAttendee;
-    private Integer categoryId;
+    private Category category;
     private JSONObject form;
 }

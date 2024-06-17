@@ -28,10 +28,9 @@ public interface EventRepository {
         @Result(property = "isOpen", column = "is_open"),
         @Result(property = "isPost", column = "is_post"),
         @Result(property = "form", column = "registration_form"),
-        @Result(property = "categoryId", column = "cate_id")
+        @Result(property = "category", column = "{cateId=cate_id, orgId=org_id}", one = @One(select = "com.example.final_project.repository.CategoryRepository.getCategoryById"))
     })
     List<Event> getAllEvents(Integer orgId, Integer offset, Integer limit);
-
     @Select("""
         SELECT * FROM event WHERE event_id = #{eventId} AND org_id = #{orgId};
     """)

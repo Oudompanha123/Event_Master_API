@@ -52,7 +52,7 @@ public interface CategoryRepository {
         SELECT * FROM category WHERE cate_id = #{cateId} AND org_id = #{orgId};
     """)
     @ResultMap("categoryMapper")
-    Category getCategoryById(Integer cateId, Integer orgId);
+    Category getCategoryById(@Param("cateId") Integer cateId, @Param("orgId") Integer orgId);
 
     @Select("""
         UPDATE category SET cate_name = #{categoryName}, update_at = current_timestamp WHERE cate_id = #{categoryId} RETURNING *;
