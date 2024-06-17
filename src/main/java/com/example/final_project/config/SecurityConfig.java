@@ -42,13 +42,13 @@ public class SecurityConfig{
                         ).permitAll()
 
                         // member controller
-                        .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole( "ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/members").hasAnyRole( "ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/members/{memberId}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/members/{memberId}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/members/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/members/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
 
                         // category controller
-                        .requestMatchers(HttpMethod.GET, "/api/categories").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/categories").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/api/categories").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/categories/{categoryId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/categories/{categoryId}").hasAnyRole("ADMIN", "SUB_ADMIN")
@@ -65,7 +65,7 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.PUT, "/api/events/registration-form/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // dashboard controller
-                        .requestMatchers(HttpMethod.GET, "/api/dashboards").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/dashboards").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
 
                         // user request controller
                         .requestMatchers(HttpMethod.GET, "/api/user-requests").hasAnyRole("ADMIN")
@@ -73,9 +73,9 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.DELETE, "/api/user-requests/reject/{memberId}").hasAnyRole("ADMIN")
 
                         // asset controller
-                        .requestMatchers(HttpMethod.GET, "/api/assets").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/assets/search").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/assets/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/assets").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/assets/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/assets/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/assets/update/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/assets/create").hasAnyRole("ADMIN", "SUB_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/assets/delete/{assetId}").hasAnyRole("ADMIN", "SUB_ADMIN")
@@ -86,9 +86,9 @@ public class SecurityConfig{
                         .requestMatchers(HttpMethod.PUT, "/api/agendas/{agendaId}").hasAnyRole("ADMIN", "SUB_ADMIN")
 
                         // attendee controller
-                        .requestMatchers(HttpMethod.GET, "/api/attendees/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/attendees/{eventId}").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/api/attendees/{attendeeId}").hasAnyRole("ADMIN", "SUB_ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/attendees/search").hasAnyRole("ADMIN", "SUB_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/attendees/search").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")
 
                         // profile controller
                         .requestMatchers(HttpMethod.GET, "/api/profiles").hasAnyRole("ADMIN", "SUB_ADMIN", "USER")

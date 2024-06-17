@@ -22,5 +22,6 @@ public class Event{
     private Boolean isOpen;
     private Boolean isPost;
     private Integer maxAttendee;
+    private Integer categoryId;
     private JSONObject form;
 }

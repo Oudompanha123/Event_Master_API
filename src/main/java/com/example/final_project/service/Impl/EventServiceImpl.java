@@ -51,13 +51,13 @@ public class EventServiceImpl implements EventService {
         // check image format
         Validation.validateImage(eventRequest.getPoster());
         
-        // start date most be later than now
+        // start date must be later than now
         if(eventRequest.getStartDate().isBefore(LocalDateTime.now()))
-            throw new BadRequestException("Start date most be later than now");
+            throw new BadRequestException("Start date must be later than now");
 
-        // check start date most be earlier than end date
+        // check start date must be earlier than end date
         if(eventRequest.getStartDate().isAfter(eventRequest.getEndDate()))
-            throw new BadRequestException("Start date most be earlier than end date");
+            throw new BadRequestException("Start date must be earlier than end date");
 
         // check categoryId in EventRequest has been found in database or not
         if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)

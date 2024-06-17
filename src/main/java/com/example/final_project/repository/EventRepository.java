@@ -20,14 +20,15 @@ public interface EventRepository {
         SELECT * FROM event WHERE org_id = #{orgId} ORDER BY start_date LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "eventMapper", value = {
-            @Result(property = "eventId", column = "event_id"),
-            @Result(property = "eventName", column = "event_name"),
-            @Result(property = "startDate", column = "start_date"),
-            @Result(property = "endDate", column = "end_date"),
-            @Result(property = "maxAttendee", column = "max_attendee"),
-            @Result(property = "isOpen", column = "is_open"),
-            @Result(property = "isPost", column = "is_post"),
-            @Result(property = "form", column = "registration_form")
+        @Result(property = "eventId", column = "event_id"),
+        @Result(property = "eventName", column = "event_name"),
+        @Result(property = "startDate", column = "start_date"),
+        @Result(property = "endDate", column = "end_date"),
+        @Result(property = "maxAttendee", column = "max_attendee"),
+        @Result(property = "isOpen", column = "is_open"),
+        @Result(property = "isPost", column = "is_post"),
+        @Result(property = "form", column = "registration_form"),
+        @Result(property = "categoryId", column = "cate_id")
     })
     List<Event> getAllEvents(Integer orgId, Integer offset, Integer limit);
 

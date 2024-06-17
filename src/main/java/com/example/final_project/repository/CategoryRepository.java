@@ -66,4 +66,10 @@ public interface CategoryRepository {
     """)
     @ResultMap("categoryMapper")
     Category getCategoryByName(String cateName, Integer orgId);
+
+    @Select("""
+        SELECT * FROM category WHERE cate_id = #{cateId};
+    """)
+    @ResultMap("categoryMapper")
+    Category getCategoryByCatId(@Param("cateId") Integer cateId);
 }
