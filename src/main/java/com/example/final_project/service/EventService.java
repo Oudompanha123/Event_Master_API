@@ -4,12 +4,10 @@ import com.example.final_project.model.Event;
 import com.example.final_project.model.constant.Active;
 import com.example.final_project.model.dto.request.event.EventRequest;
 import com.example.final_project.model.dto.request.event.FormRequest;
-import com.example.final_project.model.dto.request.event.SearchEventRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 public interface EventService {
 

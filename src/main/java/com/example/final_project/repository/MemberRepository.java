@@ -8,7 +8,6 @@ import com.example.final_project.model.dto.request.authentication.ForgetPassword
 import com.example.final_project.model.dto.request.authentication.UserRequest;
 import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.member.MemberResponse;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;

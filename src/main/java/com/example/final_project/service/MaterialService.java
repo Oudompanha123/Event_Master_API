@@ -1,7 +1,6 @@
 package com.example.final_project.service;
 
 import com.example.final_project.model.MaterialStatusCount;
-import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
 import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;

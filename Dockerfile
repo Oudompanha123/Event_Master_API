@@ -7,10 +7,10 @@ WORKDIR /app
 COPY *.jar .
 
 #set container port
-EXPOSE 8080
+EXPOSE 8888
 
 #run image
-ENTRYPOINT ["java", "-jar", "event-master-1.0.0.jar"]
+ENTRYPOINT ["java", "-jar", "*.jar"]
 
 #ENTRYPOINT ["java"]
 #CMD ["-jar", "/event-master-1.0.0.jar"]

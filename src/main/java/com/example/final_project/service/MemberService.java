@@ -5,7 +5,6 @@ import com.example.final_project.model.constant.Roles;
 import com.example.final_project.model.dto.request.authentication.AdminRequest;
 import com.example.final_project.model.dto.request.authentication.ForgetPasswordRequest;
 import com.example.final_project.model.dto.request.authentication.UserRequest;
-import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.authentication.RegisterResponse;
 import com.example.final_project.model.dto.response.member.MemberResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;

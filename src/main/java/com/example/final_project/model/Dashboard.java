@@ -3,7 +3,6 @@ package com.example.final_project.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.json.JSONObject;
 
 import java.util.List;
 

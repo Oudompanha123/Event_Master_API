@@ -17,7 +17,7 @@ public interface EventRepository {
     Integer getTotalEventRecords(Integer orgId);
 
     @Select("""
-        SELECT * FROM event WHERE org_id = #{orgId} ORDER BY start_date LIMIT #{limit} OFFSET #{offset};
+        SELECT * FROM event WHERE org_id = #{orgId} ORDER BY created_at DESC LIMIT #{limit} OFFSET #{offset};
     """)
     @Results(id = "eventMapper", value = {
         @Result(property = "eventId", column = "event_id"),
@@ -44,10 +44,10 @@ public interface EventRepository {
     Event getEventByIdNoOrgId(Integer eventId);
     @Select("""
         INSERT INTO event (event_name, start_date, end_date, duration, address, poster, description,
-                is_post, max_attendee, registration_form, cate_id, org_id)
+                is_post, max_attendee, registration_form, cate_id, org_id, created_at)
             VALUES (#{event.eventName}, #{event.startDate}, #{event.endDate}, #{event.duration},
                 #{event.address}, #{event.poster}, #{event.description}, #{event.isPost},
-                #{event.maxAttendee}, #{event.dataJsonString} :: jsonb, #{event.categoryId}, #{orgId})     RETURNING *
+                #{event.maxAttendee}, #{event.dataJsonString} :: jsonb, #{event.categoryId}, #{orgId}, current_timestamp) RETURNING *
     """)
     @ResultMap("eventMapper")
     Event createEvent(Integer orgId, @Param("event") EventRequest eventRequest);
@@ -60,14 +60,14 @@ public interface EventRepository {
     @Select("""
         UPDATE event SET event_name = #{event.eventName}, start_date = #{event.startDate}, end_date = #{event.endDate},
             duration = #{event.duration}, address = #{event.address}, poster = #{event.poster}, description = #{event.description},
-            is_post = #{event.isPost}, max_attendee = #{event.maxAttendee}, cate_id = #{event.categoryId}
+            is_post = #{event.isPost}, max_attendee = #{event.maxAttendee}, cate_id = #{event.categoryId}, created_at = current_timestamp
         WHERE event_id = #{eventId} AND org_id = #{orgId} RETURNING *
     """)
     @ResultMap("eventMapper")
     Event updateEventById(@Param("event") EventRequest eventRequest, Integer eventId, Integer orgId);
 
     @Update("""
-        UPDATE event SET is_open = #{isOpen} WHERE event_id = #{eventId} AND org_id = #{orgId}
+        UPDATE event SET is_open = #{isOpen}, created_at = current_timestamp WHERE event_id = #{eventId} AND org_id = #{orgId}
     """)
     void updateActiveById(Integer eventId, Integer orgId, boolean isOpen);
 
