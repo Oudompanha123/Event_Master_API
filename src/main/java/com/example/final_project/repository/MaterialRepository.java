@@ -104,6 +104,7 @@ public interface MaterialRepository {
         UPDATE material
         SET material_name = #{material.materialName},
             qty = #{material.qty},
+            unit = #{material.unit},
             to_get = #{material.toGet},
             status = #{material.status},
             due_date = #{material.dueDate},

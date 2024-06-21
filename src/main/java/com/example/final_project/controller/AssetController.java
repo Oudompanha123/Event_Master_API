@@ -1,7 +1,6 @@
 package com.example.final_project.controller;
 
 import com.example.final_project.model.dto.request.AssetRequest;
-import com.example.final_project.model.dto.request.AssetRequestUpdate;
 import com.example.final_project.model.dto.response.GetAllResponse;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -54,10 +53,11 @@ public class AssetController {
     @Operation(summary = "Update asset by id")
     public ResponseEntity<?> UpdateAsset(
             @PathVariable("assetId") @Positive @NotNull Integer id,
-            @RequestBody @Valid AssetRequestUpdate assetRequestUpdate
+            @RequestBody @Valid AssetRequest assetRequest
     ) {
-        assetRequestUpdate.setAssetName(assetRequestUpdate.getAssetName().trim());
-        return UpdateResponse.updateResponse("Update asset by id successfully",assetService.updateAsset(id, assetRequestUpdate));
+        assetRequest.setAssetName(assetRequest.getAssetName().trim());
+        assetRequest.setUnit(assetRequest.getUnit().trim());
+        return UpdateResponse.updateResponse("Update asset by id successfully",assetService.updateAsset(id, assetRequest));
     }
 
     @PostMapping("/create")

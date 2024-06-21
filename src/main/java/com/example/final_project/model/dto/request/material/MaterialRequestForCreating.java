@@ -31,7 +31,6 @@ public class MaterialRequestForCreating {
     private String unit;
     @NotNull
     private Status status;
-    private LocalDate assignDate;
     private LocalDate dueDate;
     @Positive
     private Integer handlerId;

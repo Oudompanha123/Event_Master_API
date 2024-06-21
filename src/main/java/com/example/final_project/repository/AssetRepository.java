@@ -2,7 +2,6 @@ package com.example.final_project.repository;
 
 import com.example.final_project.model.Asset;
 import com.example.final_project.model.dto.request.AssetRequest;
-import com.example.final_project.model.dto.request.AssetRequestUpdate;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -41,10 +40,10 @@ public interface AssetRepository {
     Asset insertAsset(@Param("asset") AssetRequest assetRequest, Integer orgId);
 
     @Select("""
-        UPDATE asset SET asset_name = #{asset.assetName}, qty = #{asset.qty}, update_at = current_timestamp WHERE asset_id = #{id} AND org_id = #{orgId} RETURNING *
+        UPDATE asset SET asset_name = #{asset.assetName}, unit = #{asset.unit}, qty = #{asset.qty}, update_at = current_timestamp WHERE asset_id = #{id} AND org_id = #{orgId} RETURNING *
     """)
     @ResultMap("AssetMapper")
-    Asset updateAsset(Integer id, @Param("asset") AssetRequestUpdate assetRequestUpdate, Integer orgId);
+    Asset updateAsset(Integer id, @Param("asset") AssetRequest assetRequest, Integer orgId);
 
     @Delete("""
         DELETE FROM asset where asset_id = #{id} AND org_id = #{orgId};

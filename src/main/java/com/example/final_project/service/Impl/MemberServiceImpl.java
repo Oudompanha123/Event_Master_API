@@ -181,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
                 throw new NotFoundException("Email does not exist");
             Integer memberId = memberRepository.getMemberIdByOtpId(otpId);
             if(!member.getMemberId().equals(memberId))
-                throw new BadRequestException("This otp is not yours");
+                throw new NotFoundException(("Wrong OTP code"));
             // check expired OTP (2 minutes long)
             if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60 * 2)){
                 memberRepository.updateOtpStatus(otpId);
