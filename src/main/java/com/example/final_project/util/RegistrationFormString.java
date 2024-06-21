@@ -106,7 +106,7 @@ public class RegistrationFormString {
     }
     public static String getUnknownCategoryString(){
         return """
-                    { "form " : [
+                    { "form" : [
                         {
                             "id": "1",
                             "type": "text",
