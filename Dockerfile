@@ -1,17 +1,15 @@
-FROM eclipse-temurin:21-jre
+FROM maven:3.9.7-eclipse-temurin-21 AS build
 
-#set current path
 WORKDIR /app
 
-#copy jar file to container
-COPY *.jar .
+COPY . .
 
-#set container port
-EXPOSE 8888
+RUN mvn clean package
 
-#run image
-ENTRYPOINT ["java", "-jar", "*.jar"]
+FROM eclipse-temurin:21-jre
 
-#ENTRYPOINT ["java"]
-#CMD ["-jar", "/event-master-1.0.0.jar"]
+WORKDIR /
 
+COPY --from=build /app/target/*.jar app.jar
+
+CMD ["java", "-jar", "/app.jar"]
