@@ -16,7 +16,7 @@ import java.util.List;
 public interface MaterialRepository {
 
     @Select("""
-        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -29,8 +29,7 @@ public interface MaterialRepository {
             @Result(property = "materialId", column = "material_id"),
             @Result(property = "materialName", column = "material_name"),
             @Result(property = "assignDate", column = "assign_date"),
-            @Result(property = "dueDate", column = "due_date"),
-            @Result(property = "toGet", column = "to_get"),
+            @Result(property = "dueDate", column = "due_date")
     })
     List<Material> getAllMaterial(Integer eventId);
 
@@ -57,7 +56,7 @@ public interface MaterialRepository {
     Integer getMaterialByIds(MultipleDelete materialIds);
 
     @Select("""
-        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
@@ -75,7 +74,7 @@ public interface MaterialRepository {
     List<Integer> getAllEventIdInMaterialTable();
 
     @Select("""
-        SELECT material_id, material_name, qty, to_get, unit, assign_date, due_date,
+        SELECT material_id, material_name, qty, unit, assign_date, due_date,
                coalesce(member.member_name, member_history.member_name) AS handlerName,
                coalesce(member.member_id, member_history.member_id) AS handlerId,
                coalesce(member.picture, member_history.picture) AS picture,
