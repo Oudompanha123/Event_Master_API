@@ -91,13 +91,12 @@ public interface MaterialRepository {
         INSERT INTO material
         VALUES (default, #{material.materialName}, #{material.qty}, #{material.unit}, 'No Remark',
          #{material.status}, default, #{material.dueDate}, #{material.handlerId},
-        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId}, #{material.toGet})
+        #{material.supporters, typeHandler = com.example.final_project.config.JsonbTypeHandler} :: JSONB, #{material.eventId})
         RETURNING *
     """)
     @ResultMap("materialMapper")
     @Result(property = "handlerId", column = "handler_id")
     @Result(property = "eventId", column = "event_id")
-    @Result(property = "toGet", column = "to_get")
     Material createMaterial(@Param("material") MaterialRequestForCreating materialRequest);
 
     @Select("""
@@ -105,7 +104,6 @@ public interface MaterialRepository {
         SET material_name = #{material.materialName},
             qty = #{material.qty},
             unit = #{material.unit},
-            to_get = #{material.toGet},
             status = #{material.status},
             due_date = #{material.dueDate},
             handler_id = #{material.handlerId},

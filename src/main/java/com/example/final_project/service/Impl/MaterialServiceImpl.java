@@ -85,63 +85,16 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public MaterialResponse createMaterial(MaterialRequestForCreating materialRequest, Integer assetId) {
+    public MaterialResponse createMaterial(MaterialRequestForCreating materialRequest) {
 
         if(materialRequest.getHandlerId() == null)
             materialRequest.setHandlerId(null);
+        else if(memberRepository.getMemberByMemberId(materialRequest.getHandlerId(), Token.getOrgIdByToken()) == null)
+            throw new NotFoundException("Member id : " + materialRequest.getHandlerId() + " Not found");
 
         // check event id exists or not
         if(eventRepository.getEventById(Token.getOrgIdByToken(), materialRequest.getEventId()) == null)
             throw new NotFoundException("Event id : " + materialRequest.getEventId() + " Not found");
-
-        // check valid status value (Issue, Done, OnGoing, Pending)
-//        if(!materialRequest.getStatus().equals("Issue")
-//            || !materialRequest.getStatus().equals("Done")
-//            || !materialRequest.getStatus().equals("OnGoing")
-//            || !materialRequest.getStatus().equals("Pending")
-//        )
-//            throw new BadRequestException("Invalid status : " + materialRequest.getStatus() + ". Correct values: Issue, Done, OnGoing, Pending ");
-
-        // check toGet must be <= desire material qty that use in event
-        if(materialRequest.getToGet() > materialRequest.getQty())
-            throw new BadRequestException("The toGet cannot be greater than material qty that use in event");
-
-        // if asset id is passed, update asset qty
-        if(assetId != null){
-            // check asset id exists or not
-            if(assetRepository.findAssetById(assetId, Token.getOrgIdByToken()) == null){
-                throw new NotFoundException("Asset id : " + assetId + " Not found");
-            }
-            else{
-                Asset asset = assetRepository.findAssetById(assetId, Token.getOrgIdByToken());
-
-                // check asset unit is match with material unit or not
-                if(!asset.getUnit().equalsIgnoreCase(materialRequest.getUnit()))
-                    throw new BadRequestException("Asset id : " + assetId + ", unit is not match with material unit");
-
-                // check asset name is match with material name or not
-                if(!asset.getAssetName().equalsIgnoreCase(materialRequest.getMaterialName()))
-                    throw new BadRequestException("Asset id : " + assetId + ", name is not match with material name");
-
-                // if desire material qty in event is greater than asset qty, update new asset qty new 0
-                float newAssetQty;
-                if(asset.getQty() - materialRequest.getQty() < 0f) {
-                    newAssetQty = 0f;
-                    if (materialRequest.getToGet() != materialRequest.getQty() - asset.getQty())
-                        throw new BadRequestException("toGet must be equal to " + (materialRequest.getQty() - asset.getQty()));
-
-                }else{
-                    // if asset is enough to create material, that means
-                    // don't need to buy more material so (toGet = 0)
-                    if(materialRequest.getToGet() != 0)
-                        throw new BadRequestException("toGet must be equal to 0 because asset qty is enough to create material");
-                    newAssetQty = asset.getQty() - materialRequest.getQty();
-                }
-
-                // update asset qty
-                assetRepository.updateAssetQty(assetId, Token.getOrgIdByToken(), newAssetQty);
-            }
-        }
 
         // create material
         return modelMapper.map(materialRepository.createMaterial(materialRequest), MaterialResponse.class);
@@ -152,7 +105,7 @@ public class MaterialServiceImpl implements MaterialService {
         MaterialRequestForCreating materialRequestForCreating;
         for(MaterialRequestForMultiCreate materialRequestForMultiCreate : materialRequestForMultiCreateList){
             materialRequestForCreating = modelMapper.map(materialRequestForMultiCreate, MaterialRequestForCreating.class);
-            createMaterial(materialRequestForCreating, materialRequestForMultiCreate.getAssetId());
+            createMaterial(materialRequestForCreating);
         }
     }
 
@@ -177,10 +130,6 @@ public class MaterialServiceImpl implements MaterialService {
         // check handler id exists or not
         if(memberRepository.getMemberByMemberId(materialRequestForUpdating.getHandlerId(), Token.getOrgIdByToken()) == null)
             throw new NotFoundException("Handler id : " + materialRequestForUpdating.getHandlerId() + " not found");
-
-        // check toGet must be <= desire material qty that use in event
-        if(materialRequestForUpdating.getToGet() > materialRequestForUpdating.getQty())
-            throw new BadRequestException("The toGet cannot be greater than material qty that use in event");
 
         return materialRepository.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating);
     }

@@ -38,5 +38,4 @@ public class MaterialRequestForMultiCreate {
     @Positive
     private Integer eventId;
     private JSONObject supporters;
-    private Integer assetId;
 }

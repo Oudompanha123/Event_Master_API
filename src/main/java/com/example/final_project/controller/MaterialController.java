@@ -85,11 +85,10 @@ public class MaterialController {
     @PostMapping("/create")
     @Operation(summary = "Create material")
     public ResponseEntity<?> createMaterial(
-            @RequestBody @Valid MaterialRequestForCreating materialRequest,
-            @RequestParam(required = false) @Positive Integer assetId
+            @RequestBody @Valid MaterialRequestForCreating materialRequest
             ) {
         return PostResponse.postResponse("create material successfully",
-                materialService.createMaterial(materialRequest, assetId));
+                materialService.createMaterial(materialRequest));
     }
 
     @PostMapping("/multipleCreate")

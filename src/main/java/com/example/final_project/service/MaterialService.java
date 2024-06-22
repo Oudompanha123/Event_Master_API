@@ -24,7 +24,7 @@ public interface MaterialService {
 
     List<Material> SearchMaterialByName(String materialName, Integer eventId);
 
-    MaterialResponse createMaterial(MaterialRequestForCreating materialRequest, Integer assetId);
+    MaterialResponse createMaterial(MaterialRequestForCreating materialRequest);
 
     void createMultipleMaterials(List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList);
 
