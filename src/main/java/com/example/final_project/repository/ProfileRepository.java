@@ -20,7 +20,10 @@ public interface ProfileRepository {
     MemberProfileResponse findProfile(Integer memberId, Integer orgId);
 
     @Select("""
-        UPDATE member SET member_name = #{profile.memberName}, gender = #{profile.gender}, phone = #{profile.phone}, picture = #{profile.picture}  WHERE member_id = #{profileId} AND org_id = #{orgId}
+        UPDATE member
+        SET member_name = #{profile.memberName}, gender = #{profile.gender},
+            phone = #{profile.phone}, address = #{profile.address}, picture = #{profile.picture},
+            date_of_birth = #{profile.dateOfBirth}  WHERE member_id = #{profileId} AND org_id = #{orgId} RETURNING *;
     """)
     Member updateProfile(Integer profileId, @Param("profile") MemberRequest memberRequest, Integer orgId);
 
