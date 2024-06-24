@@ -1,6 +1,5 @@
 package com.example.final_project.service;
 
-import com.example.final_project.model.Member;
 import com.example.final_project.model.Organization;
 import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.request.profile.MemberRequest;
@@ -10,7 +9,7 @@ import com.example.final_project.model.dto.response.profile.MemberProfileRespons
 public interface ProfileService {
     MemberProfileResponse findProfileMember();
 
-    Member updateProfile(Integer profileId, MemberRequest memberRequest);
+    MemberProfileResponse updateProfile(Integer profileId, MemberRequest memberRequest);
 
     Organization findProfileOrganization();
 
