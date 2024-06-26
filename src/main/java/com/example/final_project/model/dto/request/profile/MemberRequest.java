@@ -24,7 +24,6 @@ public class MemberRequest {
     private String phone;
     @NotNull
     @NotBlank
-    @Size(min = 1, max = 255)
     private String address;
     @NotNull
     @NotBlank

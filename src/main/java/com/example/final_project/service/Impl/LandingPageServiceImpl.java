@@ -96,10 +96,10 @@ public class LandingPageServiceImpl implements LandingPageService {
 
     @Override
     public List<EventResponseLandingPage> getEventByCategoryName(String cateName, Integer offset, Integer limit) {
+        offset = (offset - 1) * limit;
         if(landingPageRepository.getEventByCategoryName(cateName, offset, limit).isEmpty())
             throw new NotFoundException("Category name : " + cateName + " not found");
 
-        offset = (offset - 1) * limit;
         return landingPageRepository.getEventByCategoryName(cateName, offset, limit);
     }
 

@@ -23,8 +23,6 @@ public class MaterialRequestForMultiCreate {
     @Positive
     private float qty;
     @NotNull
-    private float toGet;
-    @NotNull
     @NotBlank
     @Size(min = 1, max = 20)
     private String unit;
