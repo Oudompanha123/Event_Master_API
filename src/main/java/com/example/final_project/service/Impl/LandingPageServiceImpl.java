@@ -1,7 +1,9 @@
 package com.example.final_project.service.Impl;
 
+import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.dto.response.landingPage.*;
+import com.example.final_project.repository.EventRepository;
 import com.example.final_project.repository.LandingPageRepository;
 import com.example.final_project.service.LandingPageService;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 public class LandingPageServiceImpl implements LandingPageService {
     private final ModelMapper modelMapper;
-    private  final LandingPageRepository landingPageRepository;
+    private final LandingPageRepository landingPageRepository;
+    private final EventRepository eventRepository;
 
     @Override
     public EventDetailInLandingPage getDetailEventByEventId(Integer eventId) {
@@ -30,8 +33,21 @@ public class LandingPageServiceImpl implements LandingPageService {
 
     @Override
     public FormResponse getFormByEventId(Integer eventId) {
+
+        // check event is_post = true or not
+        if(landingPageRepository.getEventById(eventId) == null)
+            throw new BadRequestException("Event id : " + eventId + " is not published");
+
+        // check form when it is null
         if(landingPageRepository.getFormByEventId(eventId) == null)
             throw new NotFoundException("Event id : " + eventId + " don't have form");
+
+        // check attendee is full or not
+        Integer maxAttendees = eventRepository.getEventByIdNoOrgId(eventId).getMaxAttendee();
+        Integer totalAttendeesInEvent = landingPageRepository.getTotalAttendees(eventId);
+        if(totalAttendeesInEvent >= maxAttendees)
+            throw new BadRequestException("Attendee in event is full");
+
         return landingPageRepository.getFormByEventId(eventId);
     }
 

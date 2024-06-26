@@ -118,8 +118,8 @@ create table material
     remark        text,
     status        varchar(10) not null default 'pending',
     assign_date   timestamp   not null default CURRENT_TIMESTAMP,
-    due_date      timestamp   not null,
-    handler_id    integer     not null, -- find member or member_history table
+    due_date      timestamp,
+    handler_id    integer, -- find member or member_history table
     supporters    jsonb, -- have many supporters
     event_id      integer     not null,
     constraint event_id_material_fk

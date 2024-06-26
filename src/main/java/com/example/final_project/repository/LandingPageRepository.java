@@ -91,4 +91,14 @@ public interface LandingPageRepository {
             @Result(property = "orgName", column = "org_name")
     })
     List<EventResponseLandingPage> getEventByCategoryName(String cateName, Integer offset, Integer limit);
+
+    @Select("""
+        SELECT event_id FROM event WHERE event_id = #{eventId} AND is_post = true;
+    """)
+    Integer getEventById(Integer eventId);
+
+    @Select("""
+        SELECT COUNT(*) FROM attendee WHERE event_id = #{eventId};
+    """)
+    Integer getTotalAttendees(Integer eventId);
 }

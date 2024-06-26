@@ -18,6 +18,9 @@ public class MaterialRequestForUpdating {
     @Size(min = 1, max = 50)
     private String materialName;
     @NotNull
+    @Positive
+    private Integer eventId;
+    @NotNull
     @PositiveOrZero
     private float qty;
     @NotNull

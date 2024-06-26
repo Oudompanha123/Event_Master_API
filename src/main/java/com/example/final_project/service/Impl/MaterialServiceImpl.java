@@ -2,7 +2,6 @@ package com.example.final_project.service.Impl;
 
 import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
-import com.example.final_project.model.Asset;
 import com.example.final_project.model.MaterialStatusCount;
 import com.example.final_project.model.Member;
 import com.example.final_project.model.constant.Roles;
@@ -13,7 +12,6 @@ import com.example.final_project.model.dto.request.material.MaterialRequestForUp
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.Material;
 import com.example.final_project.model.dto.response.material.MaterialResponse;
-import com.example.final_project.repository.AssetRepository;
 import com.example.final_project.repository.EventRepository;
 import com.example.final_project.repository.MaterialRepository;
 import com.example.final_project.repository.MemberRepository;
@@ -32,7 +30,6 @@ public class MaterialServiceImpl implements MaterialService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
-    private final AssetRepository assetRepository;
 
     @Override
     public List<Material> getAllMaterials(Integer eventId) {
@@ -112,8 +109,12 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public MaterialResponse updateMaterialDataByMaterialId(Integer materialId, MaterialRequestForUpdating materialRequestForUpdating) {
 
-//        if(materialRepository.getMaterialById(materialId) == null)
-//            throw new NotFoundException("Material id : " + materialId + " not found");
+        // check event id exist or not
+        if(eventRepository.getEventById(Token.getOrgIdByToken(), materialRequestForUpdating.getEventId()) == null)
+            throw new NotFoundException("Event id : " + materialRequestForUpdating.getEventId() + " not found");
+
+        if(materialRepository.getMaterialIdByMaterialId(materialId, materialRequestForUpdating.getEventId()) == null)
+            throw new NotFoundException("Material id : " + materialId + " not found");
 
         if(materialRequestForUpdating.getHandlerId() == null)
             materialRequestForUpdating.setHandlerId(null);
@@ -124,12 +125,15 @@ public class MaterialServiceImpl implements MaterialService {
         if(member.getRole().equals(Roles.ROLE_USER)){
             Material materialResponse = materialRepository.getMaterialById(materialId);
             if(!Objects.equals(memberId, materialResponse.getHandlerId()))
-                throw new BadRequestException("You don't have permission to change status even if You are a handler");
+                throw new BadRequestException("You don't have permission to change status except you are a handler");
         }
 
-        // check handler id exists or not
-        if(memberRepository.getMemberByMemberId(materialRequestForUpdating.getHandlerId(), Token.getOrgIdByToken()) == null)
-            throw new NotFoundException("Handler id : " + materialRequestForUpdating.getHandlerId() + " not found");
+        // if handlerId is thrown, check it exists or not
+        if(materialRequestForUpdating.getHandlerId() != null){
+            // check handler id exists or not
+            if(memberRepository.getMemberByMemberId(materialRequestForUpdating.getHandlerId(), Token.getOrgIdByToken()) == null)
+                throw new NotFoundException("Handler id : " + materialRequestForUpdating.getHandlerId() + " not found");
+        }
 
         return materialRepository.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating);
     }

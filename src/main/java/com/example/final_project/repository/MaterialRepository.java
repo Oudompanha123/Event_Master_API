@@ -69,6 +69,11 @@ public interface MaterialRepository {
     Material getMaterialById(Integer materialId);
 
     @Select("""
+        SELECT material_id FROM material WHERE material_id = #{materialId} AND event_id = #{eventId};
+    """)
+    Integer getMaterialIdByMaterialId(Integer materialId, Integer eventId);
+
+    @Select("""
         SELECT event_id FROM material;
     """)
     List<Integer> getAllEventIdInMaterialTable();
