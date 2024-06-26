@@ -65,11 +65,11 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     public List<Attendee> searchAttendeeByNameOrPhone(Integer eventId, String attendeeNameOrPhone, Integer offset, Integer limit) {
-        offset = (offset - 1) * limit;
+
         // if attendeeNameOrPhone is null then getAllTotalAttendeeRecords
         if(Objects.equals(attendeeNameOrPhone, "") || attendeeNameOrPhone == null)
             return getAttendeesByEventId(eventId, offset, limit);
-
+        offset = (offset - 1) * limit;
         return attendeeRepository.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone.trim(), offset, limit);
     }
 }
