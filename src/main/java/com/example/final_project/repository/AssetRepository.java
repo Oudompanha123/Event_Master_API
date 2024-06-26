@@ -61,7 +61,7 @@ public interface AssetRepository {
     Integer getTotalAssetRecordsFromSearch(String assetName, Integer orgId);
 
     @Select("""
-        SELECT asset_name FROM asset WHERE org_id = #{orgId} ORDER BY asset_name;
+        SELECT asset_name FROM asset WHERE org_id = #{orgId};
     """)
     List<String> getAllAssetNames(Integer orgId);
 

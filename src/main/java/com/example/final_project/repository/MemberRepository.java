@@ -157,7 +157,7 @@ public interface MemberRepository {
         SELECT member_id, member_name, gender, phone, email, address, picture,
         date_of_birth, role FROM member WHERE org_id = #{orgId} AND is_approve = true
             AND member_name ILIKE CONCAT('%', #{memberName}, '%')
-            ORDER BY member_name LIMIT #{limit} OFFSET #{offset}
+            LIMIT #{limit} OFFSET #{offset}
         ;
     """)
     @ResultMap("memberMapper")
