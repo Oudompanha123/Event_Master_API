@@ -86,7 +86,7 @@ public interface MaterialRepository {
                supporters, status, remark
         FROM (material LEFT JOIN member ON material.handler_id = member.member_id)
             LEFT JOIN member_history ON material.handler_id = member_history.member_id
-        WHERE event_id = #{eventId} AND material_name ILIKE CONCAT('%', #{materialName}, '%') ;
+        WHERE event_id = #{eventId} AND material_name ORDER BY material_name ILIKE CONCAT('%', #{materialName}, '%') ;
     """)
     @ResultMap("materialMapper")
     List<Material> searchMaterialByName(String materialName, Integer eventId);

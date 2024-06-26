@@ -57,7 +57,7 @@ public class SqlScriptFilterEvent {
             sql += " AND DATE('" + startDateTime + "') = DATE(start_date)";
         else if(endDateTime != null)
             sql += " AND DATE('" + endDateTime + "') = DATE(end_date)";
-        sql += " ORDER BY start_date LIMIT " + limit + " OFFSET " + offset;
+        sql += " ORDER BY event_name LIMIT " + limit + " OFFSET " + offset;
         return sql;
     }
 
@@ -96,7 +96,7 @@ public class SqlScriptFilterEvent {
         else if(endDateTime != null)
             sql += " AND DATE('" + endDateTime + "') = DATE(end_date)";
 
-        sql += " ORDER BY e.start_date";
+        sql += " ORDER BY e.event_name";
         return sql;
     }
 
