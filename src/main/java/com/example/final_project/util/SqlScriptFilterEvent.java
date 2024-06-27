@@ -12,7 +12,7 @@ public class SqlScriptFilterEvent {
         String sql = "SELECT COUNT(*) FROM event WHERE org_id = " + orgId;
 
         if(eventName != null && !eventName.isEmpty())
-            sql += " AND event_name ILIKE '%" + eventName + "%'";
+            sql += " AND event_name ILIKE '" + eventName + "%' OR event_name ILIKE '% " + eventName +"' OR event_name ILIKE '% " + eventName + " %'";
         if(categoryId != null)
             sql += " AND cate_id = " + categoryId;
         if(status != null)
@@ -37,7 +37,7 @@ public class SqlScriptFilterEvent {
         String sql = "SELECT * FROM event WHERE org_id = " + orgId;
 
         if(eventName != null && !eventName.isEmpty())
-            sql += " AND event_name ILIKE '%" + eventName + "%' ";
+            sql += " AND event_name ILIKE '" + eventName + "%' OR event_name ILIKE '% " + eventName +"' OR event_name ILIKE '% " + eventName + " %'";
 
         if(categoryId != null)
             sql += " AND cate_id = " + categoryId;
@@ -75,7 +75,7 @@ public class SqlScriptFilterEvent {
                 """;
 
         if(eventName != null && !eventName.isEmpty())
-            sql += " AND event_name ILIKE '%" + eventName + "%' ";
+            sql += " AND event_name ILIKE '" + eventName + "%' OR event_name ILIKE '% " + eventName +"' OR event_name ILIKE '% " + eventName + " %'";
 
         if(categoryName != null)
             sql += " AND c.cate_name = '" + categoryName + "' ";

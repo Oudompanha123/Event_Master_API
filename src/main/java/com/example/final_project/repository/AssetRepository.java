@@ -19,7 +19,8 @@ public interface AssetRepository {
     List<Asset> findAllAssets(Integer offset, Integer limit, Integer orgId);
 
     @Select("""
-        SELECT * FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId} ORDER BY asset_name LIMIT #{limit} OFFSET #{offset};
+        SELECT * FROM asset where (asset_name ILIKE CONCAT(#{assetName}, '%') OR asset_name ILIKE CONCAT('% ', #{assetName})
+        OR asset_name ILIKE CONCAT('% ', #{assetName}, ' %')) AND org_id = #{orgId} LIMIT #{limit} OFFSET #{offset};
     """)
     @ResultMap("AssetMapper")
     List<Asset> getAllAssetsByName(String assetName, Integer offset, Integer limit, Integer orgId);
@@ -56,7 +57,8 @@ public interface AssetRepository {
     Integer getTotalAssetRecords(Integer orgId);
 
     @Select("""
-        SELECT COUNT(*) FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId};
+        SELECT COUNT(*) FROM asset where (asset_name ILIKE CONCAT(#{assetName}, '%') OR asset_name ILIKE CONCAT('% ', #{assetName})
+        OR asset_name ILIKE CONCAT('% ', #{assetName}, ' %')) AND org_id = #{orgId};
     """)
     Integer getTotalAssetRecordsFromSearch(String assetName, Integer orgId);
 

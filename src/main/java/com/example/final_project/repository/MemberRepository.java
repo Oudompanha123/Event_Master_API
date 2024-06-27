@@ -156,7 +156,8 @@ public interface MemberRepository {
     @Select("""
         SELECT member_id, member_name, gender, phone, email, address, picture,
         date_of_birth, role FROM member WHERE org_id = #{orgId} AND is_approve = true
-            AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+            AND (member_name ILIKE CONCAT(#{memberName}, '%') OR member_name ILIKE CONCAT('% ', #{memberName})
+        OR member_name ILIKE CONCAT('% ', #{memberName}, ' %'))
             LIMIT #{limit} OFFSET #{offset}
         ;
     """)
@@ -177,7 +178,8 @@ public interface MemberRepository {
 
     @Select("""
         SELECT COUNT(*) FROM member WHERE org_id = #{orgId} AND is_approve = true
-            AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+            AND (member_name ILIKE CONCAT(#{memberName}, '%') OR member_name ILIKE CONCAT('% ', #{memberName})
+        OR member_name ILIKE CONCAT('% ', #{memberName}, ' %'))
     """)
     Integer getTotalMemberRecordsFromSearch(Integer orgId, String memberName);
 

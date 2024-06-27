@@ -5,9 +5,9 @@ public class RegistrationFormString {
         return """
                 { "form" :
                     [
-                        { "fieldType": "text,Full Name" },
+                        { "fieldType": "text,Name" },
                         { "fieldType": "gender,Gender" },
-                        { "fieldType": "tel,Phone Number" },
+                        { "fieldType": "tel,Phone" },
                         { "fieldType": "email,Email" },
                         { "fieldType": "text,Company Name" },
                         { "fieldType": "text,Title/Position" }
@@ -18,9 +18,9 @@ public class RegistrationFormString {
         public static String getMarathonString(){
             return """
                     { "form" : [
-                        { "fieldType": "text,Full Name" },
+                        { "fieldType": "text,Name" },
                         { "fieldType": "gender,Gender" },
-                        { "fieldType": "tel,Phone Number" },
+                        { "fieldType": "tel,Phone" },
                         { "fieldType": "email,Email" },
                         { "fieldType": "text,Race Distance" },
                         { "fieldType": "date,Date of Birth" },
@@ -34,8 +34,8 @@ public class RegistrationFormString {
         return """
                     {
                         "form": [
-                            { "fieldType": "text,Full Name" },
-                            { "fieldType": "tel,Phone Number"}
+                            { "fieldType": "text,Name" },
+                            { "fieldType": "tel,Phone"}
                         ]
                     }
                 """;
