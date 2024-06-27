@@ -20,7 +20,6 @@ public class FileServiceImpl implements FileService {
     @Override
     public String saveFile(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
-        System.out.println(fileName);
         String type = file.getContentType();
         assert fileName != null;
         assert type != null;

@@ -19,7 +19,7 @@ public interface AssetRepository {
     List<Asset> findAllAssets(Integer offset, Integer limit, Integer orgId);
 
     @Select("""
-        SELECT * FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId} ORDER BY update_at DESC LIMIT #{limit} OFFSET #{offset};
+        SELECT * FROM asset where asset_name ILIKE CONCAT('%', #{assetName}, '%') AND org_id = #{orgId} ORDER BY asset_name LIMIT #{limit} OFFSET #{offset};
     """)
     @ResultMap("AssetMapper")
     List<Asset> getAllAssetsByName(String assetName, Integer offset, Integer limit, Integer orgId);
