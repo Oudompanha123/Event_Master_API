@@ -31,7 +31,7 @@ public class EmailingServiceImpl {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setSubject("Registered please verify with OTP.");
         mimeMessageHelper.setText(processedString, true);
-        ClassPathResource image = new ClassPathResource("image/logo.png");
+        ClassPathResource image = new ClassPathResource("images/logo.png");
         mimeMessageHelper.addInline("logo", image);
         mimeMessageHelper.setFrom(fromMail);
         mimeMessageHelper.setTo(email);
@@ -46,7 +46,7 @@ public class EmailingServiceImpl {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         mimeMessageHelper.setSubject("Approve From Admin.");
         mimeMessageHelper.setText(processedString, true);
-        ClassPathResource image = new ClassPathResource("image/logo.png");
+        ClassPathResource image = new ClassPathResource("images/logo.png");
         mimeMessageHelper.addInline("logo", image);
         mimeMessageHelper.setFrom(fromMail);
         mimeMessageHelper.setTo(email);

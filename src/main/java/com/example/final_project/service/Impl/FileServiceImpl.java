@@ -25,10 +25,10 @@ public class FileServiceImpl implements FileService {
         assert type != null;
 
         fileName = switch (type) {
-            case "image/png" -> UUID.randomUUID() + ".png";
-            case "image/jpeg" -> UUID.randomUUID() + ".jpeg";
-            case "image/jpg" -> UUID.randomUUID() + ".jpg";
-            case "image/webp" -> UUID.randomUUID() + ".webp";
+            case "images/png" -> UUID.randomUUID() + ".png";
+            case "images/jpeg" -> UUID.randomUUID() + ".jpeg";
+            case "images/jpg" -> UUID.randomUUID() + ".jpg";
+            case "images/webp" -> UUID.randomUUID() + ".webp";
             case "application/pdf" -> UUID.randomUUID() + ".pdf";
             default -> throw new BadRequestException("File format not supported");
         };
