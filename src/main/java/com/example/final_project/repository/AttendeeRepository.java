@@ -43,8 +43,8 @@ public interface AttendeeRepository {
     @Select("""
         SELECT COUNT(*)
         FROM attendee
-        WHERE (data->>'name' ILIKE CONCAT('%', #{attendeeNameOrPhone}, '%')
-           OR data->>'phone' ILIKE CONCAT('%', #{attendeeNameOrPhone}, '%')
+        WHERE (data->>'name' ILIKE CONCAT(#{attendeeNameOrPhone}, '%') OR data->>'name' ILIKE CONCAT('% ', #{attendeeNameOrPhone}) OR data->>'name' ILIKE CONCAT('% ', #{attendeeNameOrPhone}, ' %')
+           OR data->>'phone' ILIKE CONCAT(#{attendeeNameOrPhone}, '%')
            ) AND event_id = #{eventId};
 
     """)
@@ -53,8 +53,8 @@ public interface AttendeeRepository {
     @Select("""
         SELECT attendee_id, data
         FROM attendee
-        WHERE (data->>'name' ILIKE CONCAT('%', #{attendeeNameOrPhone}, '%')
-           OR data->>'phone' ILIKE CONCAT('%', #{attendeeNameOrPhone}, '%')
+        WHERE (data->>'name' ILIKE CONCAT(#{attendeeNameOrPhone}, '%') OR data->>'name' ILIKE CONCAT('% ', #{attendeeNameOrPhone}) OR data->>'name' ILIKE CONCAT('% ', #{attendeeNameOrPhone}, ' %')
+           OR data->>'phone' ILIKE CONCAT(#{attendeeNameOrPhone}, '%')
            ) AND event_id = #{eventId} LIMIT #{limit} OFFSET #{offset};
     """)
     @ResultMap("attendeeMapper")

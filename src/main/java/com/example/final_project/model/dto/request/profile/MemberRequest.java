@@ -1,6 +1,5 @@
 package com.example.final_project.model.dto.request.profile;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +13,7 @@ import java.time.LocalDate;
 public class MemberRequest {
     @NotNull
     @NotBlank
+    @Size(min = 1, max = 40)
     private String memberName;
     @NotNull
     @NotBlank

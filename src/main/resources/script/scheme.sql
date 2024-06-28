@@ -44,7 +44,8 @@ create table asset
     asset_name varchar(40) not null,
     qty        decimal(6, 2)   not null,
     unit       varchar(20) not null,
-    created_at   date    default current_date,
+    created_at   timestamp    default current_timestamp,
+    update_at   timestamp    default current_timestamp,
     org_id     integer     not null,
     constraint org_id_asset_fk
         foreign key (org_id)
@@ -55,7 +56,8 @@ create table category
 (
     cate_id   serial primary key,
     cate_name varchar(40) not null,
-    created_at date default current_date,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    update_at timestamp default CURRENT_TIMESTAMP,
     created_by integer not null,
     org_id    integer     not null,
     constraint org_id_category_fk
@@ -81,6 +83,7 @@ create table event
     is_post      boolean default false,
     max_attendee integer     not null,
     registration_form jsonb,
+    created_at   timestamp    default current_timestamp,
     cate_id      integer     not null,
     org_id       integer     not null,
     constraint cate_id_event_fk
@@ -110,12 +113,13 @@ create table material
     material_id   serial primary key,
     material_name varchar(50) not null,
     qty           decimal(6, 2) not null,
+    to_get        decimal(6, 2) not null,
     unit          varchar(20) not null,
     remark        text,
     status        varchar(10) not null default 'pending',
     assign_date   timestamp   not null default CURRENT_TIMESTAMP,
-    due_date      timestamp   not null,
-    handler_id    integer     not null, -- find member or member_history table
+    due_date      timestamp,
+    handler_id    integer, -- find member or member_history table
     supporters    jsonb, -- have many supporters
     event_id      integer     not null,
     constraint event_id_material_fk

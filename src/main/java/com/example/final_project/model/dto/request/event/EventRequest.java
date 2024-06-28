@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 public class EventRequest {
     @NotNull
     @NotBlank
+    @Size(min = 1, max = 60)
     private String eventName;
     @NotNull
     @NotBlank
-    @Size(min = 1, max = 255)
     private String description;
     @NotNull
     private LocalDateTime startDate;
@@ -25,6 +25,7 @@ public class EventRequest {
     private LocalDateTime endDate;
     @NotNull
     @NotBlank
+    @Size(min = 1, max = 30)
     private String duration;
     @NotNull
     @NotBlank

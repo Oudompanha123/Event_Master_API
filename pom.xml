@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>gatherly-event</artifactId>
+	<artifactId>event-master</artifactId>
 	<version>1.0.0</version>
 	<name>final_project</name>
 	<description>final_project</description>

@@ -45,23 +45,23 @@ public class AuthController {
     @PutMapping("/set-new-password")
     @Operation(summary = "Set new password")
     public ResponseEntity<?> forgetPassword(
+            @Parameter(description = "Format : 1234")
+            @RequestParam @NotBlank @NotNull @Pattern(regexp = "^\\d{4}$", message = "OTP is 4 digits and must be number") String otp,
             @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotBlank @Email(message = "Invalid email format")
-            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
             String email,
             @RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest
     ){
-        return UpdateResponse.updateResponse(memberService.forgetPassword(email,forgetPasswordRequest), null);
+        return UpdateResponse.updateResponse(memberService.forgetPassword(otp, email, forgetPasswordRequest), null);
     }
 
     @PutMapping("/verify")
     @Operation(summary = "Verify email by OTP code")
     public ResponseEntity<?> verifyOTP(
             @Parameter(description = "Format : 1234")
-            @RequestParam @NotBlank @NotNull String otp,
+            @RequestParam @NotBlank @NotNull @Pattern(regexp = "^\\d{4}$", message = "OTP is 4 digits and must be number") String otp,
             @Parameter(description = "Format : example@gmail.com")
             @RequestParam @NotBlank @NotNull @Size(min = 11, max = 40) @Email(message = "Invalid email format")
-            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
             String email
     ){
         return UpdateResponse.updateResponse(memberService.verifyOTP(otp, email), null);
@@ -71,8 +71,8 @@ public class AuthController {
     @Operation(summary = "Resend OTP code to email")
     public ResponseEntity<?> resendOTP(
             @Parameter(description = "Format : example@gmail.com")
-            @RequestParam @NotBlank @NotBlank @Size(min = 11, max = 40) @Email(message = "Invalid email format")
-            @Pattern(regexp = "^[\\w._%+-]+@gmail\\.com$", message = "Only @gmail.com email addresses are supported")
+            @RequestParam @NotBlank @NotBlank @Size(min = 11, max = 40)
+            @Email(message = "Invalid email format")
             String email
     ){
         return PostResponse.postResponse(memberService.resendOTP(email), null);

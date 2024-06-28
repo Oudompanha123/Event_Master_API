@@ -8,7 +8,6 @@ import com.example.final_project.model.dto.request.authentication.ForgetPassword
 import com.example.final_project.model.dto.request.authentication.UserRequest;
 import com.example.final_project.model.dto.request.profile.ChangePasswordRequest;
 import com.example.final_project.model.dto.response.member.MemberResponse;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
@@ -133,7 +132,7 @@ public interface MemberRepository {
     List<MemberResponse> getAllMembers(Integer offset, Integer limit, Integer orgId);
 
     @Select("""
-        SELECT * FROM member WHERE member_id = #{memberId}
+        SELECT * FROM member WHERE member_id = #{memberId} AND org_id = #{orgId}
     """)
     @Results(id = "memberMappers", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -141,7 +140,7 @@ public interface MemberRepository {
             @Result(property = "dateOfBirth", column = "date_of_birth"),
             @Result(property = "organization", column = "org_id", one = @One(select = "getOrganizationById"))
     })
-    Member getMemberByMemberId(Integer memberId);
+    Member getMemberByMemberId(Integer memberId, Integer orgId);
 
     @Select("""
         DELETE FROM member WHERE member_id = #{memberId}
@@ -157,8 +156,9 @@ public interface MemberRepository {
     @Select("""
         SELECT member_id, member_name, gender, phone, email, address, picture,
         date_of_birth, role FROM member WHERE org_id = #{orgId} AND is_approve = true
-            AND member_name ILIKE CONCAT('%', #{memberName}, '%')
-            ORDER BY role LIMIT #{limit} OFFSET #{offset}
+            AND (member_name ILIKE CONCAT(#{memberName}, '%') OR member_name ILIKE CONCAT('% ', #{memberName})
+        OR member_name ILIKE CONCAT('% ', #{memberName}, ' %'))
+            LIMIT #{limit} OFFSET #{offset}
         ;
     """)
     @ResultMap("memberMapper")
@@ -178,7 +178,8 @@ public interface MemberRepository {
 
     @Select("""
         SELECT COUNT(*) FROM member WHERE org_id = #{orgId} AND is_approve = true
-            AND member_name ILIKE CONCAT('%', #{memberName}, '%')
+            AND (member_name ILIKE CONCAT(#{memberName}, '%') OR member_name ILIKE CONCAT('% ', #{memberName})
+        OR member_name ILIKE CONCAT('% ', #{memberName}, ' %'))
     """)
     Integer getTotalMemberRecordsFromSearch(Integer orgId, String memberName);
 
@@ -203,4 +204,9 @@ public interface MemberRepository {
         SELECT cate_id FROM category WHERE created_by = #{memberId};
     """)
     Integer getCreatedByInCategory(Integer memberId);
+
+    @Select("""
+        SELECT otp_id FROM otp WHERE otp_code = #{otp} AND member_id = #{memberId};
+    """)
+    Integer memberOtp(String otp, Integer memberId);
 }

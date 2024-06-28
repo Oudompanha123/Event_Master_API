@@ -1,6 +1,5 @@
 package com.example.final_project.model.dto.response.landingPage;
 
-import com.example.final_project.model.Agenda;
 import com.example.final_project.model.dto.response.AgendaResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,5 +17,6 @@ public class EventDetailInLandingPage {
     private String location;
     private LocalDateTime startDateTime;
     private String poster;
+    private Boolean isOpen;
     private AgendaResponse agenda;
 }

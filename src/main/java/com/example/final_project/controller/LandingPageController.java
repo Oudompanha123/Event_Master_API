@@ -18,11 +18,22 @@ import java.time.LocalDateTime;
 public class LandingPageController {
     private final LandingPageService landingPageService;
 
-    @GetMapping
-    @Operation(summary = "Get all events by categories")
-    public ResponseEntity<?> getAllEventsByCategory(){
-        return GetResponse.getResponse("Get all events by categories successfully",
-                landingPageService.getAllEventsByCategory());
+    @GetMapping("/getAllPopularEvent")
+    @Operation(summary = "Get all popular events")
+    public ResponseEntity<?> getAllPopularEvent(){
+        return GetResponse.getResponse("Get all popular events successfully",
+                landingPageService.getAllPopularEvent());
+    }
+
+    @GetMapping("/filter/{cateName}")
+    @Operation(summary = "Get events by category name")
+    public ResponseEntity<?> getAllEventsByCategoryName(
+            @PathVariable @NotNull String cateName,
+            @RequestParam(defaultValue = "1") @Positive @NotNull Integer offset,
+            @RequestParam(defaultValue = "6") @Positive @NotNull Integer limit
+    ){
+        return GetResponse.getResponse("Get events by category name successfully",
+                landingPageService.getEventByCategoryName(cateName, offset, limit));
     }
 
     @GetMapping("/{eventId}")
@@ -39,11 +50,11 @@ public class LandingPageController {
                 landingPageService.getFormByEventId(eventId));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search and filter")
     public ResponseEntity<?> searchEvent(
             @RequestParam(required = false) String eventName,
-            @RequestParam(required = false) @Positive Integer categoryId,
+            @RequestParam(required = false) String categoryName,
             @Parameter(description = "Available values : false = close, true = open")
             @RequestParam(required = false) Boolean status,
             @Parameter(description = "Format : yyyy-mm-ddThh:mm:ss. Example : 2024-06-04T12:00:00")
@@ -52,6 +63,13 @@ public class LandingPageController {
             @RequestParam(required = false) LocalDateTime endDateTime
     ){
         return GetResponse.getResponse("Search event successfully",
-                landingPageService.searchEvent(eventName, categoryId, status, startDateTime, endDateTime));
+                landingPageService.searchEvent(eventName, categoryName, status, startDateTime, endDateTime));
+    }
+
+    @GetMapping("/getAllCategoryNames")
+    @Operation(summary = "get all category names that have posted events")
+    public ResponseEntity<?> getAllCategoryNames(){
+        return GetResponse.getResponse("Get all category names successfully",
+                landingPageService.getAllCategoryNames());
     }
 }

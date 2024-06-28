@@ -1,5 +1,6 @@
 package com.example.final_project.service.Impl;
 
+import com.example.final_project.exception.BadRequestException;
 import com.example.final_project.exception.NotFoundException;
 import com.example.final_project.model.Event;
 import com.example.final_project.model.constant.Active;
@@ -49,6 +50,14 @@ public class EventServiceImpl implements EventService {
 
         // check image format
         Validation.validateImage(eventRequest.getPoster());
+        
+        // start date must be later than now
+        if(eventRequest.getStartDate().isBefore(LocalDateTime.now()))
+            throw new BadRequestException("Start date must be later than now");
+
+        // check start date must be earlier than end date
+        if(eventRequest.getStartDate().isAfter(eventRequest.getEndDate()))
+            throw new BadRequestException("Start date must be earlier than end date");
 
         // check categoryId in EventRequest has been found in database or not
         if(categoryRepository.getCategoryById(eventRequest.getCategoryId(), Token.getOrgIdByToken()) == null)

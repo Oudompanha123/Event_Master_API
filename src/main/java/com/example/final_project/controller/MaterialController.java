@@ -1,8 +1,9 @@
 package com.example.final_project.controller;
 
-import com.example.final_project.model.Supporter;
 import com.example.final_project.model.constant.Status;
 import com.example.final_project.model.dto.request.material.MaterialRequestForCreating;
+import com.example.final_project.model.dto.request.material.MaterialRequestForMultiCreate;
+import com.example.final_project.model.dto.request.material.MaterialRequestForUpdating;
 import com.example.final_project.model.dto.request.material.MultipleDelete;
 import com.example.final_project.model.dto.response.GetResponse;
 import com.example.final_project.model.dto.response.PostResponse;
@@ -16,6 +17,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -44,17 +47,6 @@ public class MaterialController {
                 materialService.countMaterialByStatus(eventId));
     }
 
-    @PutMapping("/status/{materialId}")
-    @Operation(summary = "Update material status by id")
-    public ResponseEntity<?> updateMaterialStatus(
-            @PathVariable @Positive @NotNull Integer materialId,
-            @RequestParam  Status status
-    ) {
-        materialService.updateMaterialStatus(materialId, status);
-        return UpdateResponse.updateResponse("Update status to " + status + " successfully",
-              null );
-    }
-
     @DeleteMapping("/delete/{materialId}")
     @Operation(summary = "Delete material by id")
     public ResponseEntity<?> deleteMaterialById(@PathVariable @Positive @NotNull Integer materialId) {
@@ -69,7 +61,7 @@ public class MaterialController {
         return GetResponse.getResponse("Delete materials by id list successfully", null);
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search materials by name")
     public ResponseEntity<?> SearchMaterialByName(
             @RequestParam @NotNull String materialName,
@@ -80,34 +72,40 @@ public class MaterialController {
                 materialService.SearchMaterialByName(materialName, eventId));
     }
 
-    @PutMapping("/handler/{materialId}")
-    @Operation(summary = "Update handler by material id")
-    public ResponseEntity<?> updateHandlerByMaterialId(
+    @PutMapping("/update/{materialId}")
+    @Operation(summary = "Update material data by material id")
+    public ResponseEntity<?> updateMaterialDataByMaterialId(
             @PathVariable @Positive @NotNull Integer materialId,
-            @RequestParam @Positive @NotNull Integer handlerId
+            @RequestBody @Valid MaterialRequestForUpdating materialRequestForUpdating
     ) {
-        materialService.updateHandlerByMaterialId(materialId, handlerId);
-        return UpdateResponse.updateResponse("Update handler successfully",
-                null );
-    }
-
-    @PutMapping("/supporters/{materialId}")
-    @Operation(summary = "Update supporters by material id")
-    public ResponseEntity<?> updateSupportersByMaterialId(
-            @PathVariable @Positive @NotNull Integer materialId,
-            @RequestBody Supporter supporter
-            ) {
-        return UpdateResponse.updateResponse("Update supporters successfully",
-                materialService.updateSupportersByMaterialId(materialId, supporter) );
+        return UpdateResponse.updateResponse("Update material data successfully",
+                materialService.updateMaterialDataByMaterialId(materialId, materialRequestForUpdating) );
     }
 
     @PostMapping("/create")
     @Operation(summary = "Create material")
     public ResponseEntity<?> createMaterial(
-            @RequestBody @Valid MaterialRequestForCreating materialRequest,
-            @RequestParam(required = false) @Positive Integer assetId
+            @RequestBody @Valid MaterialRequestForCreating materialRequest
             ) {
         return PostResponse.postResponse("create material successfully",
-                materialService.createMaterial(materialRequest, assetId));
+                materialService.createMaterial(materialRequest));
+    }
+
+    @PostMapping("/multipleCreate")
+    @Operation(summary = "Create multiple materials in one time")
+    public ResponseEntity<?> createMultipleMaterials(@RequestBody @Valid List<MaterialRequestForMultiCreate> materialRequestForMultiCreateList) {
+        materialService.createMultipleMaterials(materialRequestForMultiCreateList);
+        return PostResponse.postResponse("Create multiple materials successfully", null);
+    }
+
+    @PutMapping("/status/{materialId}")
+    @Operation(summary = "Update material status by id")
+    public ResponseEntity<?> updateMaterialStatus(
+            @PathVariable @Positive @NotNull Integer materialId,
+            @RequestParam Status status
+    ) {
+        materialService.updateMaterialStatus(materialId, status);
+        return UpdateResponse.updateResponse("Update status to " + status + " successfully",
+                null );
     }
 }

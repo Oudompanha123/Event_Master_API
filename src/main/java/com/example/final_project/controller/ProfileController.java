@@ -27,14 +27,14 @@ public class ProfileController {
         return GetResponse.getResponse("Get profile member successfully", profileService.findProfileMember());
     }
 
-    @PutMapping("/update-member/{memberId}")
+    @PutMapping("/update-member/{profileId}")
     @Operation(summary = "Update profile by id")
     public ResponseEntity<?> updateProfile(
-            @PathVariable @Positive @NotNull Integer memberId,
+            @PathVariable @Positive @NotNull Integer profileId,
             @RequestBody @Valid MemberRequest memberRequest
     ){
-        return GetResponse.getResponse("Update profile by id " + memberId + " successfully.",
-                profileService.updateProfile(memberId, memberRequest));
+        return GetResponse.getResponse("Update profile by id " + profileId + " successfully.",
+                profileService.updateProfile(profileId, memberRequest));
     }
 
     @GetMapping("/organization")

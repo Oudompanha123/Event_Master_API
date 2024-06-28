@@ -3,7 +3,6 @@ package com.example.final_project.repository;
 import com.example.final_project.model.CategoryEventCount;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public interface DashboardRepository {
     Integer getAttendeeCount(Integer orgId);
 
     @Select("""
-        SELECT COUNT(*) FROM member WHERE org_id = #{orgId};
+        SELECT COUNT(*) FROM member WHERE org_id = #{orgId} AND is_approve = true;
     """)
     Integer getMemberCount(Integer orgId);
 

@@ -67,4 +67,12 @@ public class CategoryServiceImpl implements CategoryService {
     public Integer getTotalCategoryRecords() {
         return categoryRepository.getAllCategoryRecords(Token.getOrgIdByToken());
     }
+
+    @Override
+    public Category getCategoryByCategoryName(String cateName) {
+        if(categoryRepository.getCategoryByName(cateName, Token.getOrgIdByToken()) == null)
+            throw new NotFoundException("Cannot find this category");
+
+        return categoryRepository.getCategoryByName(cateName, Token.getOrgIdByToken());
+    }
 }

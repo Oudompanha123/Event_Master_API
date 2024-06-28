@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface ProfileRepository {
     @Select("""
-        SELECT member_id, member_name, gender, phone, email, picture FROM member WHERE member_id = #{memberId} AND org_id = #{orgId}
+        SELECT member_id, member_name, gender, phone, email, picture, address, date_of_birth FROM member WHERE member_id = #{memberId} AND org_id = #{orgId}
     """)
     @Results(id = "profileMapper", value = {
             @Result(property = "memberId", column = "member_id"),
@@ -20,9 +20,14 @@ public interface ProfileRepository {
     MemberProfileResponse findProfile(Integer memberId, Integer orgId);
 
     @Select("""
-        UPDATE member SET member_name = #{profile.memberName}, gender = #{profile.gender}, phone = #{profile.phone}, picture = #{profile.picture}  WHERE member_id = #{profileId} AND org_id = #{orgId}
+        UPDATE member
+        SET member_name = #{profile.memberName}, gender = #{profile.gender},
+            phone = #{profile.phone}, address = #{profile.address}, picture = #{profile.picture}, date_of_birth = #{profile.dateOfBirth}
+        WHERE member_id = #{profileId}
+        RETURNING *;
     """)
-    Member updateProfile(Integer profileId, @Param("profile") MemberRequest memberRequest, Integer orgId);
+    @ResultMap("profileMapper")
+    MemberProfileResponse updateProfile(Integer profileId, @Param("profile") MemberRequest memberRequest);
 
     @Select("""
         SELECT * FROM organization WHERE org_id = #{orgId}

@@ -10,6 +10,7 @@ import com.example.final_project.util.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -50,16 +51,25 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     public Integer getTotalAttendeeRecordsFromSearch(Integer eventId, String attendeeNameOrPhone) {
+
+        // if attendeeNameOrPhone is null then getAllTotalAttendeeRecords
+        if(Objects.equals(attendeeNameOrPhone, "") || attendeeNameOrPhone == null)
+            return getTotalAttendeeRecord(eventId);
+
         if(eventRepository.getEventById(Token.getOrgIdByToken(), eventId) == null)
             throw new NotFoundException("Event id : " + eventId + " not found");
         if(attendeeRepository.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone) == 0)
             throw new NotFoundException("Attendee is not found in database");
-        return attendeeRepository.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone);
+        return attendeeRepository.getTotalAttendeeRecordsFromSearch(eventId, attendeeNameOrPhone.trim());
     }
 
     @Override
     public List<Attendee> searchAttendeeByNameOrPhone(Integer eventId, String attendeeNameOrPhone, Integer offset, Integer limit) {
+
+        // if attendeeNameOrPhone is null then getAllTotalAttendeeRecords
+        if(Objects.equals(attendeeNameOrPhone, "") || attendeeNameOrPhone == null)
+            return getAttendeesByEventId(eventId, offset, limit);
         offset = (offset - 1) * limit;
-        return attendeeRepository.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone, offset, limit);
+        return attendeeRepository.searchAttendeeByNameOrPhone(eventId, attendeeNameOrPhone.trim(), offset, limit);
     }
 }

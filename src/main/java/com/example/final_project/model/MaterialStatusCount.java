@@ -1,6 +1,5 @@
 package com.example.final_project.model;
 
-import com.example.final_project.model.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

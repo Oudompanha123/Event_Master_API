@@ -2,9 +2,11 @@ package com.example.final_project.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.time.LocalDateTime;
@@ -35,6 +37,7 @@ public class GlobalException {
         return problemDetail;
     }
 
+
     @ExceptionHandler(BadRequestException.class)
     public ProblemDetail handleBadRequestException(BadRequestException ex){
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
@@ -60,19 +63,33 @@ public class GlobalException {
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ProblemDetail handlerMethodValidationException(HandlerMethodValidationException ex){
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleMethodValidationException(HandlerMethodValidationException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        for (var parameterError : ex.getAllValidationResults()){
+        // Iterate over all validation results
+        for (var parameterError : ex.getAllValidationResults()) {
+            // Get parameter name
             String parameterName = parameterError.getMethodParameter().getParameterName();
-            for (var error : parameterError.getResolvableErrors()){
-                errors.put(parameterName, error.getDefaultMessage());
+
+            // Iterate over all resolvable errors for the parameter
+            for (var error : parameterError.getResolvableErrors()) {
+                // Check if error is an instance of FieldError for detailed field information
+                if (error instanceof FieldError fieldError) {
+                    String fieldName = fieldError.getField();
+                    String errorMessage = fieldError.getDefaultMessage();
+                    errors.put(fieldName, errorMessage);
+                } else {
+                    errors.put(parameterName, error.getDefaultMessage());
+                }
             }
         }
 
+        // Create and return ProblemDetail object
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Bad Request");
         problemDetail.setProperty("Errors", errors);
+
         return problemDetail;
     }
 

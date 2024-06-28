@@ -15,11 +15,12 @@ public class Material {
     private String materialName;
     private float qty;
     private String unit;
-    private String remark;
-    private Status status;
     private LocalDate assignDate;
     private LocalDate dueDate;
-    private Member handlerId;
-    private Event eventId;
+    private Integer handlerId;
+    private String handlerName;
+    private String picture;
     private JSONObject supporters;
+    private Status status;
+    private String remark;
 }

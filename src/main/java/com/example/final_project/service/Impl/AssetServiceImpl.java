@@ -27,7 +27,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Asset> getAllAssetsByName(String assetName, Integer offset, Integer limit) {
         offset = (offset - 1) * limit;
-        return assetRepository.getAllAssetsByName(assetName, offset, limit, Token.getOrgIdByToken());
+        if(assetName == null || assetName.isBlank())
+            return assetRepository.findAllAssets(offset, limit, Token.getOrgIdByToken());
+        return assetRepository.getAllAssetsByName(assetName.trim(), offset, limit, Token.getOrgIdByToken());
     }
 
     @Override
@@ -41,6 +43,10 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset insertAsset(AssetRequest assetRequest) {
+        // qty must be greater than 0
+        if(assetRequest.getQty() == 0)
+            throw new BadRequestException("Qty must be greater than 0");
+
         // check duplicate asset name
         List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
         for(String assetName : assetNames)
@@ -66,9 +72,13 @@ public class AssetServiceImpl implements AssetService {
 
         // check duplicate asset name
         List<String> assetNames = assetRepository.getAllAssetNames(Token.getOrgIdByToken());
-        for(String assetName : assetNames)
-            if(assetName.equalsIgnoreCase(assetRequest.getAssetName()))
+        for(String assetName : assetNames){
+            if(assetName.equalsIgnoreCase(assetRequest.getAssetName())){
+                if(asset.getAssetName().equalsIgnoreCase(assetRequest.getAssetName()))
+                    break;
                 throw new BadRequestException("Duplicate asset name");
+            }
+        }
 
         return assetRepository.updateAsset(id, assetRequest, Token.getOrgIdByToken());
     }
@@ -80,7 +90,9 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Integer getTotalAssetRecordsFromSearch(String assetName) {
-        return assetRepository.getTotalAssetRecordsFromSearch(assetName, Token.getOrgIdByToken());
+        if(assetName == null || assetName.isBlank())
+            return getTotalAssetRecords();
+        return assetRepository.getTotalAssetRecordsFromSearch(assetName.trim(), Token.getOrgIdByToken());
     }
 
 }

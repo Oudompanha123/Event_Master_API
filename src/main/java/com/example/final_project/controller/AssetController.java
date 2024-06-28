@@ -32,15 +32,15 @@ public class AssetController {
                 assetService.getTotalAssetRecords(), assetService.findALlAsset(offset,limit));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Search all assets by name")
     public ResponseEntity<?> getAssetByName(
-            @RequestParam String name,
+            @RequestParam(required = false) String name,
             @RequestParam(value = "offset",defaultValue = "1") @Positive @NotNull Integer offset,
             @RequestParam(value = "limit",defaultValue = "8") @Positive @NotNull Integer limit
     ) {
         return GetAllResponse.getAllResponse("Find asset by name successfully",
-                assetService.getTotalAssetRecordsFromSearch(name.trim()), assetService.getAllAssetsByName(name.trim(), offset, limit));
+                assetService.getTotalAssetRecordsFromSearch(name), assetService.getAllAssetsByName(name, offset, limit));
     }
 
     @GetMapping("/{assetId}")
@@ -70,7 +70,7 @@ public class AssetController {
     }
 
     @DeleteMapping("/delete/{assetId}")
-    @Operation(summary = "Delete asset by id successfully")
+    @Operation(summary = "Delete asset by id")
     public ResponseEntity<?> deleteMemberById(@PathVariable @Positive @NotNull Integer assetId){
         assetService.deleteAssetById(assetId);
         return GetResponse.getResponse("Delete asset id : " + assetId + " successfully", null);

@@ -1,18 +1,21 @@
 package com.example.final_project.service;
 
-import com.example.final_project.model.dto.response.landingPage.EventDetailInLandingPage;
-import com.example.final_project.model.dto.response.landingPage.EventsByCategory;
-import com.example.final_project.model.dto.response.landingPage.FormResponse;
+import com.example.final_project.model.dto.response.landingPage.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LandingPageService {
-    List<EventsByCategory> getAllEventsByCategory();
 
     EventDetailInLandingPage getDetailEventByEventId(Integer eventId);
 
     FormResponse getFormByEventId(Integer eventId);
 
-    List<EventsByCategory> searchEvent(String eventName, Integer categoryId, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<EventsByCategory> searchEvent(String eventName, String categoryName, Boolean status, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    List<PopularEventResponse> getAllPopularEvent();
+
+    List<EventResponseLandingPage> getEventByCategoryName(String cateName, Integer offset, Integer limit);
+
+    List<String> getAllCategoryNames();
 }
