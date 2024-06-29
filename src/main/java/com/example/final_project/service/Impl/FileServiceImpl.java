@@ -24,27 +24,14 @@ public class FileServiceImpl implements FileService {
         assert fileName != null;
         assert type != null;
 
-        System.out.println("fileName: " + fileName);
-        System.out.println("type: " + type);
-        switch (type) {
-            case "image/png":
-                fileName = UUID.randomUUID() + ".png";
-                break;
-            case "image/jpeg":
-                fileName = UUID.randomUUID() + ".jpeg";
-                break;
-            case "image/jpg":
-                fileName = UUID.randomUUID() + ".jpg";
-                break;
-            case "image/webp":
-                fileName = UUID.randomUUID() + ".webp";
-                break;
-            case "application/pdf":
-                fileName = UUID.randomUUID() + ".pdf";
-                break;
-            default:
-                throw new BadRequestException("File format not supported");
-        }
+        fileName = switch (type) {
+            case "image/png" -> UUID.randomUUID() + ".png";
+            case "image/jpeg" -> UUID.randomUUID() + ".jpeg";
+            case "image/jpg" -> UUID.randomUUID() + ".jpg";
+            case "image/webp" -> UUID.randomUUID() + ".webp";
+            case "application/pdf" -> UUID.randomUUID() + ".pdf";
+            default -> throw new BadRequestException("File format not supported");
+        };
 
         if (!Files.exists(path))
             Files.createDirectories(path);
