@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 public class FileServiceImpl implements FileService {
     //store image in images folder
-    private final Path path = Paths.get("src/main/resources/image");
+    private final Path path = Paths.get("src/main/resources/images");
     @Override
     public String saveFile(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
@@ -24,14 +24,27 @@ public class FileServiceImpl implements FileService {
         assert fileName != null;
         assert type != null;
 
-        fileName = switch (type) {
-            case "images/png" -> UUID.randomUUID() + ".png";
-            case "images/jpeg" -> UUID.randomUUID() + ".jpeg";
-            case "images/jpg" -> UUID.randomUUID() + ".jpg";
-            case "images/webp" -> UUID.randomUUID() + ".webp";
-            case "application/pdf" -> UUID.randomUUID() + ".pdf";
-            default -> throw new BadRequestException("File format not supported");
-        };
+        System.out.println("fileName: " + fileName);
+        System.out.println("type: " + type);
+        switch (type) {
+            case "image/png":
+                fileName = UUID.randomUUID() + ".png";
+                break;
+            case "image/jpeg":
+                fileName = UUID.randomUUID() + ".jpeg";
+                break;
+            case "image/jpg":
+                fileName = UUID.randomUUID() + ".jpg";
+                break;
+            case "image/webp":
+                fileName = UUID.randomUUID() + ".webp";
+                break;
+            case "application/pdf":
+                fileName = UUID.randomUUID() + ".pdf";
+                break;
+            default:
+                throw new BadRequestException("File format not supported");
+        }
 
         if (!Files.exists(path))
             Files.createDirectories(path);
@@ -43,7 +56,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public Resource getFileByFileName(String fileName) throws IOException {
         //get file path
-        Path path = Paths.get("src/main/resources/image/" + fileName);
+        Path path = Paths.get("src/main/resources/images/" + fileName);
         //read file as byte
         return new ByteArrayResource(Files.readAllBytes(path));
     }
