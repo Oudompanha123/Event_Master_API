@@ -1,0 +1,23 @@
+# Build output - the image builds from source inside the container
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# VCS and IDE
+.git/
+.gitignore
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+
+# Local runtime data and secrets
+.env
+data/
+
+# Docs
+README.md
+HELP.md

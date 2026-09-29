@@ -2,6 +2,7 @@ package com.example.final_project;
 
 import com.example.final_project.repository.EventRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -28,6 +30,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @SpringBootApplication
 @EnableScheduling
 @AllArgsConstructor
+@Slf4j
 public class FinalProjectApplication {
 	private final EventRepository eventRepository;
 	public static void main(String[] args) {
@@ -36,6 +39,11 @@ public class FinalProjectApplication {
 
 	@Scheduled(cron = "0 0 * * * *")
 	public void function(){
-		eventRepository.autoCloseEvent();
+		try {
+			eventRepository.autoCloseEvent();
+		} catch (DataAccessException e) {
+			// The database may be briefly unreachable; the next hourly run will retry.
+			log.warn("autoCloseEvent skipped - database unavailable: {}", e.getMostSpecificCause().getMessage());
+		}
 	}
 }
