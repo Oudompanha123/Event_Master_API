@@ -2,10 +2,16 @@ FROM maven:3.9.7-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-COPY . .
+# Download dependencies first, so this layer is cached until pom.xml changes
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
 
-# Tests load the full Spring context and need the database reachable from the
-# build host, so they are skipped here and run separately in CI/locally.
+# Then copy the source and build
+COPY src ./src
+
+# Tests need a Docker daemon of their own (Testcontainers), which is not
+# available inside this build container - the Jenkins 'Test' stage runs them
+# before this image is built.
 RUN mvn -B clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
