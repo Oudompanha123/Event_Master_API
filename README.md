@@ -6,6 +6,27 @@
 >  2. Install Postgres : <br> host = 110.74.194.124 <br> port = 5440 <br> username = gatherly <br> password = gatherly
       
 ## Getting started
+
+## Running the tests
+The tests start a throwaway PostgreSQL with Testcontainers, so **Docker must be running**:
+
+```powershell
+.\mvnw.cmd test
+```
+
+The schema comes from `src/main/resources/script/scheme.sql`, and the database is thrown away
+when the run finishes - nothing touches your real data.
+
+Without Docker you can still run the context check on in-memory H2, which skips everything
+that executes SQL:
+
+```powershell
+.\mvnw.cmd test -DexcludedGroups=db
+```
+
+Jenkins runs the full suite in the `Test` stage, before the image is built, so a failing test
+stops the deploy.
+
 ## API endpoint
 ### 1. Landing-page-controller
 ####  a. Search and filter:

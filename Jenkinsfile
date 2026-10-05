@@ -19,6 +19,20 @@ pipeline {
     stages {
         // No Checkout stage: Jenkins already cloned the repo to read this file.
 
+        stage('Test') {
+            steps {
+                // mvnw.cmd only needs JAVA_HOME, which is set machine-wide, so no
+                // Maven install is required on the agent. Testcontainers starts its
+                // own PostgreSQL through the same Docker daemon this job uses.
+                bat 'mvnw.cmd -B test'
+            }
+            post {
+                always {
+                    junit testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
         stage('Docker Build') {
             steps {
                 bat 'docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .'

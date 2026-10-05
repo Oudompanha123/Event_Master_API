@@ -1,10 +1,10 @@
 package com.example.final_project;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class FinalProjectApplicationTests {
+@Tag("db")
+class FinalProjectApplicationTests extends PostgresTestBase {
 
 	@Test
 	void contextLoads() {
