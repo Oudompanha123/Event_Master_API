@@ -1,5 +1,55 @@
+// Runs a Maven goal inside a throwaway container.
+//
+// The Jenkins controller is itself a container (see devops/ in the portfolio repo):
+// it ships JDK 17 and no Maven at all, while this project needs 21. Rather than
+// rebuilding the shared controller image, every Maven step borrows the official
+// maven:*-temurin-21 image through the Docker socket the controller already mounts.
+//
+// The flags are all load-bearing:
+//   -v $JENKINS_VOLUME       the workspace lives inside the jenkins_home volume, so
+//                            mounting it makes $WORKSPACE name the same files on
+//                            both sides of the socket.
+//   --user 1000:1000         everything Maven writes stays owned by the jenkins
+//                            user, or the next checkout/cleanup fails on root files.
+//   --group-add 0            what actually grants access to the mounted socket,
+//                            which is root:root 0660 (same trick as group_add in
+//                            the controller's compose file).
+//   -v docker.sock           Testcontainers starts its PostgreSQL on the host daemon.
+//   TESTCONTAINERS_HOST_OVERRIDE  tells Testcontainers to reach that database at
+//                            host.docker.internal:<published port> - the default of
+//                            'localhost' is this container, not the Docker host.
+//   --network cicd           puts the build on the same network as SonarQube, so
+//                            http://sonarqube:9000 resolves during the scan.
+def mvn(String goals) {
+    withEnv(["MVN_GOALS=${goals}"]) {
+        sh '''
+            docker run --rm \
+              --user 1000:1000 \
+              --group-add 0 \
+              --network "$CICD_NETWORK" \
+              --add-host host.docker.internal:host-gateway \
+              -v "$JENKINS_VOLUME":/var/jenkins_home \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -e MAVEN_CONFIG=/var/jenkins_home/.m2 \
+              -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal \
+              -e SONAR_HOST_URL -e SONAR_AUTH_TOKEN \
+              -w "$WORKSPACE" \
+              "$MAVEN_IMAGE" \
+              mvn -B -Duser.home=/var/jenkins_home $MVN_GOALS
+        '''
+    }
+}
+
 pipeline {
     agent any
+
+    options {
+        timestamps()
+        timeout(time: 40, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeep: 10))
+        // Two builds deploying to the same container name would fight each other.
+        disableConcurrentBuilds()
+    }
 
     // Jenkins asks GitHub for new commits every ~5 minutes and builds only
     // when the revision changed. The H spreads the poll across the hour so
@@ -12,8 +62,20 @@ pipeline {
         IMAGE_NAME     = 'event-master'
         CONTAINER_NAME = 'event-master-meta'
         HOST_PORT      = '8899'
-        DB_URL         = 'jdbc:postgresql://host.docker.internal:5432/postgres'
-        DB_USERNAME    = 'postgres'
+        // Named volume rather than a C:\ bind mount: the deploy runs from a Linux
+        // container, which cannot hand a Windows path to the daemon.
+        DATA_VOLUME    = 'event-master-data'
+
+        MAVEN_IMAGE    = 'maven:3.9-eclipse-temurin-21'
+        // Docker volume and network created by the CI stack's compose project ('cicd').
+        JENKINS_VOLUME = 'cicd_jenkins_home'
+        CICD_NETWORK   = 'cicd'
+
+        // Name of the SonarQube server configured under Manage Jenkins > System.
+        SONARQUBE_ENV  = 'SonarQube'
+
+        DB_URL      = 'jdbc:postgresql://host.docker.internal:5432/postgres'
+        DB_USERNAME = 'postgres'
     }
 
     stages {
@@ -21,10 +83,9 @@ pipeline {
 
         stage('Test') {
             steps {
-                // mvnw.cmd only needs JAVA_HOME, which is set machine-wide, so no
-                // Maven install is required on the agent. Testcontainers starts its
-                // own PostgreSQL through the same Docker daemon this job uses.
-                bat 'mvnw.cmd -B test'
+                // Also leaves target/classes and target/site/jacoco/jacoco.xml behind,
+                // both of which the SonarQube stage needs.
+                mvn 'test'
             }
             post {
                 always {
@@ -33,9 +94,70 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                // Injects SONAR_HOST_URL and SONAR_AUTH_TOKEN from the server
+                // configuration; mvn() forwards both into the build container.
+                withSonarQubeEnv(env.SONARQUBE_ENV) {
+                    // Interpolated by Groovy, not the shell: $MVN_GOALS is only
+                    // expanded once, so a $VAR inside it would reach Maven verbatim.
+                    mvn "sonar:sonar -Dsonar.projectVersion=${env.BUILD_NUMBER}"
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                // The waitForQualityGate step needs SonarQube to call a webhook back
+                // into Jenkins, which this setup deliberately does not configure, so
+                // the gate is polled instead: wait for the Compute Engine to finish
+                // processing the report, then ask for that analysis's gate status.
+                withSonarQubeEnv(env.SONARQUBE_ENV) {
+                    timeout(time: 5, unit: 'MINUTES') {
+                        sh '''
+                            set -e
+                            # The scanner drops this under target/sonar; located rather
+                            # than hard-coded so the gate does not break if a future
+                            # scanner release moves its working directory.
+                            REPORT_TASK=$(find target -name report-task.txt -print -quit)
+                            if [ -z "$REPORT_TASK" ]; then
+                                echo "No report-task.txt found - did the analysis stage upload a report?"
+                                exit 1
+                            fi
+                            CE_TASK_URL=$(grep '^ceTaskUrl=' "$REPORT_TASK" | cut -d= -f2-)
+
+                            STATUS=PENDING
+                            while [ "$STATUS" = PENDING ] || [ "$STATUS" = IN_PROGRESS ]; do
+                                sleep 5
+                                RESP=$(curl -s -u "$SONAR_AUTH_TOKEN:" "$CE_TASK_URL")
+                                STATUS=$(echo "$RESP" | jq -r .task.status)
+                                echo "SonarQube analysis task status: $STATUS"
+                            done
+
+                            if [ "$STATUS" != SUCCESS ]; then
+                                echo "$RESP"
+                                exit 1
+                            fi
+
+                            ANALYSIS_ID=$(echo "$RESP" | jq -r .task.analysisId)
+                            QG=$(curl -s -u "$SONAR_AUTH_TOKEN:" \
+                                "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$ANALYSIS_ID")
+                            QG_STATUS=$(echo "$QG" | jq -r .projectStatus.status)
+                            echo "Quality Gate status: $QG_STATUS"
+
+                            if [ "$QG_STATUS" != OK ]; then
+                                echo "$QG" | jq .
+                                exit 1
+                            fi
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .'
+                sh 'docker build -t "$IMAGE_NAME:$BUILD_NUMBER" -t "$IMAGE_NAME:latest" .'
             }
         }
 
@@ -45,13 +167,14 @@ pipeline {
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'mail-password', variable: 'MAIL_PASSWORD')
                 ]) {
-                    bat '''
-                        docker rm -f %CONTAINER_NAME% 2>nul
-                        docker run -d --name %CONTAINER_NAME% --restart always ^
-                          -p %HOST_PORT%:8080 ^
-                          -e DB_URL -e DB_USERNAME -e DB_PASSWORD -e MAIL_PASSWORD ^
-                          -v C:/deploy/event-master/data:/src/main/resources ^
-                          %IMAGE_NAME%:%BUILD_NUMBER%
+                    sh '''
+                        docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
+                        docker run -d --name "$CONTAINER_NAME" --restart always \
+                          -p "$HOST_PORT":8080 \
+                          --add-host host.docker.internal:host-gateway \
+                          -e DB_URL -e DB_USERNAME -e DB_PASSWORD -e MAIL_PASSWORD \
+                          -v "$DATA_VOLUME":/src/main/resources \
+                          "$IMAGE_NAME:$BUILD_NUMBER"
                     '''
                 }
             }
@@ -59,18 +182,20 @@ pipeline {
 
         stage('Health Check') {
             steps {
-                powershell '''
-                    for ($i = 0; $i -lt 30; $i++) {
-                        Start-Sleep -Seconds 3
-                        $running = docker inspect -f "{{.State.Running}}" $env:CONTAINER_NAME
-                        if ($running -ne "true") { break }
-                        if (docker logs $env:CONTAINER_NAME | Select-String "Started .* in ") {
-                            Write-Host "App is up on http://localhost:$env:HOST_PORT"
+                sh '''
+                    i=0
+                    while [ $i -lt 30 ]; do
+                        i=$((i + 1))
+                        sleep 3
+                        [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" = true ] || break
+                        if docker logs "$CONTAINER_NAME" 2>&1 | grep -q "Started .* in "; then
+                            echo "App is up on http://localhost:$HOST_PORT"
                             exit 0
-                        }
-                    }
-                    Write-Host "App did not start. Last log lines:"
-                    docker logs --tail 40 $env:CONTAINER_NAME
+                        fi
+                    done
+
+                    echo "App did not start. Last log lines:"
+                    docker logs --tail 40 "$CONTAINER_NAME" 2>&1 || true
                     exit 1
                 '''
             }
@@ -79,7 +204,7 @@ pipeline {
 
     post {
         always {
-            bat 'docker image prune -f'
+            sh 'docker image prune -f'
         }
     }
 }

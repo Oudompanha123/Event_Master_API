@@ -19,6 +19,20 @@
 		<!-- Newer than the Spring Boot 3.2.5 default (1.19.x), whose bundled
 		     docker-java speaks an API version Docker Engine 29 rejects. -->
 		<testcontainers.version>1.21.4</testcontainers.version>
+
+		<jacoco.version>0.8.13</jacoco.version>
+		<!-- Pinned so `mvn sonar:sonar` in the pipeline cannot silently pick up a
+		     different plugin release between builds. -->
+		<sonar.maven.plugin.version>5.1.0.4751</sonar.maven.plugin.version>
+
+		<!-- Must match the project key in SonarQube; the Jenkins 'SonarQube Analysis'
+		     stage reads it from here rather than passing -Dsonar.projectKey. -->
+		<sonar.projectKey>event-master</sonar.projectKey>
+		<sonar.projectName>Event Master API</sonar.projectName>
+		<!-- Sonar has no coverage engine of its own - it imports JaCoCo's XML report. -->
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<!-- Uploaded/static images are data, not source. -->
+		<sonar.exclusions>src/main/resources/images/**</sonar.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -148,6 +162,40 @@
 
 	<build>
 		<plugins>
+			<!-- Measures which lines the tests actually execute. 'prepare-agent' hooks
+			     the JVM that Surefire forks; 'report' is bound to 'test' instead of its
+			     default 'verify' so the pipeline's `mvn test` already leaves a
+			     jacoco.xml behind for the SonarQube stage to import. -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Declared with no execution: it only exists so the version of the
+			     `sonar:sonar` goal the pipeline invokes is pinned, not resolved to
+			     whatever is newest on Maven Central that day. -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>${sonar.maven.plugin.version}</version>
+			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

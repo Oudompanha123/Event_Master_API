@@ -27,6 +27,54 @@ that executes SQL:
 Jenkins runs the full suite in the `Test` stage, before the image is built, so a failing test
 stops the deploy.
 
+## CI/CD
+
+Jenkins and SonarQube are themselves containers, in a shared `cicd` compose stack that also
+runs the PostgreSQL that SonarQube stores its analyses in. The stack lives in the portfolio
+repo under `devops/` (`docker compose up -d` from there); it is shared with that project, so
+it is referenced rather than duplicated here.
+
+| Service   | URL                     | Notes                                                  |
+|-----------|-------------------------|--------------------------------------------------------|
+| Jenkins   | <http://localhost:8090> | 8080 is already taken on this host                     |
+| SonarQube | <http://localhost:9000> | Community Build, reachable from Jenkins as `sonarqube` |
+
+### What a build does
+
+| Stage                | What it does                                                               |
+|----------------------|----------------------------------------------------------------------------|
+| `Test`               | Full suite against a Testcontainers PostgreSQL, plus a JaCoCo coverage report |
+| `SonarQube Analysis` | `mvn sonar:sonar`, which uploads the sources and imports `jacoco.xml`        |
+| `Quality Gate`       | Waits for SonarQube to finish, then fails the build if the gate is not `OK`   |
+| `Docker Build`       | Builds `event-master:<build number>` and `:latest`                           |
+| `Deploy`             | Replaces the running `event-master-meta` container                           |
+| `Health Check`       | Polls the container log until Spring Boot reports it started                 |
+
+So a new issue that trips the quality gate stops the pipeline *before* anything is built or
+deployed, the same way a failing test does.
+
+### Why Maven runs in its own container
+
+The Jenkins controller image ships JDK 17 and no Maven at all, while this project needs
+JDK 21. Rather than rebuilding an image that is shared with another project, every Maven
+step borrows the official `maven:3.9-eclipse-temurin-21` image through the Docker socket the
+controller already mounts. The `mvn()` helper at the top of the `Jenkinsfile` documents each
+flag that makes that work - in particular, Testcontainers has to be told to reach its
+database at `host.docker.internal` rather than `localhost`, which is now a different container.
+
+### One-time setup
+
+1. **Job** - *New Item > Pipeline*, then *Pipeline script from SCM* > *Git*, this repository's
+   URL, branch `*/main`, script path `Jenkinsfile`.
+2. **Credentials** - *Manage Jenkins > Credentials*, two *Secret text* entries the `Deploy`
+   stage reads: `db-password` and `mail-password`.
+3. **SonarQube** - *Manage Jenkins > System > SonarQube servers* already defines a server
+   named `SonarQube` at `http://sonarqube:9000` with the token credential `sonarqube-token`.
+   The project key is `event-master`, set in `pom.xml`.
+
+No webhook is configured from SonarQube back into Jenkins, so `Quality Gate` polls the
+analysis task instead of using `waitForQualityGate`.
+
 ## API endpoint
 ### 1. Landing-page-controller
 ####  a. Search and filter:
