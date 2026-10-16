@@ -30,7 +30,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @AllArgsConstructor
@@ -183,7 +185,15 @@ public class MemberServiceImpl implements MemberService {
             if(!member.getMemberId().equals(memberId))
                 throw new NotFoundException(("Wrong OTP code"));
             // check expired OTP (2 minutes long)
-            if(Duration.between(memberRepository.issuedAt(otp), LocalDateTime.now()).getSeconds() < (60 * 2)){
+            // Both operands are anchored to the timeline before subtracting. A
+            // LocalDateTime carries no zone, so Duration.between on two of them
+            // measures clock-face difference rather than elapsed time - it would
+            // read an hour short or long across a DST change, letting an expired
+            // OTP verify or rejecting a fresh one.
+            Instant otpIssuedAt = memberRepository.issuedAt(otp)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant();
+            if(Duration.between(otpIssuedAt, Instant.now()).getSeconds() < (60 * 2)){
                 memberRepository.updateOtpStatus(otpId);
                 if(member.getRole().equals(Roles.ROLE_ADMIN)) {
                     // change is approve to true for admin
