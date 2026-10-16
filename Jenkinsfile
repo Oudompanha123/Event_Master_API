@@ -23,6 +23,12 @@
 def mvn(String goals) {
     withEnv(["MVN_GOALS=${goals}"]) {
         sh '''
+            # sonar-scanner-maven 5.x authenticates from SONAR_TOKEN. withSonarQubeEnv
+            # exports the same secret as SONAR_AUTH_TOKEN too, so accept either and
+            # forward it under the one name the scanner actually reads. Empty outside
+            # the SonarQube stages, where no Maven goal looks at it.
+            export SONAR_TOKEN="${SONAR_TOKEN:-$SONAR_AUTH_TOKEN}"
+
             docker run --rm \
               --user 1000:1000 \
               --group-add 0 \
@@ -32,7 +38,7 @@ def mvn(String goals) {
               -v /var/run/docker.sock:/var/run/docker.sock \
               -e MAVEN_CONFIG=/var/jenkins_home/.m2 \
               -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal \
-              -e SONAR_HOST_URL -e SONAR_AUTH_TOKEN \
+              -e SONAR_HOST_URL -e SONAR_TOKEN \
               -w "$WORKSPACE" \
               "$MAVEN_IMAGE" \
               mvn -B -Duser.home=/var/jenkins_home $MVN_GOALS
@@ -96,7 +102,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // Injects SONAR_HOST_URL and SONAR_AUTH_TOKEN from the server
+                // Injects the server URL and token from the SonarQube server
                 // configuration; mvn() forwards both into the build container.
                 withSonarQubeEnv(env.SONARQUBE_ENV) {
                     // Interpolated by Groovy, not the shell: $MVN_GOALS is only
@@ -116,6 +122,8 @@ pipeline {
                     timeout(time: 5, unit: 'MINUTES') {
                         sh '''
                             set -e
+                            TOKEN="${SONAR_TOKEN:-$SONAR_AUTH_TOKEN}"
+
                             # The scanner drops this under target/sonar; located rather
                             # than hard-coded so the gate does not break if a future
                             # scanner release moves its working directory.
@@ -129,7 +137,7 @@ pipeline {
                             STATUS=PENDING
                             while [ "$STATUS" = PENDING ] || [ "$STATUS" = IN_PROGRESS ]; do
                                 sleep 5
-                                RESP=$(curl -s -u "$SONAR_AUTH_TOKEN:" "$CE_TASK_URL")
+                                RESP=$(curl -s -u "$TOKEN:" "$CE_TASK_URL")
                                 STATUS=$(echo "$RESP" | jq -r .task.status)
                                 echo "SonarQube analysis task status: $STATUS"
                             done
@@ -140,7 +148,7 @@ pipeline {
                             fi
 
                             ANALYSIS_ID=$(echo "$RESP" | jq -r .task.analysisId)
-                            QG=$(curl -s -u "$SONAR_AUTH_TOKEN:" \
+                            QG=$(curl -s -u "$TOKEN:" \
                                 "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$ANALYSIS_ID")
                             QG_STATUS=$(echo "$QG" | jq -r .projectStatus.status)
                             echo "Quality Gate status: $QG_STATUS"
