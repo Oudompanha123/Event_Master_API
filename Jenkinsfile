@@ -173,14 +173,15 @@ pipeline {
             steps {
                 withCredentials([
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
-                    string(credentialsId: 'mail-password', variable: 'MAIL_PASSWORD')
+                    string(credentialsId: 'mail-password', variable: 'MAIL_PASSWORD'),
+                    string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
                 ]) {
                     sh '''
                         docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
                         docker run -d --name "$CONTAINER_NAME" --restart always \
                           -p "$HOST_PORT":8080 \
                           --add-host host.docker.internal:host-gateway \
-                          -e DB_URL -e DB_USERNAME -e DB_PASSWORD -e MAIL_PASSWORD \
+                          -e DB_URL -e DB_USERNAME -e DB_PASSWORD -e MAIL_PASSWORD -e JWT_SECRET \
                           -v "$DATA_VOLUME":/src/main/resources \
                           "$IMAGE_NAME:$BUILD_NUMBER"
                     '''
