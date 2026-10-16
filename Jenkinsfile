@@ -46,7 +46,7 @@ pipeline {
     options {
         timestamps()
         timeout(time: 40, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeep: 10))
+        buildDiscarder(logRotator(numToKeepStr: '10'))
         // Two builds deploying to the same container name would fight each other.
         disableConcurrentBuilds()
     }
