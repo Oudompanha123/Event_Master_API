@@ -46,6 +46,25 @@ def mvn(String goals) {
     }
 }
 
+/**
+ * True when this build is of the production branch.
+ *
+ * <p>GitFlow puts releasable code on main and day-to-day integration on develop,
+ * so only main is allowed to build an image and deploy it. BRANCH_NAME is set
+ * only by multibranch jobs; a plain pipeline job gets GIT_BRANCH from the git
+ * plugin in the form 'origin/main', so both are accepted.
+ */
+def isProductionBranch() {
+    String branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ''
+    return branch == 'main' || branch.endsWith('/main')
+}
+
+/** main and develop are analysed; short-lived feature branches only run tests. */
+def isAnalysedBranch() {
+    String branch = env.BRANCH_NAME ?: env.GIT_BRANCH ?: ''
+    return isProductionBranch() || branch == 'develop' || branch.endsWith('/develop')
+}
+
 pipeline {
     agent any
 
@@ -66,11 +85,18 @@ pipeline {
 
     environment {
         IMAGE_NAME     = 'event-master'
-        CONTAINER_NAME = 'event-master-meta'
         HOST_PORT      = '8899'
+        // Deployed as a Swarm stack, so the unit of deployment is a service
+        // rather than a container: 'docker stack deploy' names the service
+        // <stack>_<service in stack.yml>.
+        STACK_NAME     = 'event-master'
+        SERVICE_NAME   = 'event-master_api'
         // Named volume rather than a C:\ bind mount: the deploy runs from a Linux
         // container, which cannot hand a Windows path to the daemon.
         DATA_VOLUME    = 'event-master-data'
+        // The standalone container the pre-Swarm pipeline left behind; it holds
+        // the same published port, so it has to go before the service can bind it.
+        LEGACY_CONTAINER = 'event-master-meta'
 
         MAVEN_IMAGE    = 'maven:3.9-eclipse-temurin-21'
         // Docker volume and network created by the CI stack's compose project ('cicd').
@@ -101,6 +127,7 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
+            when { expression { isAnalysedBranch() } }
             steps {
                 // Injects the server URL and token from the SonarQube server
                 // configuration; mvn() forwards both into the build container.
@@ -113,6 +140,7 @@ pipeline {
         }
 
         stage('Quality Gate') {
+            when { expression { isAnalysedBranch() } }
             steps {
                 // The waitForQualityGate step needs SonarQube to call a webhook back
                 // into Jenkins, which this setup deliberately does not configure, so
@@ -164,47 +192,71 @@ pipeline {
         }
 
         stage('Docker Build') {
+            when { expression { isProductionBranch() } }
             steps {
                 sh 'docker build -t "$IMAGE_NAME:$BUILD_NUMBER" -t "$IMAGE_NAME:latest" .'
             }
         }
 
         stage('Deploy') {
+            when { expression { isProductionBranch() } }
             steps {
                 withCredentials([
                     string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'mail-password', variable: 'MAIL_PASSWORD'),
                     string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')
                 ]) {
+                    // stack.yml reads every value through ${...}, which
+                    // 'docker stack deploy' substitutes from this shell, so the
+                    // credentials reach the service without being written to disk.
                     sh '''
-                        docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
-                        docker run -d --name "$CONTAINER_NAME" --restart always \
-                          -p "$HOST_PORT":8080 \
-                          --add-host host.docker.internal:host-gateway \
-                          -e DB_URL -e DB_USERNAME -e DB_PASSWORD -e MAIL_PASSWORD -e JWT_SECRET \
-                          -v "$DATA_VOLUME":/src/main/resources \
-                          "$IMAGE_NAME:$BUILD_NUMBER"
+                        # The pre-Swarm pipeline left a standalone container holding
+                        # the same published port. Removing it is a one-time
+                        # migration, and a no-op safety net from then on.
+                        docker rm -f "$LEGACY_CONTAINER" 2>/dev/null || true
+
+                        # Declared external in stack.yml so uploads survive a
+                        # 'stack rm'; creating it is idempotent.
+                        docker volume create "$DATA_VOLUME" >/dev/null
+
+                        IMAGE_TAG="$BUILD_NUMBER" docker stack deploy \
+                          --compose-file stack.yml \
+                          --prune \
+                          "$STACK_NAME"
                     '''
                 }
             }
         }
 
         stage('Health Check') {
+            when { expression { isProductionBranch() } }
             steps {
+                // Asks the running app over its published port instead of grepping
+                // 'docker service logs'. With update_config order start-first the
+                // previous task lingers for a few seconds and its own
+                // "Started ... in" line is still in the service log, so matching
+                // on that would pass before the new task is even serving.
                 sh '''
                     i=0
-                    while [ $i -lt 30 ]; do
+                    while [ $i -lt 40 ]; do
                         i=$((i + 1))
                         sleep 3
-                        [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" = true ] || break
-                        if docker logs "$CONTAINER_NAME" 2>&1 | grep -q "Started .* in "; then
-                            echo "App is up on http://localhost:$HOST_PORT"
+
+                        REPLICAS=$(docker service ls --filter name="$SERVICE_NAME" --format '{{.Replicas}}')
+                        [ "$REPLICAS" = "1/1" ] || continue
+
+                        CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 \
+                            "http://host.docker.internal:$HOST_PORT/swagger-ui/index.html" || true)
+                        if [ "$CODE" = "200" ]; then
+                            echo "App is up on http://localhost:$HOST_PORT (replicas $REPLICAS)"
                             exit 0
                         fi
                     done
 
-                    echo "App did not start. Last log lines:"
-                    docker logs --tail 40 "$CONTAINER_NAME" 2>&1 || true
+                    echo "Service did not become healthy. Task state:"
+                    docker service ps "$SERVICE_NAME" --no-trunc 2>&1 || true
+                    echo "Last log lines:"
+                    docker service logs --tail 40 "$SERVICE_NAME" 2>&1 || true
                     exit 1
                 '''
             }

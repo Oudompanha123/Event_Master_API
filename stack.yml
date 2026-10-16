@@ -1,0 +1,51 @@
+version: "3.8"
+
+# Docker Swarm stack for the API. Deployed by the Jenkins 'Deploy' stage with
+#   docker stack deploy -c stack.yml event-master
+# which substitutes the ${...} values below from its own environment, so no
+# secret is ever written into this file.
+#
+# Manual deploy (values from your shell, not .env - stack deploy does not read it):
+#   IMAGE_TAG=latest DB_URL=... DB_PASSWORD=... MAIL_PASSWORD=... JWT_SECRET=... \
+#     docker stack deploy -c stack.yml event-master
+
+services:
+  api:
+    # The pipeline pins the exact build it tested; 'latest' is only a manual
+    # fallback. On a multi-node swarm this has to come from a registry that
+    # every node can pull - a locally built tag only exists on the node that
+    # built it.
+    image: event-master:${IMAGE_TAG:-latest}
+
+    ports:
+      - "8899:8080"
+
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+
+    volumes:
+      # Uploads are written relative to the container working directory, so they
+      # need to outlive the task. Declared external so that `docker stack rm`
+      # cannot take the uploaded images with it; the pipeline creates it.
+      - event-master-data:/src/main/resources
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      update_config:
+        # Start the replacement task before stopping the old one, so a redeploy
+        # does not drop requests, and put the previous task back if the new
+        # image fails to come up at all.
+        order: start-first
+        failure_action: rollback
+      rollback_config:
+        order: start-first
+
+volumes:
+  event-master-data:
+    external: true

@@ -47,11 +47,90 @@ it is referenced rather than duplicated here.
 | `SonarQube Analysis` | `mvn sonar:sonar`, which uploads the sources and imports `jacoco.xml`        |
 | `Quality Gate`       | Waits for SonarQube to finish, then fails the build if the gate is not `OK`   |
 | `Docker Build`       | Builds `event-master:<build number>` and `:latest`                           |
-| `Deploy`             | Replaces the running `event-master-meta` container                           |
-| `Health Check`       | Polls the container log until Spring Boot reports it started                 |
+| `Deploy`             | `docker stack deploy` of `stack.yml` onto the Swarm                          |
+| `Health Check`       | Waits for `1/1` replicas, then requires HTTP 200 from the published port      |
 
 So a new issue that trips the quality gate stops the pipeline *before* anything is built or
 deployed, the same way a failing test does.
+
+Which stages run depends on the branch, following GitFlow:
+
+| Branch       | Test | Analysis + Gate | Build + Deploy |
+|--------------|------|-----------------|----------------|
+| `main`       | yes  | yes             | **yes**        |
+| `develop`    | yes  | yes             | no             |
+| `feature/*`  | yes  | no              | no             |
+| `release/*`  | yes  | no              | no             |
+| `hotfix/*`   | yes  | no              | no             |
+
+Only `main` deploys, so nothing reaches the Swarm without having passed the gate first.
+Analysis is limited to `main` and `develop` because SonarQube Community Build has no
+branch analysis - every scan of a given project key overwrites the last, so scanning
+short-lived branches into the same project would make the dashboard meaningless.
+
+## GitFlow
+
+| Branch      | Purpose                                                | Cut from  | Merges into        |
+|-------------|--------------------------------------------------------|-----------|--------------------|
+| `main`      | Released code; every commit is deployed                 | -         | -                  |
+| `develop`   | Integration branch; the default target for new work     | `main`    | `release/*`        |
+| `feature/*` | One change in progress                                  | `develop` | `develop`          |
+| `release/*` | Stabilising a version: fixes only, no new features      | `develop` | `main` + `develop` |
+| `hotfix/*`  | Urgent production fix that cannot wait for a release    | `main`    | `main` + `develop` |
+
+```bash
+# a feature
+git switch develop && git switch -c feature/attendee-export
+#   ... commits ...
+git switch develop && git merge --no-ff feature/attendee-export
+
+# a release
+git switch -c release/1.1.0 develop
+#   ... fixes only ...
+git switch main    && git merge --no-ff release/1.1.0 && git tag -a v1.1.0 -m "1.1.0"
+git switch develop && git merge --no-ff release/1.1.0
+
+# a hotfix
+git switch -c hotfix/otp-expiry main
+git switch main    && git merge --no-ff hotfix/otp-expiry && git tag -a v1.1.1 -m "1.1.1"
+git switch develop && git merge --no-ff hotfix/otp-expiry
+```
+
+Merging a `release/*` or `hotfix/*` back into `develop` as well as `main` is the step that
+is easy to skip and the reason fixes reappear two releases later.
+
+## Docker Swarm
+
+The API is deployed as a Swarm service, not a standalone container. `stack.yml` holds the
+service definition and the pipeline applies it with:
+
+```bash
+IMAGE_TAG=<build number> docker stack deploy -c stack.yml --prune event-master
+```
+
+`docker stack deploy` substitutes every `${...}` in `stack.yml` from the environment of the
+shell that runs it, which is how the Jenkins credentials reach the service without any
+secret being written to a file. It does **not** read `.env`, so a manual deploy has to
+export the values first.
+
+`update_config` is set to `order: start-first` with `failure_action: rollback`, so a
+redeploy brings the new task up before retiring the old one and puts the previous task back
+if the new image never serves. The uploads volume is declared `external` so that
+`docker stack rm` cannot take uploaded images with it.
+
+Useful commands:
+
+```bash
+docker stack services event-master      # replica counts
+docker service ps event-master_api      # task history, including why one failed
+docker service logs -f event-master_api # application log
+docker stack rm event-master            # tear down (keeps the external volume)
+```
+
+> [!NOTE]
+> This is a single-node Swarm. On a multi-node cluster the image has to come from a
+> registry every node can pull - a locally built `event-master:<n>` tag only exists on the
+> node that built it, and tasks scheduled elsewhere would fail to start.
 
 ### Why Maven runs in its own container
 
